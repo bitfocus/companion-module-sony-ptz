@@ -1,6 +1,6 @@
 ## Sony PTZ Camera Module
 
-A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based commands
+A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based commands with digest authentication
 
 ### Supported Devices
 

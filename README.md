@@ -1,6 +1,23 @@
-# companion-module-[replace with module name]
+# companion-module-sony-ptz
+
+A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based commands with digest authentication
 
 See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
+
+## Supported Devices
+
+- BRC-AM7
+- SRG-A40
+- SRG-A12
+
+## Actions
+
+- System Power
+- Pan/Tilt/Zoom
+- PTZ Auto Framing
+- Multi-Person Tracking
+- Preset
+- Send any HTTP-based command
 
 ## Getting started
 
