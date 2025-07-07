@@ -1,0 +1,50 @@
+{
+	"name": "sony-ptz",
+	"version": "1.0.0",
+	"main": "dist/main.js",
+	"type": "module",
+	"scripts": {
+		"postinstall": "husky",
+		"format": "prettier -w .",
+		"package": "run build && companion-module-build",
+		"build": "rimraf dist && run build:main",
+		"build:main": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch",
+		"lint:raw": "eslint",
+		"lint": "run lint:raw ."
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-sony-ptz.git"
+	},
+	"engines": {
+		"node": "^22.14",
+		"yarn": "^4"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.11.3",
+		"urllib": "^4.2.0"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.3.0",
+		"@types/node": "^22.14.1",
+		"eslint": "^9.24.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.5.1",
+		"prettier": "^3.5.3",
+		"rimraf": "^6.0.1",
+		"typescript": "~5.8.3",
+		"typescript-eslint": "^8.30.1"
+	},
+	"prettier": "@companion-module/tools/.prettierrc.json",
+	"lint-staged": {
+		"*.{css,json,md,scss}": [
+			"prettier --write"
+		],
+		"*.{ts,tsx,js,jsx}": [
+			"yarn lint:raw --fix"
+		]
+	},
+	"packageManager": "yarn@4.9.1"
+}
