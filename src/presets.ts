@@ -143,6 +143,15 @@ export function UpdatePresets(self: ModuleInstance): void {
 		]),
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(10)].map((x, i) => ['Preset Call', `${i + 1}`, `PTZ Preset ${i + 1}`, `preset_${i + 1}`, [], []]),
+		// @ts-expect-error  The first param 'x' will not be used
+		...[...Array(10)].map((x, i) => [
+			'Preset Set',
+			`${i + 1}`,
+			`PTZ Preset Set ${i + 1}`,
+			`preset_set_${i + 1}`,
+			[],
+			[],
+		]),
 	]
 
 	const presets: CompanionPresetDefinitions = {}

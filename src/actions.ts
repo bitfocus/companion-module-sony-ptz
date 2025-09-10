@@ -158,6 +158,15 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PresetCall: (i + 1).toString() },
 			i ? false : true,
 		]),
+		// @ts-expect-error  The first param will not be used
+		...[...Array(10)].map((x, i) => [
+			'Preset Set',
+			(i + 1).toString(),
+			`preset_set_${i + 1}`,
+			'command/presetposition.cgi',
+			{ PresetSet: `${i + 1},Preset${i + 1},on` },
+			i ? false : true,
+		]),
 	]
 
 	interface Commands {
