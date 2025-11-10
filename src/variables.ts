@@ -11,6 +11,16 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'multiTracking', name: 'Multi Tracking Status' },
 		{ variableId: 'multiTrackingNum', name: 'Multi Tracking Target Number' },
 		{ variableId: 'zoomMode', name: 'Zoom Mode' },
+		{ variableId: 'panPos', name: 'Pan Position' },
+		{ variableId: 'tiltPos', name: 'Tilt Position' },
+		{ variableId: 'zoomPos', name: 'Zoom Position' },
+		{ variableId: 'focusPos', name: 'Focus Position' },
+		{ variableId: 'panRangeLeft', name: 'Pan Range - Left' },
+		{ variableId: 'panRangeRight', name: 'Pan Range - Right' },
+		{ variableId: 'tiltRangeLower', name: 'Tilt Range - Lower' },
+		{ variableId: 'tiltRangeUpper', name: 'Tilt Range - Upper' },
+		{ variableId: 'zoomRangeWide', name: 'Zoom Range - Wide' },
+		{ variableId: 'zoomRangeTele', name: 'Zoom Range - Tele' },
 		{ variableId: 'streamMode', name: 'Stream Mode' },
 	])
 }

@@ -1,8 +1,9 @@
 import type { ModuleInstance } from './main.js'
 import { combineRgb, CompanionPresetDefinition, CompanionPresetDefinitions } from '@companion-module/base'
-import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, SPEED_PARAM_ACTIONS } from './actions.js'
+import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, DEFAULT_PTZ_STEP, SPEED_PARAM_ACTIONS } from './actions.js'
 
 type PresetSpec = [string, string, string, string, [string, string, number][], [string, string, number][]]
+type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any]]
 
 const FONT_SIZE = 12
 const SPEED_PARAM_ACTION_IDS = SPEED_PARAM_ACTIONS.map((x) => x.toLowerCase().split(' ').join('_') + '_action')
@@ -199,6 +200,61 @@ export function UpdatePresets(self: ModuleInstance): void {
 				options: { val: item[3] },
 				delay: 0,
 			})
+		}
+
+		presets[item[3] + '_preset'] = preset
+	})
+
+	// Rotary Presets
+	const ROTARY_PRESET_LIST: RotaryPresetSpec[] = [
+		// [category, name, text, key, left[actionId, options], right[actionId, options]]
+		[
+			'Rotary Presets',
+			'Rotary Pan',
+			'Pan\\n$(this:panPos)',
+			'rotary_pan',
+			['ptz_step_action', { target: 'pan', step: -DEFAULT_PTZ_STEP }],
+			['ptz_step_action', { target: 'pan', step: DEFAULT_PTZ_STEP }],
+		],
+		[
+			'Rotary Presets',
+			'Rotary Tilt',
+			'Tilt\\n$(this:tiltPos)',
+			'rotary_tilt',
+			['ptz_step_action', { target: 'tilt', step: -DEFAULT_PTZ_STEP }],
+			['ptz_step_action', { target: 'tilt', step: DEFAULT_PTZ_STEP }],
+		],
+		[
+			'Rotary Presets',
+			'Rotary Zoom',
+			'Zoom\\n$(this:zoomPos)',
+			'rotary_zoom',
+			['ptz_step_action', { target: 'zoom', step: -DEFAULT_PTZ_STEP }],
+			['ptz_step_action', { target: 'zoom', step: DEFAULT_PTZ_STEP }],
+		],
+	]
+
+	ROTARY_PRESET_LIST.forEach((item) => {
+		const preset: CompanionPresetDefinition = {
+			type: 'button',
+			category: item[0],
+			name: item[1],
+			options: { rotaryActions: true },
+			style: {
+				text: item[2],
+				size: FONT_SIZE,
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: [],
+					up: [],
+					rotate_left: [{ actionId: item[4][0], options: item[4][1] }],
+					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
+				},
+			],
+			feedbacks: [],
 		}
 
 		presets[item[3] + '_preset'] = preset
