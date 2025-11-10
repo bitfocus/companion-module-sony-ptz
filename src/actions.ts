@@ -9,9 +9,26 @@ import { PtzCommandParams } from './sonyptz.js'
 
 export const DEFAULT_PTZ_MOVE_SPEED = 8
 export const DEFAULT_PTZ_ZOOM_SPEED = 8000
+export const DEFAULT_PTZ_STEP = 5
 export const SPEED_PARAM_ACTIONS = ['PTZ Move', 'PTZ Zoom']
 
 export type CommandSpec = [string, string, string, string, PtzCommandParams, boolean]
+
+function clamp(self: ModuleInstance, value: number, min: string, max: string): number {
+	const _min = self.getVariableValue(min)
+	const _max = self.getVariableValue(max)
+	return Math.min(Math.max(value, _min === '' ? -0xffff : (_min as number)), _max === '' ? 0xffff : (_max as number))
+}
+
+function to16(num: number): string {
+	const buffer = new ArrayBuffer(2)
+	const int16Array = new Int16Array(buffer)
+	int16Array[0] = num
+	const signed16BitValue = int16Array[0]
+	const unsigned16BitValue = signed16BitValue & 0xffff
+	const hexString = unsigned16BitValue.toString(16)
+	return hexString.padStart(4, '0')
+}
 
 export function UpdateActions(self: ModuleInstance): void {
 	const COMMAND_LIST: CommandSpec[] = [
@@ -246,6 +263,60 @@ export function UpdateActions(self: ModuleInstance): void {
 			;(actions[k]?.options[0] as CompanionInputFieldDropdown).default = item[2]
 		}
 	})
+
+	// PTZ Step
+	actions['ptz_step_action'] = {
+		name: 'PTZ Step',
+		options: [
+			{
+				id: 'target',
+				type: 'dropdown',
+				label: 'Target',
+				choices: [
+					{ id: 'pan', label: 'Pan' },
+					{ id: 'tilt', label: 'Tilt' },
+					{ id: 'zoom', label: 'Zoom' },
+				],
+				default: 'zoom',
+			},
+			{
+				id: 'step',
+				type: 'number',
+				label: 'Step',
+				default: DEFAULT_PTZ_STEP,
+				min: -9999,
+				max: 9999,
+			},
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const focus = self.getVariableValue('focusPos')
+			if (focus === '') {
+				return
+			}
+
+			const target = event.options.target as string
+			const step = (event.options.step as number) * 51.2
+			let [pan, tilt, zoom] = [
+				(self.getVariableValue('panPos') || 0) as number,
+				(self.getVariableValue('tiltPos') || 0) as number,
+				(self.getVariableValue('zoomPos') || 0) as number,
+			]
+
+			if (target === 'pan') {
+				pan = clamp(self, pan + step, 'panRangeLeft', 'panRangeRight')
+				self.setVariableValues({ panPos: pan })
+			} else if (target === 'tilt') {
+				tilt = clamp(self, tilt + step, 'tiltRangeLower', 'tiltRangeUpper')
+				self.setVariableValues({ tiltPos: tilt })
+			} else if (target === 'zoom') {
+				zoom = clamp(self, zoom + step, 'zoomRangeWide', 'zoomRangeTele')
+				self.setVariableValues({ zoomPos: zoom })
+			}
+			await self.sendCommand('command/ptzf.cgi', {
+				AbsolutePTZF: `${to16(pan)},${to16(tilt)},${to16(zoom)},${to16(focus as number)}`,
+			})
+		},
+	}
 
 	// Other Commands
 	actions['other_command_action'] = {

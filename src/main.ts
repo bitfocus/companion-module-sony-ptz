@@ -11,6 +11,10 @@ const FB_ID = {
 	POWER: 'power',
 }
 
+function splitInt16Array(value: string): number[] {
+	return value.split(',').map((x) => (parseInt(x, 16) << 16) >> 16)
+}
+
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	config!: ModuleConfig // Setup in init()
 	ptz?: SonyPTZ
@@ -115,6 +119,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const power = sysinfoParams.get('Power') || systemParams.get('Power') || ''
 			const serial = systemParams.get('Serial') || sysinfoParams.get('Serial') || ''
 			const version = systemParams.get('SoftVersion') || sysinfoParams.get('SoftVersion') || ''
+			const [panPos, tiltPos, zoomPos, focusPos] = splitInt16Array(ptzfParams.get('AbsolutePTZF') || '')
+			const [panRangeLeft, panRangeRight] = splitInt16Array(ptzfParams.get('PanMovementRange') || '')
+			const [tiltRangeLower, tiltRangeUpper] = splitInt16Array(ptzfParams.get('TiltMovementRange') || '')
+			const [zoomRangeWide, zoomRangeTele] = splitInt16Array(ptzfParams.get('ZoomMovementRange') || '')
 
 			this.status = InstanceStatus.Ok
 
@@ -128,6 +136,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				multiTracking: ptzautoframingParams.get('PtzAutoFramingMultiTrackingEnable') || '',
 				multiTrackingNum: ptzautoframingParams.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || '',
 				zoomMode: ptzfParams.get('ZoomMode') || '',
+				panPos: panPos,
+				tiltPos: tiltPos,
+				zoomPos: zoomPos,
+				focusPos: focusPos,
+				panRangeLeft: panRangeLeft,
+				panRangeRight: panRangeRight,
+				tiltRangeLower: tiltRangeLower,
+				tiltRangeUpper: tiltRangeUpper,
+				zoomRangeWide: zoomRangeWide,
+				zoomRangeTele: zoomRangeTele,
 				streamMode: streamParams.get('StreamMode') || '',
 			})
 
