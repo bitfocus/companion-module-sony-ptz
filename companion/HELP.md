@@ -7,6 +7,7 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - BRC-AM7
 - SRG-A40
 - SRG-A12
+- FR7
 
 ### Actions
 
