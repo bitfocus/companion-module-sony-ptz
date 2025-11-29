@@ -21,19 +21,28 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	timeoutID?: ReturnType<typeof setTimeout>
 	_status: InstanceStatus = InstanceStatus.Disconnected
 	feedbackProperties: { [key: string]: string | boolean | undefined } = {}
+	presetQueue = new Set()
 
 	constructor(internal: unknown) {
 		super(internal)
 	}
 
 	async sendCommand(path: string, params: PtzCommandParams): Promise<void> {
+		let maybePresetCall
 		try {
+			if ('PresetCall' in params) {
+				maybePresetCall = Symbol(params.PresetCall.toString())
+				this.presetQueue.add(maybePresetCall)
+				this.setVariableValues({ lastPreset: params.PresetCall, goingToPreset: this.presetQueue.size })
+			}
 			await this.ptz?.send({ path, params })
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				this.log('debug', `statusCode = ${e.statusCode}`)
 			}
 		}
+		this.presetQueue.delete(maybePresetCall)
+		this.setVariableValues({ goingToPreset: this.presetQueue.size })
 	}
 
 	private set status(status: InstanceStatus) {

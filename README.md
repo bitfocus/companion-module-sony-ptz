@@ -9,6 +9,7 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 - BRC-AM7
 - SRG-A40
 - SRG-A12
+- FR7
 
 ## Actions
 

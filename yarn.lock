@@ -23,20 +23,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@companion-module/base@npm:~1.11.3":
-  version: 1.11.3
-  resolution: "@companion-module/base@npm:1.11.3"
+"@companion-module/base@npm:~1.13.4":
+  version: 1.13.4
+  resolution: "@companion-module/base@npm:1.13.4"
   dependencies:
     ajv: "npm:^8.17.1"
     colord: "npm:^2.9.3"
     ejson: "npm:^2.2.3"
     eventemitter3: "npm:^5.0.1"
     mimic-fn: "npm:^3.1.0"
-    nanoid: "npm:^3.3.8"
+    nanoid: "npm:^3.3.11"
     p-queue: "npm:^6.6.2"
     p-timeout: "npm:^4.1.0"
     tslib: "npm:^2.8.1"
-  checksum: 10c0/19acbc544de97ed8f02abf03e1d657085e51f0e92363456a84bdc1975723ba1bdfc0e943ff17444cb4e6a2b588abb794a9c5b48efb4d784be32784362e7c4efd
+  checksum: 10c0/1d57fc67d10cef7cda1d627daac8c79b03be1059a18ff5476f0427a35909fa8d53cd29c1bb0c8d37a65c59e15b0ee561b8faeb318f2511efae6974e4c3d9a9e5
   languageName: node
   linkType: hard
 
@@ -2546,7 +2546,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.8":
+"nanoid@npm:^3.3.11":
   version: 3.3.11
   resolution: "nanoid@npm:3.3.11"
   bin:
@@ -3183,7 +3183,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sony-ptz@workspace:."
   dependencies:
-    "@companion-module/base": "npm:~1.11.3"
+    "@companion-module/base": "npm:~1.13.4"
     "@companion-module/tools": "npm:^2.3.0"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^22.14.1"

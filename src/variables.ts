@@ -22,5 +22,8 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'zoomRangeWide', name: 'Zoom Range - Wide' },
 		{ variableId: 'zoomRangeTele', name: 'Zoom Range - Tele' },
 		{ variableId: 'streamMode', name: 'Stream Mode' },
+		{ variableId: 'streamMode', name: 'Stream Mode' },
+		{ variableId: 'lastPreset', name: 'Last Preset' },
+		{ variableId: 'goingToPreset', name: 'Actively Going To A Preset' },
 	])
 }
