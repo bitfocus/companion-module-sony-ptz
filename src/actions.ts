@@ -318,6 +318,52 @@ export function UpdateActions(self: ModuleInstance): void {
 		},
 	}
 
+	// Call Preset from variable
+	actions['preset_call_variable'] = {
+		name: 'Preset Call from variable',
+		options: [
+			{
+				id: 'variable',
+				type: 'textinput',
+				label: 'Variable',
+				useVariables: true,
+			},
+		],
+		callback: async (event: CompanionActionEvent) => {
+			if (event.options.variable === undefined) return
+			const preset = Number(event.options.variable)
+			if (isNaN(preset)) return
+			await self.sendCommand('command/presetposition.cgi', { PresetCall: `${preset}` })
+		},
+	} as CompanionActionDefinition
+
+	// Set Preset from variable
+	actions['preset_set_variable'] = {
+		name: 'Preset Set from variable',
+		options: [
+			{
+				id: 'variable',
+				type: 'textinput',
+				label: 'Variable',
+				useVariables: true,
+			},
+			{
+				id: 'name',
+				type: 'textinput',
+				description: 'if left blank the preset will be named Preset#',
+				label: 'Preset name',
+				useVariables: true,
+			},
+		],
+		callback: async (event: CompanionActionEvent) => {
+			if (event.options.variable === undefined) return
+			const preset = Number(event.options.variable)
+			if (isNaN(preset)) return
+			const name = event.options.name ? event.options.name : `Preset${preset}`
+			await self.sendCommand('command/presetposition.cgi', { PresetSet: `${preset},${name},on` })
+		},
+	} as CompanionActionDefinition
+
 	// Other Commands
 	actions['other_command_action'] = {
 		name: 'Other Command',
