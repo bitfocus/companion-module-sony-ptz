@@ -22,5 +22,9 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'zoomRangeWide', name: 'Zoom Range - Wide' },
 		{ variableId: 'zoomRangeTele', name: 'Zoom Range - Tele' },
 		{ variableId: 'streamMode', name: 'Stream Mode' },
+		{ variableId: 'autoFocusMode', name: 'Auto Focus Mode' },
+		{ variableId: 'afSensitivity', name: 'Auto Focus Sensitivity' },
+		{ variableId: 'focusMode', name: 'Focus Mode' },
+		{ variableId: 'absoluteFocus', name: 'Absolute Focus' },
 	])
 }

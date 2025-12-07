@@ -132,6 +132,13 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		['Preset Call', 'Look Back', 'PTZ Preset\\nBack', 'preset_back', [], []],
 		['Preset Call', 'PTZ Home', 'PTZ Preset\\nHome', 'preset_home', [], []],
+		['Auto Focus', 'ON', 'Auto Focus\\nON', 'focus_auto', [], []],
+		['Auto Focus', 'OFF', 'Auto Focus\\nOFF', 'focus_manual', [], []],
+		['Auto Focus', 'Normal Mode', 'Auto Focus\\nNormal Mode', 'afmode_normal', [], []],
+		['Auto Focus', 'Interval Mode', 'Auto Focus\\nInterval Mode', 'afmode_interval', [], []],
+		['Auto Focus', 'Zoom Trigger', 'Auto Focus\\nZoom Trigger', 'afmode_zoomtrigger', [], []],
+		['Auto Focus', 'Normal Sensitivity', 'Auto Focus\\nNormal Sensitivity', 'afsensitivity_normal', [], []],
+		['Auto Focus', 'Low Sensitivity', 'Auto Focus\\nLow Sensitivity', 'afsensitivity_low', [], []],
 		['Multi Tracking Num', 'OFF', 'Multi Tracking OFF', 'multitrackingnum_1', [], []],
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(7)].map((x, i) => [
