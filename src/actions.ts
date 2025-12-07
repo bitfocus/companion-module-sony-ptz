@@ -148,6 +148,20 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingMultiTrackingEnable: 'off' },
 			true,
 		],
+		['Auto Focus Mode', 'Normal', 'afmode_normal', 'command/imaging.cgi', { AFMode: 'normal' }, true],
+		['Auto Focus Mode', 'Interval', 'afmode_interval', 'command/imaging.cgi', { AFMode: 'interval' }, false],
+		['Auto Focus Mode', 'Zoom Trigger', 'afmode_zoomtrigger', 'command/imaging.cgi', { AFMode: 'zoomtrigger' }, false],
+		[
+			'Auto Focus Sensitivity',
+			'Normal',
+			'afsensitivity_normal',
+			'command/imaging.cgi',
+			{ AFSensitivity: 'normal' },
+			true,
+		],
+		['Auto Focus Sensitivity', 'Low', 'afsensitivity_low', 'command/imaging.cgi', { AFSensitivity: 'low' }, false],
+		['Focus Mode', 'Auto', 'focus_auto', 'command/imaging.cgi', { FocusMode: 'auto' }, true],
+		['Focus Mode', 'Manual', 'focus_manual', 'command/imaging.cgi', { FocusMode: 'manual' }, false],
 		// @ts-expect-error  The first param will not be used
 		...[...Array(7)].map((x, i) => [
 			'Multi Tracking Num',
