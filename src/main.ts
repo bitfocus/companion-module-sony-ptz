@@ -80,17 +80,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			return
 		}
 
-		try {
-			await this.checkStatus()
-		} catch (e: any) {
-			this.log('debug', `checkStatus error: ${e.message}`)
-		}
+		this.status = InstanceStatus.Connecting
+		await this.checkStatus()
 
 		if (config.polling) {
-			this.status = InstanceStatus.Connecting
 			this.startPolling(config.interval)
-		} else {
-			this.status = InstanceStatus.Ok
 		}
 	}
 
