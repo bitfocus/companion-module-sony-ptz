@@ -3,7 +3,7 @@
 	"name": "sony-ptz",
 	"shortname": "sony-ptz",
 	"description": "Sony BRC/SRG PTZ Camera Series",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-sony-ptz.git",
 	"bugs": "https://github.com/bitfocus/companion-module-sony-ptz/issues",
@@ -21,6 +21,6 @@
 	},
 	"legacyIds": [],
 	"manufacturer": "Sony",
-	"products": ["BRC-AM7", "SRG-A40", "SRG-A12"],
+	"products": ["BRC-AM7", "SRG-A40", "SRG-A12", "ILME-FR7"],
 	"keywords": []
 }
