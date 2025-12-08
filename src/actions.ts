@@ -13,6 +13,7 @@ export const DEFAULT_PTZ_STEP = 5
 export const SPEED_PARAM_ACTIONS = ['PTZ Move', 'PTZ Zoom']
 
 export type CommandSpec = [string, string, string, string, PtzCommandParams, boolean]
+export type CommandSpecWithValues = [string, string, string, string, string[]]
 
 function clamp(self: ModuleInstance, value: number, min: string, max: string): number {
 	const _min = self.getVariableValue(min)
@@ -317,6 +318,34 @@ export function UpdateActions(self: ModuleInstance): void {
 			})
 		},
 	}
+
+	// [actionId, label, commandPath, paramName, defaultValues[]]
+	const COMMAND_LIST_WITH_VALUES: CommandSpecWithValues[] = [
+		['Absolute Focus', 'Absolute Focus', 'command/ptzf.cgi', 'AbsoluteFocus', ['0000']],
+		['Absolute Zoom', 'Absolute Zoom', 'command/ptzf.cgi', 'AbsoluteZoom', ['0000']],
+		['Absolute PTZF', 'Absolute PTZF', 'command/ptzf.cgi', 'AbsolutePTZF', ['00000', '00000', '0000', '0000']],
+		['Absolute PanTilt', 'Absolute PanTilt', 'command/ptzf.cgi', 'AbsolutePanTilt', ['0000', '0000', '12']],
+		['Relative PanTilt', 'Relative PanTilt', 'command/ptzf.cgi', 'RelativePanTilt', ['0000', '0000', '12']],
+	]
+
+	COMMAND_LIST_WITH_VALUES.forEach((item) => {
+		const k: string = item[0].toLowerCase().replace(/\s/g, '_') + '_action'
+		const action: CompanionActionDefinition = {
+			name: item[1],
+			options: item[4].map((val, idx) => ({
+				id: 'val' + (idx + 1),
+				type: 'textinput',
+				label: `Value${idx + 1}`,
+				default: val,
+				useVariables: true,
+			})),
+			callback: async (event: CompanionActionEvent) => {
+				const vars: string[] = item[4].map((_, idx) => event.options['val' + (idx + 1)]!.toString())
+				await self.sendCommand(item[2], { [item[3]]: vars.join(',') })
+			},
+		}
+		actions[k] = action
+	})
 
 	// Other Commands
 	actions['other_command_action'] = {
