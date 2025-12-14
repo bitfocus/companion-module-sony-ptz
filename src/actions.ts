@@ -156,6 +156,44 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Auto Focus Sensitivity', 'Low', 'afsensitivity_low', 'command/ptzf.cgi', { AFSensitivity: 'low' }, false],
 		['Focus Mode', 'Auto', 'focus_auto', 'command/ptzf.cgi', { FocusMode: 'auto' }, true],
 		['Focus Mode', 'Manual', 'focus_manual', 'command/ptzf.cgi', { FocusMode: 'manual' }, false],
+		['Stabilizer', 'ON', 'stabilizer_on', 'command/imaging.cgi', { Stabilizer: 'on' }, true],
+		['Stabilizer', 'OFF', 'stabilizer_off', 'command/imaging.cgi', { Stabilizer: 'off' }, false],
+		['TallyControl', 'ON', 'tallycontrol_on', 'command/tally.cgi', { TallyControl: 'on' }, false],
+		['TallyControl', 'OFF', 'tallycontrol_off', 'command/tally.cgi', { TallyControl: 'off' }, false],
+		['WhiteBalanceMode', 'Auto', 'whitebalancemode_auto', 'command/imaging.cgi', { WhiteBalanceMode: 'auto' }, true],
+		[
+			'WhiteBalanceMode',
+			'Indoor',
+			'whitebalancemode_indoor',
+			'command/imaging.cgi',
+			{ WhiteBalanceMode: 'indoor' },
+			false,
+		],
+		[
+			'WhiteBalanceMode',
+			'Outdoor',
+			'whitebalancemode_outdoor',
+			'command/imaging.cgi',
+			{ WhiteBalanceMode: 'outdoor' },
+			false,
+		],
+		[
+			'WhiteBalanceMode',
+			'One Push WB',
+			'whitebalancemode_onepushwb',
+			'command/imaging.cgi',
+			{ WhiteBalanceMode: 'onepushwb' },
+			false,
+		],
+		['WhiteBalanceMode', 'ATW', 'whitebalancemode_atw', 'command/imaging.cgi', { WhiteBalanceMode: 'atw' }, false],
+		[
+			'WhiteBalanceMode',
+			'Manual',
+			'whitebalancemode_manual',
+			'command/imaging.cgi',
+			{ WhiteBalanceMode: 'manual' },
+			false,
+		],
 		// @ts-expect-error  The first param will not be used
 		...[...Array(7)].map((x, i) => [
 			'Multi Tracking Num',
@@ -333,6 +371,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Absolute PTZF', 'Absolute PTZF', 'command/ptzf.cgi', 'AbsolutePTZF', ['00000', '00000', '0000', '0000']],
 		['Absolute PanTilt', 'Absolute PanTilt', 'command/ptzf.cgi', 'AbsolutePanTilt', ['0000', '0000', '12']],
 		['Relative PanTilt', 'Relative PanTilt', 'command/ptzf.cgi', 'RelativePanTilt', ['0000', '0000', '12']],
+		['WhiteBalanceCbGain', 'B', 'command/imaging.cgi', 'WhiteBalanceCbGain', ['0000', '0000', '128']],
+		['WhiteBalanceCrGain', 'R', 'command/imaging.cgi', 'WhiteBalanceCrGain', ['0000', '0000', '128']],
 	]
 
 	COMMAND_LIST_WITH_VALUES.forEach((item) => {
