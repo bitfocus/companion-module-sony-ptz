@@ -86,6 +86,9 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
   - Tilt
   - Zoom
 - Auto Focus
+  -White Balance Modes
+- Stabilizer
+- Tally Control
 
 ### Variables
 
