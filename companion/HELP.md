@@ -63,6 +63,11 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - Absolute PTZF
 - Absolute PanTilt
 - Relative PanTilt \*SRG only
+- White Balance Mode
+- White Balance Blue Gain
+- White Balance Red Gain
+- Image Stabilizier
+- Tally Control
 - Other Command
   - Any command can be sent
 
