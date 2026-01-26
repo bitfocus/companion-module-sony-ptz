@@ -1,3 +1,4 @@
+import * as dgram from 'dgram'
 import { RequestOptions, request } from 'urllib'
 
 export interface PtzCommand {
@@ -56,4 +57,45 @@ export class SonyPTZ {
 		err.statusCode = res.statusCode
 		throw err
 	}
+}
+
+/**
+ * Discovers Sony PTZ cameras on the network and returns a list of IP addresses.
+ * @param timeoutMS Time to wait for responses in milliseconds (Default: 2000)
+ */
+export async function discover(timeoutMS: number = 2000): Promise<string[]> {
+	const message = Buffer.concat([Buffer.from([0x02]), Buffer.from('ENQ:network'), Buffer.from([0xff, 0x03])])
+
+	const client = dgram.createSocket('udp4')
+	const foundIPs = new Set<string>()
+
+	return new Promise((resolve, reject) => {
+		client.on('error', (err) => {
+			client.close()
+			reject(err)
+		})
+
+		client.on('message', (msg, _) => {
+			const content = msg.toString('ascii')
+			const ipMatch = content.match(/IPADR:([\d.]+)/)
+			if (ipMatch && ipMatch[1]) {
+				foundIPs.add(ipMatch[1])
+			}
+		})
+
+		client.bind(() => {
+			client.setBroadcast(true)
+			client.send(message, 0, message.length, 52380, '255.255.255.255', (err) => {
+				if (err) {
+					client.close()
+					reject(err)
+				}
+			})
+		})
+
+		setTimeout(() => {
+			client.close()
+			resolve(Array.from(foundIPs))
+		}, timeoutMS)
+	})
 }
