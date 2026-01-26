@@ -4,8 +4,9 @@ import type {
 	CompanionActionEvent,
 	CompanionInputFieldDropdown,
 } from '@companion-module/base'
+import { MAX_FOUND_DEVICES } from './variables.js'
 import type { ModuleInstance } from './main.js'
-import { PtzCommandParams } from './sonyptz.js'
+import { PtzCommandParams, discover } from './sonyptz.js'
 
 export const DEFAULT_PTZ_MOVE_SPEED = 8
 export const DEFAULT_PTZ_ZOOM_SPEED = 8000
@@ -376,6 +377,40 @@ export function UpdateActions(self: ModuleInstance): void {
 			const paramsStr = await self.parseVariablesInString(event.options.params as string)
 			const params = Object.fromEntries(paramsStr.split('&').map((x) => x.split(/(?<=^[^=]+)=/)))
 			await self.sendCommand(path, params)
+		},
+	}
+
+	// Discover Cameras
+	actions['discover_cameras_action'] = {
+		name: 'Discover Cameras',
+		options: [],
+		callback: async (_event: CompanionActionEvent) => {
+			const devices = await discover()
+			self.log('info', `Discovered cameras: ${devices.join(', ')}`)
+			Array.from({ length: MAX_FOUND_DEVICES }, (_, i) => {
+				const varId = `foundDevice${i + 1}`
+				const value = devices[i] || ''
+				self.setVariableValues({ [varId]: value })
+			})
+		},
+	}
+
+	actions['host_update_action'] = {
+		name: 'Update Target IP via Variable',
+		options: [
+			{
+				id: 'host',
+				type: 'textinput',
+				label: 'Host',
+				useVariables: true,
+			},
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const host = await self.parseVariablesInString(event.options.host as string)
+			if (host && self.config.host !== host) {
+				const newConfig = { ...self.config, host }
+				self.saveConfig(newConfig)
+			}
 		},
 	}
 
