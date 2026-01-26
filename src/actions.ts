@@ -362,16 +362,19 @@ export function UpdateActions(self: ModuleInstance): void {
 				id: 'path',
 				type: 'textinput',
 				label: 'Path',
+				useVariables: true,
 			},
 			{
 				id: 'params',
 				type: 'textinput',
 				label: 'Params',
+				useVariables: true,
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
-			const path = event.options.path as string
-			const params = Object.fromEntries((event.options.params as string).split('&').map((x) => x.split(/(?<=^[^=]+)=/)))
+			const path = await self.parseVariablesInString(event.options.path as string)
+			const paramsStr = await self.parseVariablesInString(event.options.params as string)
+			const params = Object.fromEntries(paramsStr.split('&').map((x) => x.split(/(?<=^[^=]+)=/)))
 			await self.sendCommand(path, params)
 		},
 	}
