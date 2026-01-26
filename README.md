@@ -17,7 +17,7 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 - PTZ Auto Framing
 - Multi-Person Tracking
 - Preset
-- Send any HTTP-based command
+- Send any command following Sony PTZ camera command format (supports variables)
 
 ## Getting started
 
