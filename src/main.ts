@@ -21,6 +21,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	timeoutID?: ReturnType<typeof setTimeout>
 	_status: InstanceStatus = InstanceStatus.Disconnected
 	feedbackProperties: { [key: string]: string | boolean | undefined } = {}
+	lastPtzStepTime: number = 0
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -120,7 +121,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 			this.status = InstanceStatus.Ok
 
-			this.setVariableValues({
+			const variables: Record<string, any> = {
 				modelName: systemParams.get('ModelName') || '',
 				name: sysinfoParams.get('NetworkCameraName') || '',
 				power: power,
@@ -134,10 +135,6 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				afSensitivity: ptzfParams.get('AFSensitivity') || '',
 				focusMode: ptzfParams.get('FocusMode') || '',
 				absoluteFocus: ptzfParams.get('AbsoluteFocus') || '',
-				panPos: panPos,
-				tiltPos: tiltPos,
-				zoomPos: zoomPos,
-				focusPos: focusPos,
 				panRangeLeft: panRangeLeft,
 				panRangeRight: panRangeRight,
 				tiltRangeLower: tiltRangeLower,
@@ -145,7 +142,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				zoomRangeWide: zoomRangeWide,
 				zoomRangeTele: zoomRangeTele,
 				streamMode: streamParams.get('StreamMode') || '',
-			})
+			}
+
+			if (Date.now() - this.lastPtzStepTime >= 3000) {
+				variables.panPos = panPos
+				variables.tiltPos = tiltPos
+				variables.zoomPos = zoomPos
+				variables.focusPos = focusPos
+			}
+
+			this.setVariableValues(variables)
 
 			this.setFeedbackValue(FB_ID.POWER, power)
 		} catch (e: any) {

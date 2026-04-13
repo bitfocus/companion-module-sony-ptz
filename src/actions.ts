@@ -298,6 +298,8 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
+			self.lastPtzStepTime = Date.now()
+
 			const focus = self.getVariableValue('focusPos')
 			if (focus === '') {
 				return
