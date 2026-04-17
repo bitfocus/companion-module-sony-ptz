@@ -1,4 +1,5 @@
 {
+	"$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
 	"id": "sony-ptz",
 	"name": "sony-ptz",
 	"shortname": "sony-ptz",
