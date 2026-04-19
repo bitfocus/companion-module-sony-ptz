@@ -298,6 +298,8 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
+			self.lastStepTime = Date.now()
+
 			const focus = self.getVariableValue('focusPos')
 			if (focus === '') {
 				return
@@ -354,6 +356,66 @@ export function UpdateActions(self: ModuleInstance): void {
 		}
 		actions[k] = action
 	})
+
+	actions['generic_step_action'] = {
+		name: 'Generic Step',
+		options: [
+			{
+				id: 'path',
+				type: 'textinput',
+				label: 'Path',
+				useVariables: true,
+			},
+			{
+				id: 'param',
+				type: 'textinput',
+				label: 'Param',
+				useVariables: true,
+			},
+			{
+				id: 'step',
+				type: 'number',
+				label: 'Step',
+				default: 1,
+				min: -9999,
+				max: 9999,
+			},
+			{
+				id: 'max',
+				type: 'number',
+				label: 'Max',
+				default: 9999,
+				min: -999999,
+				max: 999999,
+			},
+			{
+				id: 'min',
+				type: 'number',
+				label: 'Min',
+				default: 0,
+				min: -999999,
+				max: 999999,
+			},
+		],
+		callback: async (event: CompanionActionEvent) => {
+			self.lastStepTime = Date.now()
+
+			const path = await self.parseVariablesInString(event.options.path as string)
+			const param = await self.parseVariablesInString(event.options.param as string)
+			const step = event.options.step as number
+			const max = event.options.max as number
+			const min = event.options.min as number
+			const valname = param.charAt(0).toLowerCase() + param.slice(1)
+			let value = (self.getVariableValue(valname) || 0) as number
+			value = Math.min(Math.max(value + step, min), max)
+
+			self.setVariableValues({ [valname]: value })
+
+			await self.sendCommand(path, {
+				[param]: value.toString(),
+			})
+		},
+	}
 
 	// Other Commands
 	actions['other_command_action'] = {

@@ -21,6 +21,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	timeoutID?: ReturnType<typeof setTimeout>
 	_status: InstanceStatus = InstanceStatus.Disconnected
 	feedbackProperties: { [key: string]: string | boolean | undefined } = {}
+	lastStepTime: number = 0
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -109,6 +110,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const ptzautoframingParams = await this.ptz.sendInq({ inq: 'ptzautoframing' })
 			const ptzfParams = await this.ptz.sendInq({ inq: 'ptzf' })
 			const streamParams = await this.ptz.sendInq({ inq: 'stream' })
+			const imagingParams = await this.ptz.sendInq({ inq: 'imaging' })
+			const paintParams = await this.ptz.sendInq({ inq: 'paint' })
 
 			const power = sysinfoParams.get('Power') || systemParams.get('Power') || ''
 			const serial = systemParams.get('Serial') || sysinfoParams.get('Serial') || ''
@@ -120,7 +123,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 			this.status = InstanceStatus.Ok
 
-			this.setVariableValues({
+			const variables: Record<string, any> = {
 				modelName: systemParams.get('ModelName') || '',
 				name: sysinfoParams.get('NetworkCameraName') || '',
 				power: power,
@@ -134,10 +137,6 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				afSensitivity: ptzfParams.get('AFSensitivity') || '',
 				focusMode: ptzfParams.get('FocusMode') || '',
 				absoluteFocus: ptzfParams.get('AbsoluteFocus') || '',
-				panPos: panPos,
-				tiltPos: tiltPos,
-				zoomPos: zoomPos,
-				focusPos: focusPos,
 				panRangeLeft: panRangeLeft,
 				panRangeRight: panRangeRight,
 				tiltRangeLower: tiltRangeLower,
@@ -145,7 +144,20 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				zoomRangeWide: zoomRangeWide,
 				zoomRangeTele: zoomRangeTele,
 				streamMode: streamParams.get('StreamMode') || '',
-			})
+			}
+
+			if (Date.now() - this.lastStepTime >= 3000) {
+				variables.panPos = panPos
+				variables.tiltPos = tiltPos
+				variables.zoomPos = zoomPos
+				variables.focusPos = focusPos
+				variables.exposureGain = Number(imagingParams.get('ExposureGain')) || 0
+				variables.exposureIris = Number(imagingParams.get('ExposureIris')) || 0
+				variables.exposureNDVariable = Number(imagingParams.get('ExposureNDVariable')) || 0
+				variables.masterBlack = Number(paintParams.get('MasterBlack')) || 0
+			}
+
+			this.setVariableValues(variables)
 
 			this.setFeedbackValue(FB_ID.POWER, power)
 		} catch (e: any) {

@@ -18,6 +18,10 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 - Multi-Person Tracking
 - Preset
 - Send any command following Sony PTZ camera command format (supports variables)
+- Gain
+- Iris
+- ND Variable
+- Master Black
 
 ## Getting started
 

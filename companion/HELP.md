@@ -80,6 +80,10 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
   - Pan
   - Tilt
   - Zoom
+  - Gain
+  - Iris
+  - ND Variable
+  - Master Black
 - Auto Focus
 
 ### Variables
@@ -108,5 +112,9 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - `$(this:afSensitivity)` - Auto Focus Sensitivity
 - `$(this:autoFocusMode)` - Auto Focus Mode (normal/interval/zoomtrigger) \*SRG only
 - `$(this:focusMode)` - Focus Mode (auto/manual)
+- `$(this:exposureGain)` - Exposure Gain Value
+- `$(this:exposureIris)` - Exposure Iris Value
+- `$(this:exposureNDVariable)` - Exposure ND Variable Value \*BRC-AM7 only
+- `$(this:masterBlack)` - Master Black Value \*BRC-AM7 only
 
 https://github.com/bitfocus/companion-module-sony-ptz/issues
