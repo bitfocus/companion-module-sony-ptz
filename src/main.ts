@@ -107,6 +107,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const sysinfoParams = await this.ptz.sendInq({ inq: 'sysinfo' })
 			const systemParams = await this.ptz.sendInq({ inq: 'system' })
 			const ptzautoframingParams = await this.ptz.sendInq({ inq: 'ptzautoframing' })
+			const imagingParams = await this.ptz.sendInq({ inq: 'imaging' })
+			const tallyParams = await this.ptz.sendInq({ inq: 'tally' })
 			const ptzfParams = await this.ptz.sendInq({ inq: 'ptzf' })
 			const streamParams = await this.ptz.sendInq({ inq: 'stream' })
 
@@ -134,6 +136,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				afSensitivity: ptzfParams.get('AFSensitivity') || '',
 				focusMode: ptzfParams.get('FocusMode') || '',
 				absoluteFocus: ptzfParams.get('AbsoluteFocus') || '',
+				whiteBalanceMode: imagingParams.get('WhiteBalanceMode') || '',
+				whiteBalanceCbGain: imagingParams.get('WhiteBalanceCbGain') || '',
+				whiteBalanceCrGain: imagingParams.get('WhiteBalanceCrGain') || '',
+				WhiteBalanceMode: imagingParams.get('WhiteBalanceMode') || '',
+				Stabilizer: imagingParams.get('Stabilizer') || '',
 				panPos: panPos,
 				tiltPos: tiltPos,
 				zoomPos: zoomPos,
@@ -145,6 +152,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				zoomRangeWide: zoomRangeWide,
 				zoomRangeTele: zoomRangeTele,
 				streamMode: streamParams.get('StreamMode') || '',
+				TallyControl: tallyParams.get('TallyControl') || '',
+				RTallyStatus: tallyParams.get('RTallyStatus') || '',
 			})
 
 			this.setFeedbackValue(FB_ID.POWER, power)
