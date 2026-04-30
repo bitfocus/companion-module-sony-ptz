@@ -4,6 +4,7 @@ import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, DEFAULT_PTZ_STEP, SPEED
 
 type PresetSpec = [string, string, string, string, [string, string, number][], [string, string, number][]]
 type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any]]
+type GenericRotaryPresetSpec = [string, string, string, string, [string, any], [string, any]]
 
 const FONT_SIZE = 12
 const SPEED_PARAM_ACTION_IDS = SPEED_PARAM_ACTIONS.map((x) => x.toLowerCase().split(' ').join('_') + '_action')
@@ -284,6 +285,88 @@ export function UpdatePresets(self: ModuleInstance): void {
 	]
 
 	ROTARY_PRESET_LIST.forEach((item) => {
+		const preset: CompanionPresetDefinition = {
+			type: 'button',
+			category: item[0],
+			name: item[1],
+			options: { rotaryActions: true },
+			style: {
+				text: item[2],
+				size: FONT_SIZE,
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: [],
+					up: [],
+					rotate_left: [{ actionId: item[4][0], options: item[4][1] }],
+					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
+				},
+			],
+			feedbacks: [],
+		}
+
+		presets[item[3] + '_preset'] = preset
+	})
+
+	// GenericRotary Presets
+	const GENERIC_ROTARY_PRESET_LIST: GenericRotaryPresetSpec[] = [
+		// [category, name, text, key, left[actionId, options], right[actionId, options]]
+		[
+			'Rotary (BRC-AM7)',
+			'Gain',
+			'Gain\\n$(this:exposureGain)',
+			'am7_rotary_gain',
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: -1, min: 6, max: 45 }],
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: 1, min: 6, max: 45 }],
+		],
+		[
+			'Rotary (BRC-AM7)',
+			'Iris',
+			'Iris\\n$(this:exposureIris)',
+			'am7_rotary_iris',
+			[
+				'generic_step_action',
+				{ path: 'command/imaging.cgi', param: 'ExposureIris', step: -20, min: 30975, max: 32000 },
+			],
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: 20, min: 30975, max: 32000 }],
+		],
+		[
+			'Rotary (BRC-AM7)',
+			'ExposureNDVariable',
+			'ND Variable\\n$(this:exposureNDVariable)',
+			'am7_rotary_ndvariable',
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureNDVariable', step: -1, min: 0, max: 20 }],
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureNDVariable', step: 1, min: 0, max: 20 }],
+		],
+		[
+			'Rotary (BRC-AM7)',
+			'Master Black',
+			'Master Black\\n$(this:masterBlack)',
+			'am7_rotary_masterblack',
+			['generic_step_action', { path: 'command/paint.cgi', param: 'MasterBlack', step: -10, min: -990, max: 990 }],
+			['generic_step_action', { path: 'command/paint.cgi', param: 'MasterBlack', step: 10, min: -990, max: 990 }],
+		],
+		[
+			'Rotary (SRG-A12/A40)',
+			'Gain',
+			'Gain\\n$(this:exposureGain)',
+			'srg_rotary_gain',
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: -1, min: 1, max: 13 }],
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: 1, min: 1, max: 13 }],
+		],
+		[
+			'Rotary (SRG-A12/A40)',
+			'Iris',
+			'Iris\\n$(this:exposureIris)',
+			'srg_rotary_iris',
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: -1, min: 0, max: 25 }],
+			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: 1, min: 0, max: 25 }],
+		],
+	]
+
+	GENERIC_ROTARY_PRESET_LIST.forEach((item) => {
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
 			category: item[0],

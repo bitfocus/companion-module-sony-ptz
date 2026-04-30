@@ -28,6 +28,11 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'afSensitivity', name: 'Auto Focus Sensitivity' },
 		{ variableId: 'focusMode', name: 'Focus Mode' },
 		{ variableId: 'absoluteFocus', name: 'Absolute Focus' },
+		{ variableId: 'exposureGain', name: 'Exposure Gain' },
+		{ variableId: 'exposureIris', name: 'Exposure Iris' },
+		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
+		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
+		{ variableId: 'masterBlack', name: 'Master Black' },
 		...Array.from({ length: MAX_FOUND_DEVICES }, (_, i) => ({
 			variableId: `foundDevice${i + 1}`,
 			name: `Found Device ${i + 1}`,
