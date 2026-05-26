@@ -8,3 +8,4 @@ DEBUG-*
 /.vscode
 /.actrc
 /.secrets
+.DS_Store
