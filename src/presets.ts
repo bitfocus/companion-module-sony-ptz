@@ -29,6 +29,14 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		[
 			'Auto Framing',
+			'Mode:Closer Closeup',
+			'AF Mode\\nCloser',
+			'autoframing_closer_closeup',
+			[['auto_framing_shot_mode_action', 'autoframing_closer_closeup', 0]],
+			[],
+		],
+		[
+			'Auto Framing',
 			'Mode:Closeup',
 			'AF Mode\\nCloseup',
 			'autoframing_closeup',
@@ -51,6 +59,22 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['auto_framing_shot_mode_action', 'autoframing_fullbody', 0]],
 			[],
 		],
+		// Person/Ball Sports Framing switching (Framing Mode action)
+		['Framing Mode', 'Person', 'Framing\\nPerson', 'autoframing_person', [], []],
+		['Framing Mode', 'Ball Sports', 'Framing\\nBall', 'autoframing_ball', [], []],
+		// Lead Room Effect
+		['Lead Room Effect', 'Off', 'Lead Room\\nOff', 'autoframing_leadroom_off', [], []],
+		['Lead Room Effect', 'Low', 'Lead Room\\nLow', 'autoframing_leadroom_low', [], []],
+		['Lead Room Effect', 'Middle', 'Lead Room\\nMiddle', 'autoframing_leadroom_middle', [], []],
+		['Lead Room Effect', 'High', 'Lead Room\\nHigh', 'autoframing_leadroom_high', [], []],
+		// Real-time Overlay (Frame/Area Indicator)
+		['Real-time Overlay', 'On', 'Overlay\\nOn', 'autoframing_faceindicator_on', [], []],
+		['Real-time Overlay', 'Off', 'Overlay\\nOff', 'autoframing_faceindicator_off', [], []],
+		// Fixed Angle Position (SRG-A40/A12)
+		['Fixed Angle Position', 'Off', 'Fixed Angle\\nOff', 'fixedangle_off', [], []],
+		['Fixed Angle Position', 'On', 'Fixed Angle\\nOn', 'fixedangle_on', [], []],
+		['Fixed Angle Position', 'Store', 'Fixed Angle\\nStore', 'fixedangle_store', [], []],
+		['Fixed Angle Position', 'Recall', 'Fixed Angle\\nRecall', 'fixedangle_recall', [], []],
 		[
 			'Pan/Tilt/Zoom',
 			'Up',
@@ -200,6 +224,15 @@ export function UpdatePresets(self: ModuleInstance): void {
 			`${i + 1}`,
 			`PTZ Preset Set ${i + 1}`,
 			`preset_set_${i + 1}`,
+			[],
+			[],
+		]),
+		// @ts-expect-error  The first param 'x' will not be used
+		...[...Array(17)].map((x, i) => [
+			'Scene File Recall',
+			i === 0 ? 'Off' : `${i}`,
+			i === 0 ? 'Scene File\\nOff' : `Scene File ${i}`,
+			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
 			[],
 			[],
 		]),

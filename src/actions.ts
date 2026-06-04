@@ -35,8 +35,12 @@ function to16(num: number): string {
 export function UpdateActions(self: ModuleInstance): void {
 	const COMMAND_LIST: CommandSpec[] = [
 		// [actionId, choiceLabel, choiceId, commandPath, commandParams, isDefault]
+
+		//System Power
 		['System Power', 'ON', 'system_on', 'command/main.cgi', { System: 'on' }, true],
 		['System Power', 'Standby', 'system_standby', 'command/main.cgi', { System: 'standby' }, false],
+
+		//Auto Framing
 		['Auto Framing', 'ON', 'autoframing_on', 'analytics/ptzautoframing.cgi', { PtzAutoFraming: 'on' }, false],
 		['Auto Framing', 'OFF', 'autoframing_off', 'analytics/ptzautoframing.cgi', { PtzAutoFraming: 'off' }, true],
 		[
@@ -63,15 +67,79 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingRestart: 'on' },
 			false,
 		],
-		['PTZ Reset', 'Reset', 'ptzf_reset', 'command/ptzf.cgi', { PanTiltReset: 'on' }, true],
-		['Preset Call', 'Look Back', 'preset_back', 'command/ptzf.cgi', { AbsolutePanTilt: '2200,0,24' }, false],
-		['Preset Call', 'PTZ Home', 'preset_home', 'command/presetposition.cgi', { HomePos: 'recall' }, false],
+		// Person/Ball Sports Framing switching (PtzAutoFramingFramingMode)
 		[
-			'Preset Call',
-			'Auto Framing Start Position',
-			'autoframing_home',
-			'analytics/ptzautoframingexe.cgi',
-			{ PtzAutoFramingMoveStartPosition: 'on' },
+			'Framing Mode',
+			'Person',
+			'autoframing_person',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFramingMode: 'person' },
+			true,
+		],
+		[
+			'Framing Mode',
+			'Ball Sports',
+			'autoframing_ball',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFramingMode: 'ball_sports' },
+			false,
+		],
+		// Lead Room Effect (PtzAutoFramingLeadRoomLevel)
+		[
+			'Lead Room Effect',
+			'OFF',
+			'autoframing_leadroom_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'off' },
+			false,
+		],
+		[
+			'Lead Room Effect',
+			'Low',
+			'autoframing_leadroom_low',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'low' },
+			false,
+		],
+		[
+			'Lead Room Effect',
+			'Middle',
+			'autoframing_leadroom_middle',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'middle' },
+			true,
+		],
+		[
+			'Lead Room Effect',
+			'High',
+			'autoframing_leadroom_high',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'high' },
+			false,
+		],
+		// Real-time Overlay (Frame/Area Indicator) ON/OFF (PtzAutoFramingFaceIndicatorEnable3)
+		[
+			'Real-time Overlay',
+			'ON',
+			'autoframing_faceindicator_on',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFaceIndicatorEnable3: 'on' },
+			true,
+		],
+		[
+			'Real-time Overlay',
+			'OFF',
+			'autoframing_faceindicator_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFaceIndicatorEnable3: 'off' },
+			false,
+		],
+		[
+			'Auto Framing Shot Mode',
+			'Closer Closeup',
+			'autoframing_closer_closeup',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingAdjustSetting: '0,0,200' },
 			false,
 		],
 		[
@@ -114,6 +182,31 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingMoveStartPosition: 'on' },
 			true,
 		],
+		[
+			'Multi Tracking Num',
+			'1',
+			'multitrackingnum_1',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingMultiTrackingEnable: 'off' },
+			true,
+		],
+
+		//PTZ Reset
+		['PTZ Reset', 'Reset', 'ptzf_reset', 'command/ptzf.cgi', { PanTiltReset: 'on' }, true],
+
+		//Presets
+		['Preset Call', 'Look Back', 'preset_back', 'command/ptzf.cgi', { AbsolutePanTilt: '2200,0,24' }, false],
+		['Preset Call', 'PTZ Home', 'preset_home', 'command/presetposition.cgi', { HomePos: 'recall' }, false],
+		[
+			'Preset Call',
+			'Auto Framing Start Position',
+			'autoframing_home',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingMoveStartPosition: 'on' },
+			false,
+		],
+
+		//PTZ Movement
 		['PTZ Move', 'Up', 'move_up', 'command/ptzf.cgi', { PanTiltMove: 'up,0,{speed}' }, true],
 		['PTZ Move', 'Down', 'move_down', 'command/ptzf.cgi', { PanTiltMove: 'down,0,{speed}' }, false],
 		['PTZ Move', 'Left', 'move_left', 'command/ptzf.cgi', { PanTiltMove: 'left,{speed},0' }, false],
@@ -142,14 +235,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		['PTZ Move Stop', 'Tele/Wide', 'stop_zoom', 'command/ptzf.cgi', { ZoomMove: 'stop,0' }, false],
 		['PTZ Move Stop', 'Focus', 'stop_focus', 'command/ptzf.cgi', { Move: 'stop,focus' }, false],
 		['PTZ Move Stop', 'Motor', 'stop_motor', 'command/ptzf.cgi', { Move: 'stop,motor' }, false],
-		[
-			'Multi Tracking Num',
-			'1',
-			'multitrackingnum_1',
-			'analytics/ptzautoframing.cgi',
-			{ PtzAutoFramingMultiTrackingEnable: 'off' },
-			true,
-		],
+
+		//Focus Mode
 		['Auto Focus Mode', 'Normal', 'afmode_normal', 'command/ptzf.cgi', { AFMode: 'normal' }, true],
 		['Auto Focus Mode', 'Interval', 'afmode_interval', 'command/ptzf.cgi', { AFMode: 'interval' }, false],
 		['Auto Focus Mode', 'Zoom Trigger', 'afmode_zoomtrigger', 'command/ptzf.cgi', { AFMode: 'zoomtrigger' }, false],
@@ -157,6 +244,40 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Auto Focus Sensitivity', 'Low', 'afsensitivity_low', 'command/ptzf.cgi', { AFSensitivity: 'low' }, false],
 		['Focus Mode', 'Auto', 'focus_auto', 'command/ptzf.cgi', { FocusMode: 'auto' }, true],
 		['Focus Mode', 'Manual', 'focus_manual', 'command/ptzf.cgi', { FocusMode: 'manual' }, false],
+
+		//Fixed Angle Position (SRG-A40/A12)
+		[
+			'Fixed Angle Position',
+			'OFF',
+			'fixedangle_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFixedAngleEnable: '1,off' },
+			true,
+		],
+		[
+			'Fixed Angle Position',
+			'ON',
+			'fixedangle_on',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFixedAngleEnable: '1,on' },
+			false,
+		],
+		[
+			'Fixed Angle Position',
+			'Store Current Position',
+			'fixedangle_store',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingFixedAnglePositionSet: '1' },
+			false,
+		],
+		[
+			'Fixed Angle Position',
+			'Recall Position',
+			'fixedangle_recall',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingFixedAnglePositionCall: '1' },
+			false,
+		],
 		// @ts-expect-error  The first param will not be used
 		...[...Array(7)].map((x, i) => [
 			'Multi Tracking Num',
@@ -192,6 +313,16 @@ export function UpdateActions(self: ModuleInstance): void {
 			'command/presetposition.cgi',
 			{ PresetSet: `${i + 1},Preset${i + 1},on` },
 			i ? false : true,
+		]),
+		// Scene File Recall (BRC-AM7) — SceneFileCurrentSceneFile: 0=Off, 1-16=scene file
+		// @ts-expect-error  The first param will not be used
+		...[...Array(17)].map((x, i) => [
+			'Scene File Recall',
+			i === 0 ? 'Off' : i.toString(),
+			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
+			'command/scenefile.cgi',
+			{ SceneFileCurrentSceneFile: `${i}` },
+			i === 0,
 		]),
 	]
 
@@ -336,6 +467,21 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Absolute PTZF', 'Absolute PTZF', 'command/ptzf.cgi', 'AbsolutePTZF', ['00000', '00000', '0000', '0000']],
 		['Absolute PanTilt', 'Absolute PanTilt', 'command/ptzf.cgi', 'AbsolutePanTilt', ['0000', '0000', '12']],
 		['Relative PanTilt', 'Relative PanTilt', 'command/ptzf.cgi', 'RelativePanTilt', ['0000', '0000', '12']],
+		// Fine Adjustment of Fixed Angle Position (SRG-A40/A12) — Value1=angle #, then relative hex offsets
+		[
+			'Fixed Angle Fine PanTilt',
+			'Fixed Angle Fine Pan/Tilt',
+			'analytics/ptzautoframingexe.cgi',
+			'PtzAutoFramingFixedAngleRelativePanTilt',
+			['1', '0000', '0000'],
+		],
+		[
+			'Fixed Angle Fine Zoom',
+			'Fixed Angle Fine Zoom',
+			'analytics/ptzautoframingexe.cgi',
+			'PtzAutoFramingFixedAngleRelativeZoom',
+			['1', '0000'],
+		],
 	]
 
 	COMMAND_LIST_WITH_VALUES.forEach((item) => {
@@ -356,6 +502,37 @@ export function UpdateActions(self: ModuleInstance): void {
 		}
 		actions[k] = action
 	})
+
+	// Auto Framing tracking Speed / Sensitivity per axis (BRC-AM7)
+	const AF_AXIS_CHOICES = [
+		{ id: 'Pan', label: 'Pan' },
+		{ id: 'Tilt', label: 'Tilt' },
+		{ id: 'Zoom', label: 'Zoom' },
+	]
+	actions['autoframing_tracking_speed_action'] = {
+		name: 'Auto Framing Tracking Speed',
+		options: [
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'value', type: 'number', label: 'Speed (1-5)', default: 4, min: 1, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFramingSpeed${event.options.axis}`]: (event.options.value as number).toString(),
+			})
+		},
+	}
+	actions['autoframing_tracking_sensitivity_action'] = {
+		name: 'Auto Framing Tracking Sensitivity',
+		options: [
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'value', type: 'number', label: 'Sensitivity (0-5)', default: 3, min: 0, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFramingSensitivity${event.options.axis}`]: (event.options.value as number).toString(),
+			})
+		},
+	}
 
 	actions['generic_step_action'] = {
 		name: 'Generic Step',
