@@ -1,19 +1,62 @@
 import type { ModuleInstance } from './main.js'
-import { combineRgb, CompanionPresetDefinition, CompanionPresetDefinitions } from '@companion-module/base'
+import {
+	combineRgb,
+	CompanionFeedbackButtonStyleResult,
+	CompanionPresetDefinition,
+	CompanionPresetDefinitions,
+	CompanionPresetFeedback,
+} from '@companion-module/base'
 import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, DEFAULT_PTZ_STEP, SPEED_PARAM_ACTIONS } from './actions.js'
 
-type PresetSpec = [string, string, string, string, [string, string, number][], [string, string, number][]]
-type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any]]
-type GenericRotaryPresetSpec = [string, string, string, string, [string, any], [string, any]]
+type PresetSpec = [
+	category: string,
+	name: string,
+	text: string,
+	key: string,
+	down: [string, string, number][],
+	up: [string, string, number][],
+	// Use the CompanionPresetFeedback shape: { feedbackId, options, style?, isInverted? }.
+	// When a feedback omits `style`, the builder falls back to DEFAULT_ACTIVE_STYLE.
+	feedbacks?: CompanionPresetFeedback[],
+]
+type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any], CompanionPresetFeedback[]?]
+type GenericRotaryPresetSpec = [
+	string,
+	string,
+	string,
+	string,
+	[string, any],
+	[string, any],
+	CompanionPresetFeedback[]?,
+]
 
 const FONT_SIZE = 12
 const SPEED_PARAM_ACTION_IDS = SPEED_PARAM_ACTIONS.map((x) => x.toLowerCase().split(' ').join('_') + '_action')
 
+// Default highlight applied to a preset feedback when it does not specify its own style.
+const DEFAULT_ACTIVE_STYLE: CompanionFeedbackButtonStyleResult = {
+	bgcolor: combineRgb(0, 153, 51),
+	color: combineRgb(255, 255, 255),
+}
+
+// Normalize a spec's optional feedback list into CompanionPresetFeedback entries.
+function buildPresetFeedbacks(feedbacks?: CompanionPresetFeedback[]): CompanionPresetFeedback[] {
+	return (feedbacks ?? []).map((fb) => ({ ...fb, style: fb.style ?? DEFAULT_ACTIVE_STYLE }))
+}
+
 export function UpdatePresets(self: ModuleInstance): void {
 	const PRESET_LIST: PresetSpec[] = [
 		// [category, name, text, key, down[actionId, choiceId, delay][], up[actionId, choiceId, delay]]
-		['System Power', 'On', 'PTZ\\nOn', 'system_on', [], []],
-		['System Power', 'Standby', 'PTZ\\nStandby', 'system_standby', [], []],
+		['System Power', 'On', 'PTZ\\nOn', 'system_on', [], [], [{ feedbackId: 'power', options: { power: 'on' } }]],
+		[
+			'System Power',
+			'Standby',
+			'PTZ\\nStandby',
+			'system_standby',
+			[],
+			[],
+			[{ feedbackId: 'power', options: { power: 'standby' } }],
+		],
 		['Auto Framing', 'On', 'Auto Framing\\nOn', 'autoframing_on', [], []],
 		['Auto Framing', 'Off', 'Auto Framing\\nOff', 'autoframing_off', [], []],
 		['Auto Framing', 'Pause On', 'Auto Framing\\nPause On', 'autoframing_pause_on', [], []],
@@ -60,19 +103,109 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		// Person/Ball Sports Framing switching (Framing Mode action)
-		['Framing Mode', 'Person', 'Framing\\nPerson', 'autoframing_person', [], []],
-		['Framing Mode', 'Ball Sports', 'Framing\\nBall', 'autoframing_ball', [], []],
+
+		[
+			'Framing Mode',
+			'Person',
+			'Framing\\nPerson',
+			'autoframing_person',
+			[],
+			[],
+			[{ feedbackId: 'framingMode', options: { mode: 'person' } }],
+		],
+
+		[
+			'Framing Mode',
+			'Ball Sports',
+			'Framing\\nBall',
+			'autoframing_ball',
+			[],
+			[],
+			[{ feedbackId: 'framingMode', options: { mode: 'ball_sports' } }],
+		],
 		// Lead Room Effect
-		['Lead Room Effect', 'Off', 'Lead Room\\nOff', 'autoframing_leadroom_off', [], []],
-		['Lead Room Effect', 'Low', 'Lead Room\\nLow', 'autoframing_leadroom_low', [], []],
-		['Lead Room Effect', 'Middle', 'Lead Room\\nMiddle', 'autoframing_leadroom_middle', [], []],
-		['Lead Room Effect', 'High', 'Lead Room\\nHigh', 'autoframing_leadroom_high', [], []],
+
+		[
+			'Lead Room Effect',
+			'Off',
+			'Lead Room\\nOff',
+			'autoframing_leadroom_off',
+			[],
+			[],
+			[{ feedbackId: 'leadRoom', options: { level: 'off' } }],
+		],
+
+		[
+			'Lead Room Effect',
+			'Low',
+			'Lead Room\\nLow',
+			'autoframing_leadroom_low',
+			[],
+			[],
+			[{ feedbackId: 'leadRoom', options: { level: 'low' } }],
+		],
+
+		[
+			'Lead Room Effect',
+			'Middle',
+			'Lead Room\\nMiddle',
+			'autoframing_leadroom_middle',
+			[],
+			[],
+			[{ feedbackId: 'leadRoom', options: { level: 'middle' } }],
+		],
+
+		[
+			'Lead Room Effect',
+			'High',
+			'Lead Room\\nHigh',
+			'autoframing_leadroom_high',
+			[],
+			[],
+			[{ feedbackId: 'leadRoom', options: { level: 'high' } }],
+		],
 		// Real-time Overlay (Frame/Area Indicator)
-		['Real-time Overlay', 'On', 'Overlay\\nOn', 'autoframing_faceindicator_on', [], []],
-		['Real-time Overlay', 'Off', 'Overlay\\nOff', 'autoframing_faceindicator_off', [], []],
-		// Fixed Angle Position (SRG-A40/A12)
-		['Fixed Angle Position', 'Off', 'Fixed Angle\\nOff', 'fixedangle_off', [], []],
-		['Fixed Angle Position', 'On', 'Fixed Angle\\nOn', 'fixedangle_on', [], []],
+
+		[
+			'Real-time Overlay',
+			'On',
+			'Overlay\\nOn',
+			'autoframing_faceindicator_on',
+			[],
+			[],
+			[{ feedbackId: 'realtimeOverlay', options: { state: 'on' } }],
+		],
+
+		[
+			'Real-time Overlay',
+			'Off',
+			'Overlay\\nOff',
+			'autoframing_faceindicator_off',
+			[],
+			[],
+			[{ feedbackId: 'realtimeOverlay', options: { state: 'off' } }],
+		],
+		// Fixed Angle Position (SRG-A40/A12) — Store/Recall are momentary, no state feedback
+
+		[
+			'Fixed Angle Position',
+			'Off',
+			'Fixed Angle\\nOff',
+			'fixedangle_off',
+			[],
+			[],
+			[{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
+		],
+
+		[
+			'Fixed Angle Position',
+			'On',
+			'Fixed Angle\\nOn',
+			'fixedangle_on',
+			[],
+			[],
+			[{ feedbackId: 'fixedAngle', options: { state: 'on' } }],
+		],
 		['Fixed Angle Position', 'Store', 'Fixed Angle\\nStore', 'fixedangle_store', [], []],
 		['Fixed Angle Position', 'Recall', 'Fixed Angle\\nRecall', 'fixedangle_recall', [], []],
 		[
@@ -256,7 +389,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				bgcolor: combineRgb(0, 0, 0),
 			},
 			steps: [{ down: [], up: [] }],
-			feedbacks: [],
+			feedbacks: buildPresetFeedbacks(item[6]),
 		}
 
 		downSteps.forEach((step) => {
@@ -337,7 +470,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
 				},
 			],
-			feedbacks: [],
+			feedbacks: buildPresetFeedbacks(item[6]),
 		}
 
 		presets[item[3] + '_preset'] = preset
@@ -419,7 +552,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
 				},
 			],
-			feedbacks: [],
+			feedbacks: buildPresetFeedbacks(item[6]),
 		}
 
 		presets[item[3] + '_preset'] = preset

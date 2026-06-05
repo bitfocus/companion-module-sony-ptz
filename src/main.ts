@@ -9,6 +9,11 @@ import { SonyPTZ, PtzCommandParams, PtzError } from './sonyptz.js'
 
 const FB_ID = {
 	POWER: 'power',
+	FRAMING_MODE: 'framingMode',
+	LEAD_ROOM: 'leadRoom',
+	REALTIME_OVERLAY: 'realtimeOverlay',
+	FIXED_ANGLE: 'fixedAngle',
+	TRACKING_STATUS: 'trackingStatus',
 }
 
 function splitInt16Array(value: string): number[] {
@@ -121,6 +126,13 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const [tiltRangeLower, tiltRangeUpper] = splitInt16Array(ptzfParams.get('TiltMovementRange') || '')
 			const [zoomRangeWide, zoomRangeTele] = splitInt16Array(ptzfParams.get('ZoomMovementRange') || '')
 
+			const framingMode = ptzautoframingParams.get('PtzAutoFramingFramingMode') || ''
+			const leadRoom = ptzautoframingParams.get('PtzAutoFramingLeadRoomLevel') || ''
+			const realtimeOverlay = ptzautoframingParams.get('PtzAutoFramingFaceIndicatorEnable3') || ''
+			// FixedAngleEnable inquiry returns "<number>,<on|off>"; the enabled state is the 2nd field
+			const fixedAngle = (ptzautoframingParams.get('PtzAutoFramingFixedAngleEnable') || '').split(',')[1] || ''
+			const trackingStatus = ptzautoframingParams.get('PtzAutoFramingTrackingStatus') || ''
+
 			this.status = InstanceStatus.Ok
 
 			const variables: Record<string, any> = {
@@ -130,6 +142,17 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				serial: serial,
 				softVersion: version,
 				autoFraming: ptzautoframingParams.get('PtzAutoFraming') || '',
+				trackingStatus: trackingStatus,
+				framingMode: framingMode,
+				leadRoom: leadRoom,
+				realtimeOverlay: realtimeOverlay,
+				fixedAngle: fixedAngle,
+				trackingSpeedPan: ptzautoframingParams.get('PtzAutoFramingSpeedPan') || '',
+				trackingSpeedTilt: ptzautoframingParams.get('PtzAutoFramingSpeedTilt') || '',
+				trackingSpeedZoom: ptzautoframingParams.get('PtzAutoFramingSpeedZoom') || '',
+				trackingSensitivityPan: ptzautoframingParams.get('PtzAutoFramingSensitivityPan') || '',
+				trackingSensitivityTilt: ptzautoframingParams.get('PtzAutoFramingSensitivityTilt') || '',
+				trackingSensitivityZoom: ptzautoframingParams.get('PtzAutoFramingSensitivityZoom') || '',
 				multiTracking: ptzautoframingParams.get('PtzAutoFramingMultiTrackingEnable') || '',
 				multiTrackingNum: ptzautoframingParams.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || '',
 				zoomMode: ptzfParams.get('ZoomMode') || '',
@@ -160,6 +183,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			this.setVariableValues(variables)
 
 			this.setFeedbackValue(FB_ID.POWER, power)
+			this.setFeedbackValue(FB_ID.FRAMING_MODE, framingMode)
+			this.setFeedbackValue(FB_ID.LEAD_ROOM, leadRoom)
+			this.setFeedbackValue(FB_ID.REALTIME_OVERLAY, realtimeOverlay)
+			this.setFeedbackValue(FB_ID.FIXED_ANGLE, fixedAngle)
+			this.setFeedbackValue(FB_ID.TRACKING_STATUS, trackingStatus)
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				if (e.statusCode === 401) {
