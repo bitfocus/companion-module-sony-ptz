@@ -10,8 +10,8 @@
 	"bugs": "https://github.com/bitfocus/companion-module-sony-ptz/issues",
 	"maintainers": [
 		{
-			"name": "Takashi Ito",
-			"email": "takashic.ito@gmail.com"
+			"name": "Bitfocus AS",
+			"email": "connections@bitfocus.io"
 		}
 	],
 	"runtime": {
