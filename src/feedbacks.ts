@@ -71,9 +71,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			],
 			callback: (feedback) => self.getFeedbackValue('leadRoom') === feedback.options.level,
 		},
-		realtimeOverlay: {
+		autoFramingFrameAreaIndicator: {
 			type: 'boolean',
-			name: 'Auto Framing: Real-time Overlay (Frame/Area Indicator)',
+			name: 'Auto Framing - Frame/Area Indicator',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),

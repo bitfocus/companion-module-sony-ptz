@@ -119,7 +119,7 @@ export function UpdateActions(self: ModuleInstance): void {
 		],
 		// Real-time Overlay (Frame/Area Indicator) ON/OFF (PtzAutoFramingFaceIndicatorEnable3)
 		[
-			'Real-time Overlay',
+			'Auto Framing - Frame/Area Indicator',
 			'ON',
 			'autoframing_faceindicator_on',
 			'analytics/ptzautoframing.cgi',
@@ -127,7 +127,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			true,
 		],
 		[
-			'Real-time Overlay',
+			'Auto Framing - Frame/Area Indicator',
 			'OFF',
 			'autoframing_faceindicator_off',
 			'analytics/ptzautoframing.cgi',

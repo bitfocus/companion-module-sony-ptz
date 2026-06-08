@@ -57,55 +57,22 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 			[{ feedbackId: 'power', options: { power: 'standby' } }],
 		],
-		['Auto Framing', 'On', 'Auto Framing\\nOn', 'autoframing_on', [], []],
-		['Auto Framing', 'Off', 'Auto Framing\\nOff', 'autoframing_off', [], []],
-		['Auto Framing', 'Pause On', 'Auto Framing\\nPause On', 'autoframing_pause_on', [], []],
-		['Auto Framing', 'Pause Off', 'Auto Framing\\nPause Off', 'autoframing_pause_off', [], []],
-		['Auto Framing', 'Restart', 'Auto Framing\\nRestart', 'autoframing_restart', [], []],
+		['Auto Framing Controls', 'On', 'Auto Framing\\nOn', 'autoframing_on', [], []],
+		['Auto Framing Controls', 'Off', 'Auto Framing\\nOff', 'autoframing_off', [], []],
+		['Auto Framing Controls', 'Pause On', 'Auto Framing\\nPause On', 'autoframing_pause_on', [], []],
+		['Auto Framing Controls', 'Pause Off', 'Auto Framing\\nPause Off', 'autoframing_pause_off', [], []],
+		['Auto Framing Controls', 'Restart', 'Auto Framing\\nRestart', 'autoframing_restart', [], []],
 		[
-			'Auto Framing',
+			'Auto Framing Controls',
 			'Home',
 			'Auto Framing\\nHome',
 			'autoframing_home',
 			[['preset_call_action', 'autoframing_home', 0]],
 			[],
 		],
-		[
-			'Auto Framing',
-			'Mode:Closer Closeup',
-			'AF Mode\\nCloser',
-			'autoframing_closer_closeup',
-			[['auto_framing_shot_mode_action', 'autoframing_closer_closeup', 0]],
-			[],
-		],
-		[
-			'Auto Framing',
-			'Mode:Closeup',
-			'AF Mode\\nCloseup',
-			'autoframing_closeup',
-			[['auto_framing_shot_mode_action', 'autoframing_closeup', 0]],
-			[],
-		],
-		[
-			'Auto Framing',
-			'Mode:Waist',
-			'AF Mode\\nWaist',
-			'autoframing_waist',
-			[['auto_framing_shot_mode_action', 'autoframing_waist', 0]],
-			[],
-		],
-		[
-			'Auto Framing',
-			'Mode:Fullbody',
-			'AF Mode\\nFullbody',
-			'autoframing_fullbody',
-			[['auto_framing_shot_mode_action', 'autoframing_fullbody', 0]],
-			[],
-		],
 		// Person/Ball Sports Framing switching (Framing Mode action)
-
 		[
-			'Framing Mode',
+			'Auto Framing Mode',
 			'Person',
 			'Framing\\nPerson',
 			'autoframing_person',
@@ -115,13 +82,46 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Framing Mode',
+			'Auto Framing Mode',
 			'Ball Sports',
 			'Framing\\nBall',
 			'autoframing_ball',
 			[],
 			[],
 			[{ feedbackId: 'framingMode', options: { mode: 'ball_sports' } }],
+		],
+		//Shot Mode
+		[
+			'Auto Framing - Shot Mode',
+			'Mode:Fullbody',
+			'AF Mode\\nFullbody',
+			'autoframing_fullbody',
+			[['auto_framing_shot_mode_action', 'autoframing_fullbody', 0]],
+			[],
+		],
+		[
+			'Auto Framing - Shot Mode',
+			'Mode:Waist',
+			'AF Mode\\nWaist',
+			'autoframing_waist',
+			[['auto_framing_shot_mode_action', 'autoframing_waist', 0]],
+			[],
+		],
+		[
+			'Auto Framing - Shot Mode',
+			'Mode:Closeup',
+			'AF Mode\\nCloseup',
+			'autoframing_closeup',
+			[['auto_framing_shot_mode_action', 'autoframing_closeup', 0]],
+			[],
+		],
+		[
+			'Auto Framing - Shot Mode',
+			'Mode:Closer Closeup',
+			'AF Mode\\nCloser Closeup',
+			'autoframing_closer_closeup',
+			[['auto_framing_shot_mode_action', 'autoframing_closer_closeup', 0]],
+			[],
 		],
 		// Lead Room Effect
 
@@ -167,23 +167,23 @@ export function UpdatePresets(self: ModuleInstance): void {
 		// Real-time Overlay (Frame/Area Indicator)
 
 		[
-			'Real-time Overlay',
+			'Auto Framing - Frame/Area Indicator',
 			'On',
 			'Overlay\\nOn',
 			'autoframing_faceindicator_on',
 			[],
 			[],
-			[{ feedbackId: 'realtimeOverlay', options: { state: 'on' } }],
+			[{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'on' } }],
 		],
 
 		[
-			'Real-time Overlay',
+			'Auto Framing - Frame/Area Indicator',
 			'Off',
 			'Overlay\\nOff',
 			'autoframing_faceindicator_off',
 			[],
 			[],
-			[{ feedbackId: 'realtimeOverlay', options: { state: 'off' } }],
+			[{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'off' } }],
 		],
 		// Fixed Angle Position (SRG-A40/A12) — Store/Recall are momentary, no state feedback
 
@@ -339,12 +339,12 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['auto_focus_sensitivity_action', 'afsensitivity_low', 0]],
 			[],
 		],
-		['Multi Tracking Num', 'OFF', 'Multi Tracking OFF', 'multitrackingnum_1', [], []],
+		['Multi Tracking Targets', 'OFF', 'Multi Tracking OFF', 'multitrackingnum_1', [], []],
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(7)].map((x, i) => [
-			'Multi Tracking Num',
+			'Multi Tracking Targets',
 			`${i + 2}`,
-			`Multi Tracking Num=${i + 2}`,
+			`Multi Tracking Targets\n${i + 2}`,
 			`multitrackingnum_${i + 2}`,
 			[],
 			[],
@@ -385,6 +385,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			style: {
 				text: item[2],
 				size: FONT_SIZE,
+				show_topbar: false,
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
 			},
@@ -459,6 +460,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			style: {
 				text: item[2],
 				size: FONT_SIZE,
+				show_topbar: false,
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
 			},
@@ -541,6 +543,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			style: {
 				text: item[2],
 				size: FONT_SIZE,
+				show_topbar: false,
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
 			},
