@@ -95,7 +95,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		leadRoom: {
 			type: 'boolean',
-			name: 'Auto Framing: Lead Room Effect',
+			name: 'Auto Framing: Lead Room',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -103,15 +103,15 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			options: [
 				{
 					type: 'dropdown',
-					label: 'Lead Room Effect',
+					label: 'Lead Room',
 					id: 'level',
 					choices: [
-						{ id: 'off', label: 'Off' },
-						{ id: 'low', label: 'Low' },
-						{ id: 'middle', label: 'Middle' },
-						{ id: 'high', label: 'High' },
+						{ id: 'Off', label: 'Off' },
+						{ id: 'Low', label: 'Low' },
+						{ id: 'Middle', label: 'Middle' },
+						{ id: 'High', label: 'High' },
 					],
-					default: 'off',
+					default: 'Off',
 				},
 			],
 			callback: (feedback) => self.getFeedbackValue('leadRoom') === feedback.options.level,

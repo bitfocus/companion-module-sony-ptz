@@ -28,7 +28,7 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - Framing Mode
   - Person
   - Ball Sports
-- Lead Room Effect
+- Lead Room
   - Off
   - Low
   - Middle
@@ -99,7 +99,7 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - System Power
 - Auto Framing
 - Framing Mode
-- Lead Room Effect
+- Lead Room
 - Real-time Overlay
 - Fixed Angle Position \*SRG only
 - Scene File Recall \*BRC-AM7 only
@@ -123,7 +123,7 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 
 - System Power (On/Standby)
 - Framing Mode (Person/Ball Sports)
-- Lead Room Effect (Off/Low/Middle/High)
+- Lead Room (Off/Low/Middle/High)
 - Real-time Overlay (On/Off)
 - Fixed Angle Position Enabled (On/Off) \*SRG only
 - Auto Framing Tracking Status (Idle/Missing/Preparing/Searching/Tracking/Waiting/Fixed Angle)
@@ -133,7 +133,7 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - `$(this:autoFraming)` - Auto Framing Status
 - `$(this:trackingStatus)` - Auto Framing Tracking Status (Idle/Missing/Preparing/Searching/Tracking/Waiting/Fixed Angle)
 - `$(this:framingMode)` - Framing Mode (Person/Ball Sports)
-- `$(this:leadRoom)` - Lead Room Effect Level (Off/Low/Middle/High)
+- `$(this:leadRoom)` - Lead Room Level (Off/Low/Middle/High)
 - `$(this:realtimeOverlay)` - Real-time Overlay (Frame/Area Indicator) State (On/Off)
 - `$(this:fixedAngle)` - Fixed Angle Position Enabled (On/Off) \*SRG only
 - `$(this:trackingSpeedPan)` - Auto Framing Tracking Speed - Pan \*BRC-AM7 only

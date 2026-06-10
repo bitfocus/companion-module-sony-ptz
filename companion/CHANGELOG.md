@@ -10,15 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Auto Framing — Framing Mode** action (Person / Ball Sports) — BRC-AM7 & SRG-A40/A12.
-- **Auto Framing — Lead Room Effect** action (Off / Low / Middle / High).
+- **Auto Framing — Lead Room** action (Off / Low / Middle / High).
 - **Auto Framing — Real-time Overlay (Frame/Area Indicator)** action (On / Off).
 - **Auto Framing Shot Mode — Closer Close Up** option (tighter than the existing Close Up).
 - **Auto Framing Tracking Speed** and **Tracking Sensitivity** actions with per-axis (Pan/Tilt/Zoom) selection — BRC-AM7 only.
 - **Fixed Angle Position** action (Off / On / Store Current Position / Recall Position) — SRG-A40/A12 only.
 - **Fixed Angle Fine Pan/Tilt** and **Fixed Angle Fine Zoom** actions for nudging the stored fixed angle — SRG-A40/A12 only.
 - **Scene File Recall** action (Off / 1–16) — BRC-AM7 only.
-- Boolean **feedbacks** for Framing Mode, Lead Room Effect, Real-time Overlay, Fixed Angle Position, and Auto Framing Tracking Status.
-- **Variables** for tracking status, framing mode, lead room level, real-time overlay state, fixed angle enabled, and per-axis tracking speed/sensitivity.
+- Boolean **feedbacks** for Auto Framing On/Off, Shot Mode, Framing Mode, Lead Room, Real-time Overlay, Fixed Angle Position, and Auto Framing Tracking Status.
+- **Variables** for tracking status, framing mode, shot mode (friendly name), lead room level, real-time overlay state, fixed angle enabled, and per-axis tracking speed/sensitivity.
 - Matching **presets** for the new actions, with feedback highlighting on the relevant buttons.
 - Support for attaching feedbacks to presets via an optional trailing element on the preset specs.
 

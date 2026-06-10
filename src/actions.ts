@@ -84,9 +84,9 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingFramingMode: 'ball_sports' },
 			false,
 		],
-		// Lead Room Effect (PtzAutoFramingLeadRoomLevel)
+		// Lead Room (PtzAutoFramingLeadRoomLevel)
 		[
-			'Lead Room Effect',
+			'Lead Room',
 			'OFF',
 			'autoframing_leadroom_off',
 			'analytics/ptzautoframing.cgi',
@@ -94,7 +94,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			false,
 		],
 		[
-			'Lead Room Effect',
+			'Lead Room',
 			'Low',
 			'autoframing_leadroom_low',
 			'analytics/ptzautoframing.cgi',
@@ -102,7 +102,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			false,
 		],
 		[
-			'Lead Room Effect',
+			'Lead Room',
 			'Middle',
 			'autoframing_leadroom_middle',
 			'analytics/ptzautoframing.cgi',
@@ -110,7 +110,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			true,
 		],
 		[
-			'Lead Room Effect',
+			'Lead Room',
 			'High',
 			'autoframing_leadroom_high',
 			'analytics/ptzautoframing.cgi',

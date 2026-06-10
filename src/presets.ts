@@ -164,16 +164,16 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 			[{ feedbackId: 'shotMode', options: { mode: '200' } }],
 		],
-		// Lead Room Effect
+		// Lead Room
 
 		[
 			'Auto Framing - Lead Room',
 			'Off',
 			'Lead Room\\nOff',
 			'autoframing_leadroom_off',
+			[['lead_room_action', 'autoframing_leadroom_off', 0]],
 			[],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'off' } }],
+			[{ feedbackId: 'leadRoom', options: { level: 'Off' } }],
 		],
 
 		[
@@ -181,9 +181,9 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'Low',
 			'Lead Room\\nLow',
 			'autoframing_leadroom_low',
+			[['lead_room_action', 'autoframing_leadroom_low', 0]],
 			[],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'low' } }],
+			[{ feedbackId: 'leadRoom', options: { level: 'Low' } }],
 		],
 
 		[
@@ -191,9 +191,9 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'Middle',
 			'Lead Room\\nMiddle',
 			'autoframing_leadroom_middle',
+			[['lead_room_action', 'autoframing_leadroom_middle', 0]],
 			[],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'middle' } }],
+			[{ feedbackId: 'leadRoom', options: { level: 'Middle' } }],
 		],
 
 		[
@@ -201,9 +201,9 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'High',
 			'Lead Room\\nHigh',
 			'autoframing_leadroom_high',
+			[['lead_room_action', 'autoframing_leadroom_high', 0]],
 			[],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'high' } }],
+			[{ feedbackId: 'leadRoom', options: { level: 'High' } }],
 		],
 		// Real-time Overlay (Frame/Area Indicator)
 
@@ -233,7 +233,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'Off',
 			'Fixed Angle\\nOff',
 			'fixedangle_off',
-			[],
+			[['fixed_angle_position_action', 'fixedangle_off', 0]],
 			[],
 			[{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
 		],
@@ -243,12 +243,26 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'On',
 			'Fixed Angle\\nOn',
 			'fixedangle_on',
-			[],
+			[['fixed_angle_position_action', 'fixedangle_on', 0]],
 			[],
 			[{ feedbackId: 'fixedAngle', options: { state: 'on' } }],
 		],
-		['Auto Framing - Fixed Angle Position', 'Store', 'Fixed Angle\\nStore', 'fixedangle_store', [], []],
-		['Auto Framing - Fixed Angle Position', 'Recall', 'Fixed Angle\\nRecall', 'fixedangle_recall', [], []],
+		[
+			'Auto Framing - Fixed Angle Position',
+			'Store',
+			'Fixed Angle\\nStore',
+			'fixedangle_store',
+			[['fixed_angle_position_action', 'fixedangle_store', 0]],
+			[],
+		],
+		[
+			'Auto Framing - Fixed Angle Position',
+			'Recall',
+			'Fixed Angle\\nRecall',
+			'fixedangle_recall',
+			[['fixed_angle_position_action', 'fixedangle_recall', 0]],
+			[],
+		],
 		[
 			'Pan/Tilt/Zoom',
 			'Up',

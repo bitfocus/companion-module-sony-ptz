@@ -30,6 +30,13 @@ const SHOT_MODE_NAMES: Record<string, string> = {
 	'200': 'Closer Closeup',
 }
 
+const LEAD_ROOM_NAMES: Record<string, string> = {
+	off: 'Off',
+	low: 'Low',
+	middle: 'Middle',
+	high: 'High',
+}
+
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	config!: ModuleConfig // Setup in init()
 	ptz?: SonyPTZ
@@ -140,7 +147,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const framingMode = ptzautoframingParams.get('PtzAutoFramingFramingMode') || ''
 			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
 			const shotMode = (ptzautoframingParams.get('PtzAutoFramingAdjustSetting') || '').split(',')[2] || ''
-			const leadRoom = ptzautoframingParams.get('PtzAutoFramingLeadRoomLevel') || ''
+			const leadRoom =
+				LEAD_ROOM_NAMES[(ptzautoframingParams.get('PtzAutoFramingLeadRoomLevel') || '').toLowerCase()] ||
+				ptzautoframingParams.get('PtzAutoFramingLeadRoomLevel') ||
+				''
 			const realtimeOverlay = ptzautoframingParams.get('PtzAutoFramingFaceIndicatorEnable3') || ''
 			// FixedAngleEnable inquiry returns "<number>,<on|off>"; the enabled state is the 2nd field
 			const fixedAngle = (ptzautoframingParams.get('PtzAutoFramingFixedAngleEnable') || '').split(',')[1] || ''
