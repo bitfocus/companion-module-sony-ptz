@@ -657,9 +657,9 @@ export function UpdateActions(self: ModuleInstance): void {
 			const host = await self.parseVariablesInString(event.options.host as string)
 			if (host && self.config.host !== host) {
 				const newConfig = { ...self.config, host }
-				self.saveConfig(newConfig)
+				self.saveConfig(newConfig, self.secrets)
 				// saveConfig only persists to the UI; apply it so the module reconnects to the new host.
-				await self.configUpdated(newConfig)
+				await self.configUpdated(newConfig, self.secrets)
 			}
 		},
 	}

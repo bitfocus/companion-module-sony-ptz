@@ -1,5 +1,5 @@
 import { InstanceBase, runEntrypoint, InstanceStatus, SomeCompanionConfigField } from '@companion-module/base'
-import { GetConfigFields, type ModuleConfig } from './config.js'
+import { GetConfigFields, type ModuleConfig, type ModuleSecrets } from './config.js'
 import { UpdateVariableDefinitions } from './variables.js'
 import { UpgradeScripts } from './upgrades.js'
 import { UpdateActions } from './actions.js'
@@ -54,8 +54,9 @@ const LEAD_ROOM_NAMES: Record<string, string> = {
 	high: 'High',
 }
 
-export class ModuleInstance extends InstanceBase<ModuleConfig> {
+export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 	config!: ModuleConfig // Setup in init()
+	secrets!: ModuleSecrets // Setup in init()
 	ptz?: SonyPTZ
 	timeoutID?: ReturnType<typeof setTimeout>
 	_status: InstanceStatus = InstanceStatus.Disconnected
@@ -97,8 +98,9 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		}
 	}
 
-	async init(config: ModuleConfig): Promise<void> {
+	async init(config: ModuleConfig, _isFirstInit: boolean, secrets: ModuleSecrets): Promise<void> {
 		this.config = config
+		this.secrets = secrets
 
 		// Register definitions first so actions, feedbacks, variables, and presets are
 		// available even when no camera is reachable (e.g. configuring a show offline).
@@ -108,7 +110,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		this.updatePresets() // export presets
 
 		// Then attempt to connect; failures here must not block the definitions above.
-		await this.configUpdated(config)
+		await this.configUpdated(config, secrets)
 	}
 
 	// When module gets deleted
@@ -117,8 +119,9 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		this.stopPolling()
 	}
 
-	async configUpdated(config: ModuleConfig): Promise<void> {
+	async configUpdated(config: ModuleConfig, secrets: ModuleSecrets): Promise<void> {
 		this.config = config
+		this.secrets = secrets
 		this.stopPolling()
 
 		if (!config.host) {
@@ -144,7 +147,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				this.config.host,
 				this.config.port,
 				this.config.user,
-				this.config.pass,
+				this.secrets.pass,
 				this.config.referer,
 			)
 		}
