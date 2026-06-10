@@ -343,8 +343,14 @@ export function UpdateActions(self: ModuleInstance): void {
 	const SPEED_PARAM_ACTION_FUNC = async (event: CompanionActionEvent) => {
 		const v = commands[event.options.val as string]
 		const p = structuredClone(v.params)
-		const speed = (event.options.speed as number).toString()
-		const half = Math.floor((event.options.speed as number) / 2).toString()
+		const isZoom = !!p.ZoomMove
+		const fallback = isZoom ? DEFAULT_PTZ_ZOOM_SPEED : DEFAULT_PTZ_MOVE_SPEED
+		const max = isZoom ? 32766 : 24
+		// `speed` may be a plain number (preset / older config) or a string with variables.
+		const parsed = Math.round(Number(await self.parseVariablesInString(String(event.options.speed ?? ''))))
+		const speedNum = Math.min(Math.max(Number.isFinite(parsed) ? parsed : fallback, 0), max)
+		const speed = speedNum.toString()
+		const half = Math.floor(speedNum / 2).toString()
 		if (p.PanTiltMove) {
 			p.PanTiltMove = (p.PanTiltMove as string).replaceAll('{speed}', speed).replaceAll('{speed/2}', half)
 		} else if (p.ZoomMove) {
@@ -379,21 +385,21 @@ export function UpdateActions(self: ModuleInstance): void {
 			if (item[0] === 'PTZ Move') {
 				action.options.push({
 					id: 'speed',
-					type: 'number',
-					label: 'Speed',
-					default: DEFAULT_PTZ_MOVE_SPEED,
-					min: 0,
-					max: 24,
+					type: 'textinput',
+					label: 'Speed (0-24)',
+					tooltip: 'Pan/tilt speed. Supports variables; value is clamped to 0-24.',
+					default: DEFAULT_PTZ_MOVE_SPEED.toString(),
+					useVariables: true,
 				})
 				action.callback = SPEED_PARAM_ACTION_FUNC
 			} else if (item[0] === 'PTZ Zoom') {
 				action.options.push({
 					id: 'speed',
-					type: 'number',
-					label: 'Speed',
-					default: DEFAULT_PTZ_ZOOM_SPEED,
-					min: 0,
-					max: 32766,
+					type: 'textinput',
+					label: 'Speed (0-32766)',
+					tooltip: 'Zoom speed. Supports variables; value is clamped to 0-32766.',
+					default: DEFAULT_PTZ_ZOOM_SPEED.toString(),
+					useVariables: true,
 				})
 				action.callback = SPEED_PARAM_ACTION_FUNC
 			}

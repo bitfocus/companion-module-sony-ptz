@@ -459,7 +459,11 @@ export function UpdatePresets(self: ModuleInstance): void {
 			preset.steps[0].down.push({
 				actionId: step[0],
 				options: SPEED_PARAM_ACTION_IDS.includes(step[0])
-					? { val: step[1], speed: step[0] === 'ptz_move_action' ? DEFAULT_PTZ_MOVE_SPEED : DEFAULT_PTZ_ZOOM_SPEED }
+					? // Move/Zoom speed use variable-enabled text fields, so the default must be a string
+						{
+							val: step[1],
+							speed: (step[0] === 'ptz_move_action' ? DEFAULT_PTZ_MOVE_SPEED : DEFAULT_PTZ_ZOOM_SPEED).toString(),
+						}
 					: { val: step[1] },
 				delay: step[2],
 			})

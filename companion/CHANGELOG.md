@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PTZ Move** and **PTZ Zoom** speed fields now accept variables, so pan/tilt and zoom speeds can be driven dynamically (values are parsed and clamped to 0-24 and 0-32766 respectively).
 - **Auto Framing — Framing Mode** action (Person / Ball Sports) — BRC-AM7 & SRG-A40/A12.
 - **Auto Framing — Lead Room** action (Off / Low / Middle / High).
 - **Auto Framing — Real-time Overlay (Frame/Area Indicator)** action (On / Off).
