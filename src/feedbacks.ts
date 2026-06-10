@@ -158,6 +158,27 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			],
 			callback: (feedback) => self.getFeedbackValue('fixedAngle') === feedback.options.state,
 		},
+		sceneFile: {
+			type: 'boolean',
+			name: 'Scene File: Current Scene File',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 102, 204),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Scene File',
+					id: 'file',
+					choices: [
+						{ id: '0', label: 'Off' },
+						...Array.from({ length: 16 }, (_, i) => ({ id: `${i + 1}`, label: `Scene File ${i + 1}` })),
+					],
+					default: '1',
+				},
+			],
+			callback: (feedback) => self.getFeedbackValue('sceneFile') === feedback.options.file,
+		},
 		trackingStatus: {
 			type: 'boolean',
 			name: 'Auto Framing: Tracking Status',

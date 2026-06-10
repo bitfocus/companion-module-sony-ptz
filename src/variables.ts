@@ -45,6 +45,11 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
 		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
 		{ variableId: 'masterBlack', name: 'Master Black' },
+		{ variableId: 'currentSceneFile', name: 'Current Scene File Number' },
+		...Array.from({ length: 16 }, (_, i) => ({
+			variableId: `sceneFileName${i + 1}`,
+			name: `Scene File ${i + 1} Name`,
+		})),
 		...Array.from({ length: MAX_FOUND_DEVICES }, (_, i) => ({
 			variableId: `foundDevice${i + 1}`,
 			name: `Found Device ${i + 1}`,

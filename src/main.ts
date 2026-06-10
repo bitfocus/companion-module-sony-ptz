@@ -16,6 +16,7 @@ const FB_ID = {
 	REALTIME_OVERLAY: 'realtimeOverlay',
 	FIXED_ANGLE: 'fixedAngle',
 	TRACKING_STATUS: 'trackingStatus',
+	SCENE_FILE: 'sceneFile',
 }
 
 function splitInt16Array(value: string): number[] {
@@ -28,6 +29,22 @@ const SHOT_MODE_NAMES: Record<string, string> = {
 	'510': 'Waist',
 	'310': 'Closeup',
 	'200': 'Closer Closeup',
+}
+
+// SceneFileList value is CSV in groups of 3: fileNumber, base64Name, exportable
+function parseSceneFileList(raw: string): Record<string, string> {
+	const result: Record<string, string> = Object.fromEntries(
+		Array.from({ length: 16 }, (_, i) => [`sceneFileName${i + 1}`, 'None']),
+	)
+	const parts = raw.split(',')
+	for (let i = 0; i + 2 < parts.length; i += 3) {
+		const fileNum = parseInt(parts[i], 10)
+		const name = Buffer.from(parts[i + 1], 'base64').toString('utf8')
+		if (fileNum >= 1 && fileNum <= 16) {
+			result[`sceneFileName${fileNum}`] = name
+		}
+	}
+	return result
 }
 
 const LEAD_ROOM_NAMES: Record<string, string> = {
@@ -138,6 +155,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const ptzautoframingParams = await this.ptz.sendInq({ inq: 'ptzautoframing' })
 			const ptzfParams = await this.ptz.sendInq({ inq: 'ptzf' })
 			const streamParams = await this.ptz.sendInq({ inq: 'stream' })
+			const sceneFileParams = await this.ptz.sendInq({ inq: 'scenefile' })
 
 			const power = sysinfoParams.get('Power') || systemParams.get('Power') || ''
 			const serial = systemParams.get('Serial') || sysinfoParams.get('Serial') || ''
@@ -195,6 +213,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				zoomRangeWide: zoomRangeWide,
 				zoomRangeTele: zoomRangeTele,
 				streamMode: streamParams.get('StreamMode') || '',
+				currentSceneFile: sceneFileParams.get('SceneFileCurrentSceneFile') ?? '',
+				...parseSceneFileList(sceneFileParams.get('SceneFileList') ?? ''),
 			}
 
 			if (Date.now() - this.lastStepTime >= 3000) {
@@ -220,6 +240,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			this.setFeedbackValue(FB_ID.REALTIME_OVERLAY, realtimeOverlay)
 			this.setFeedbackValue(FB_ID.FIXED_ANGLE, fixedAngle)
 			this.setFeedbackValue(FB_ID.TRACKING_STATUS, trackingStatus)
+			this.setFeedbackValue(FB_ID.SCENE_FILE, sceneFileParams.get('SceneFileCurrentSceneFile') ?? undefined)
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				if (e.statusCode === 401) {
