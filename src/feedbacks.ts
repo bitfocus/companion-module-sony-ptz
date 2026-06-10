@@ -27,6 +27,27 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				return self.getFeedbackValue('power') === feedback.options.power
 			},
 		},
+		autoFraming: {
+			type: 'boolean',
+			name: 'Auto Framing: On/Off',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'State',
+					id: 'state',
+					choices: [
+						{ id: 'on', label: 'On' },
+						{ id: 'off', label: 'Off' },
+					],
+					default: 'on',
+				},
+			],
+			callback: (feedback) => self.getFeedbackValue('autoFraming') === feedback.options.state,
+		},
 		framingMode: {
 			type: 'boolean',
 			name: 'Auto Framing: Framing Mode (Person/Ball Sports)',

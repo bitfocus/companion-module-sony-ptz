@@ -58,23 +58,25 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[{ feedbackId: 'power', options: { power: 'standby' } }],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'On',
 			'Auto Framing\\nOn',
 			'autoframing_on',
 			[['auto_framing_action', 'autoframing_on', 0]],
 			[],
+			[{ feedbackId: 'autoFraming', options: { state: 'on' } }],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'Off',
 			'Auto Framing\\nOff',
 			'autoframing_off',
 			[['auto_framing_action', 'autoframing_off', 0]],
 			[],
+			[{ feedbackId: 'autoFraming', options: { state: 'off' } }],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'Pause On',
 			'Auto Framing\\nPause On',
 			'autoframing_pause_on',
@@ -82,7 +84,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'Pause Off',
 			'Auto Framing\\nPause Off',
 			'autoframing_pause_off',
@@ -90,7 +92,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'Restart',
 			'Auto Framing\\nRestart',
 			'autoframing_restart',
@@ -98,7 +100,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Framing Controls',
+			'Auto Framing - Controls',
 			'Home',
 			'Auto Framing\\nHome',
 			'autoframing_home',
@@ -107,7 +109,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		// Person/Ball Sports Framing switching (Framing Mode action)
 		[
-			'Auto Framing Mode',
+			'Auto Framing - Mode',
 			'Person',
 			'Framing\\nPerson',
 			'autoframing_person',
@@ -117,7 +119,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Auto Framing Mode',
+			'Auto Framing - Mode',
 			'Ball Sports',
 			'Framing\\nBall',
 			'autoframing_ball',
@@ -165,7 +167,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		// Lead Room Effect
 
 		[
-			'Lead Room Effect',
+			'Auto Framing - Lead Room',
 			'Off',
 			'Lead Room\\nOff',
 			'autoframing_leadroom_off',
@@ -175,7 +177,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Lead Room Effect',
+			'Auto Framing - Lead Room',
 			'Low',
 			'Lead Room\\nLow',
 			'autoframing_leadroom_low',
@@ -185,7 +187,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Lead Room Effect',
+			'Auto Framing - Lead Room',
 			'Middle',
 			'Lead Room\\nMiddle',
 			'autoframing_leadroom_middle',
@@ -195,7 +197,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Lead Room Effect',
+			'Auto Framing - Lead Room',
 			'High',
 			'Lead Room\\nHigh',
 			'autoframing_leadroom_high',
@@ -227,7 +229,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		// Fixed Angle Position (SRG-A40/A12) — Store/Recall are momentary, no state feedback
 
 		[
-			'Fixed Angle Position',
+			'Auto Framing - Fixed Angle Position',
 			'Off',
 			'Fixed Angle\\nOff',
 			'fixedangle_off',
@@ -237,7 +239,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 
 		[
-			'Fixed Angle Position',
+			'Auto Framing - Fixed Angle Position',
 			'On',
 			'Fixed Angle\\nOn',
 			'fixedangle_on',
@@ -245,8 +247,8 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 			[{ feedbackId: 'fixedAngle', options: { state: 'on' } }],
 		],
-		['Fixed Angle Position', 'Store', 'Fixed Angle\\nStore', 'fixedangle_store', [], []],
-		['Fixed Angle Position', 'Recall', 'Fixed Angle\\nRecall', 'fixedangle_recall', [], []],
+		['Auto Framing - Fixed Angle Position', 'Store', 'Fixed Angle\\nStore', 'fixedangle_store', [], []],
+		['Auto Framing - Fixed Angle Position', 'Recall', 'Fixed Angle\\nRecall', 'fixedangle_recall', [], []],
 		[
 			'Pan/Tilt/Zoom',
 			'Up',
@@ -379,7 +381,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Multi Tracking Targets',
+			'Auto Framing - Multi Tracking',
 			'OFF',
 			'Multi Tracking OFF',
 			'multitrackingnum_1',
@@ -388,7 +390,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(7)].map((x, i) => [
-			'Multi Tracking Targets',
+			'Auto Framing - Multi Tracking',
 			`${i + 2}`,
 			`Multi Tracking Targets\n${i + 2}`,
 			`multitrackingnum_${i + 2}`,

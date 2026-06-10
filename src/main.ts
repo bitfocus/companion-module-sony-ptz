@@ -9,6 +9,7 @@ import { SonyPTZ, PtzCommandParams, PtzError } from './sonyptz.js'
 
 const FB_ID = {
 	POWER: 'power',
+	AUTO_FRAMING: 'autoFraming',
 	FRAMING_MODE: 'framingMode',
 	SHOT_MODE: 'shotMode',
 	LEAD_ROOM: 'leadRoom',
@@ -135,6 +136,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const [tiltRangeLower, tiltRangeUpper] = splitInt16Array(ptzfParams.get('TiltMovementRange') || '')
 			const [zoomRangeWide, zoomRangeTele] = splitInt16Array(ptzfParams.get('ZoomMovementRange') || '')
 
+			const autoFraming = ptzautoframingParams.get('PtzAutoFraming') || ''
 			const framingMode = ptzautoframingParams.get('PtzAutoFramingFramingMode') || ''
 			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
 			const shotMode = (ptzautoframingParams.get('PtzAutoFramingAdjustSetting') || '').split(',')[2] || ''
@@ -152,7 +154,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				power: power,
 				serial: serial,
 				softVersion: version,
-				autoFraming: ptzautoframingParams.get('PtzAutoFraming') || '',
+				autoFraming: autoFraming,
 				trackingStatus: trackingStatus,
 				framingMode: framingMode,
 				shotMode: SHOT_MODE_NAMES[shotMode] || shotMode,
@@ -195,6 +197,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			this.setVariableValues(variables)
 
 			this.setFeedbackValue(FB_ID.POWER, power)
+			this.setFeedbackValue(FB_ID.AUTO_FRAMING, autoFraming)
 			this.setFeedbackValue(FB_ID.FRAMING_MODE, framingMode)
 			this.setFeedbackValue(FB_ID.SHOT_MODE, shotMode)
 			this.setFeedbackValue(FB_ID.LEAD_ROOM, leadRoom)
