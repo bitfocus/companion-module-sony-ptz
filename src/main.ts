@@ -81,11 +81,17 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	async init(config: ModuleConfig): Promise<void> {
-		await this.configUpdated(config)
+		this.config = config
+
+		// Register definitions first so actions, feedbacks, variables, and presets are
+		// available even when no camera is reachable (e.g. configuring a show offline).
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
 		this.updatePresets() // export presets
+
+		// Then attempt to connect; failures here must not block the definitions above.
+		await this.configUpdated(config)
 	}
 
 	// When module gets deleted

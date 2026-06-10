@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Actions, feedbacks, variables, and presets are now registered immediately, so they can be configured while the camera is offline or unreachable (e.g. building a show at home before connecting the PTZs on site). Previously these were not exported until a connection attempt completed.
 - Scene File Recall now uses the correct `SceneFileCurrentSceneFile` CGI parameter with values 0 (Off) and 1–16, replacing the previous incorrect `SceneFileCurrent` (0–15) mapping.
 
 ## [1.2.0] - 2025-12-07
