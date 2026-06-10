@@ -10,6 +10,7 @@ import { SonyPTZ, PtzCommandParams, PtzError } from './sonyptz.js'
 const FB_ID = {
 	POWER: 'power',
 	FRAMING_MODE: 'framingMode',
+	SHOT_MODE: 'shotMode',
 	LEAD_ROOM: 'leadRoom',
 	REALTIME_OVERLAY: 'realtimeOverlay',
 	FIXED_ANGLE: 'fixedAngle',
@@ -18,6 +19,14 @@ const FB_ID = {
 
 function splitInt16Array(value: string): number[] {
 	return value.split(',').map((x) => (parseInt(x, 16) << 16) >> 16)
+}
+
+// AdjustSetting zoom field -> friendly Auto Framing shot mode name
+const SHOT_MODE_NAMES: Record<string, string> = {
+	'1200': 'Full Body',
+	'510': 'Waist',
+	'310': 'Closeup',
+	'200': 'Closer Closeup',
 }
 
 export class ModuleInstance extends InstanceBase<ModuleConfig> {
@@ -127,6 +136,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const [zoomRangeWide, zoomRangeTele] = splitInt16Array(ptzfParams.get('ZoomMovementRange') || '')
 
 			const framingMode = ptzautoframingParams.get('PtzAutoFramingFramingMode') || ''
+			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
+			const shotMode = (ptzautoframingParams.get('PtzAutoFramingAdjustSetting') || '').split(',')[2] || ''
 			const leadRoom = ptzautoframingParams.get('PtzAutoFramingLeadRoomLevel') || ''
 			const realtimeOverlay = ptzautoframingParams.get('PtzAutoFramingFaceIndicatorEnable3') || ''
 			// FixedAngleEnable inquiry returns "<number>,<on|off>"; the enabled state is the 2nd field
@@ -144,6 +155,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				autoFraming: ptzautoframingParams.get('PtzAutoFraming') || '',
 				trackingStatus: trackingStatus,
 				framingMode: framingMode,
+				shotMode: SHOT_MODE_NAMES[shotMode] || shotMode,
 				leadRoom: leadRoom,
 				realtimeOverlay: realtimeOverlay,
 				fixedAngle: fixedAngle,
@@ -184,6 +196,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 			this.setFeedbackValue(FB_ID.POWER, power)
 			this.setFeedbackValue(FB_ID.FRAMING_MODE, framingMode)
+			this.setFeedbackValue(FB_ID.SHOT_MODE, shotMode)
 			this.setFeedbackValue(FB_ID.LEAD_ROOM, leadRoom)
 			this.setFeedbackValue(FB_ID.REALTIME_OVERLAY, realtimeOverlay)
 			this.setFeedbackValue(FB_ID.FIXED_ANGLE, fixedAngle)

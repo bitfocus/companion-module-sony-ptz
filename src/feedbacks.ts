@@ -48,6 +48,30 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			],
 			callback: (feedback) => self.getFeedbackValue('framingMode') === feedback.options.mode,
 		},
+		shotMode: {
+			type: 'boolean',
+			name: 'Auto Framing: Shot Mode',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 102, 204),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Shot Mode',
+					id: 'mode',
+					choices: [
+						{ id: '1200', label: 'Full Body' },
+						{ id: '510', label: 'Waist' },
+						{ id: '310', label: 'Closeup' },
+						{ id: '200', label: 'Closer Closeup' },
+					],
+					default: '1200',
+				},
+			],
+			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
+			callback: (feedback) => self.getFeedbackValue('shotMode') === feedback.options.mode,
+		},
 		leadRoom: {
 			type: 'boolean',
 			name: 'Auto Framing: Lead Room Effect',

@@ -12,6 +12,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'autoFraming', name: 'Auto Framing Status' },
 		{ variableId: 'trackingStatus', name: 'Auto Framing Tracking Status' },
 		{ variableId: 'framingMode', name: 'Framing Mode (Person/Ball Sports)' },
+		{ variableId: 'shotMode', name: 'Auto Framing Shot Mode' },
 		{ variableId: 'leadRoom', name: 'Lead Room Effect Level' },
 		{ variableId: 'realtimeOverlay', name: 'Real-time Overlay (Frame/Area Indicator)' },
 		{ variableId: 'fixedAngle', name: 'Fixed Angle Position Enabled' },
