@@ -138,8 +138,6 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			const ptzautoframingParams = await this.ptz.sendInq({ inq: 'ptzautoframing' })
 			const ptzfParams = await this.ptz.sendInq({ inq: 'ptzf' })
 			const streamParams = await this.ptz.sendInq({ inq: 'stream' })
-			const imagingParams = await this.ptz.sendInq({ inq: 'imaging' })
-			const paintParams = await this.ptz.sendInq({ inq: 'paint' })
 
 			const power = sysinfoParams.get('Power') || systemParams.get('Power') || ''
 			const serial = systemParams.get('Serial') || sysinfoParams.get('Serial') || ''
@@ -200,6 +198,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			}
 
 			if (Date.now() - this.lastStepTime >= 3000) {
+				const imagingParams = await this.ptz.sendInq({ inq: 'imaging' })
+				const paintParams = await this.ptz.sendInq({ inq: 'paint' })
 				variables.panPos = panPos
 				variables.tiltPos = tiltPos
 				variables.zoomPos = zoomPos

@@ -502,7 +502,10 @@ export function UpdateActions(self: ModuleInstance): void {
 				useVariables: true,
 			})),
 			callback: async (event: CompanionActionEvent) => {
-				const vars: string[] = item[4].map((_, idx) => event.options['val' + (idx + 1)]!.toString())
+				// Fields declare useVariables, so resolve any variable references before sending.
+				const vars: string[] = await Promise.all(
+					item[4].map(async (_, idx) => self.parseVariablesInString(String(event.options['val' + (idx + 1)] ?? ''))),
+				)
 				await self.sendCommand(item[2], { [item[3]]: vars.join(',') })
 			},
 		}
@@ -655,6 +658,8 @@ export function UpdateActions(self: ModuleInstance): void {
 			if (host && self.config.host !== host) {
 				const newConfig = { ...self.config, host }
 				self.saveConfig(newConfig)
+				// saveConfig only persists to the UI; apply it so the module reconnects to the new host.
+				await self.configUpdated(newConfig)
 			}
 		},
 	}
