@@ -64,6 +64,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 	lastStepTime: number = 0
 	// Camera model reported by ModelName; drives model-specific preset filtering. Empty until first poll.
 	model: string = ''
+	// Guards against overlapping checkStatus runs (background reconnect + polling tick).
+	private isChecking: boolean = false
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -200,11 +202,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 		}
 
 		this.status = InstanceStatus.Connecting
-		await this.checkStatus()
-
-		if (config.polling) {
-			this.startPolling(config.interval)
-		}
+		// Start polling once the first check settles
+		void this.checkStatus().finally(() => {
+			if (config.polling) {
+				this.startPolling(config.interval)
+			}
+		})
 	}
 
 	async checkStatus(): Promise<void> {
@@ -212,6 +215,19 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 			return
 		}
 
+		// A previous check is still in flight (e.g. timing out against an unreachable camera);
+		if (this.isChecking) {
+			return
+		}
+		this.isChecking = true
+		try {
+			await this.runStatusCheck()
+		} finally {
+			this.isChecking = false
+		}
+	}
+
+	private async runStatusCheck(): Promise<void> {
 		if (!this.ptz) {
 			this.ptz = new SonyPTZ(
 				this.config.host,

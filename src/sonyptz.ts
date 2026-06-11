@@ -43,6 +43,7 @@ export class SonyPTZ {
 			method: 'GET',
 			digestAuth: `${this.user}:${this.pass}`,
 			data: command.params,
+			timeout: [3000, 5000],
 		}
 		if (this.referer) {
 			options.headers = { referer: this.refererHeader }
