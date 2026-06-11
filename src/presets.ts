@@ -20,6 +20,16 @@ type PresetSpec = [
 	feedbacks?: CompanionPresetFeedback[],
 ]
 type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any], CompanionPresetFeedback[]?]
+// Button preset that pushes one action with an explicit options object (for actions
+// whose options don't fit the simple `{ val: choiceId }` shape used by PRESET_LIST).
+type GenericButtonPresetSpec = [
+	category: string,
+	name: string,
+	text: string,
+	key: string,
+	down: [actionId: string, options: Record<string, any>][],
+	feedbacks?: CompanionPresetFeedback[],
+]
 type GenericRotaryPresetSpec = [
 	string,
 	string,
@@ -47,13 +57,21 @@ function buildPresetFeedbacks(feedbacks?: CompanionPresetFeedback[]): CompanionP
 export function UpdatePresets(self: ModuleInstance): void {
 	const PRESET_LIST: PresetSpec[] = [
 		// [category, name, text, key, down[actionId, choiceId, delay][], up[actionId, choiceId, delay]]
-		['System Power', 'On', 'PTZ\\nOn', 'system_on', [], [], [{ feedbackId: 'power', options: { power: 'on' } }]],
 		[
-			'System Power',
+			'System',
+			'On',
+			'PTZ\\nOn',
+			'system_on',
+			[['system_power_action', 'system_on', 0]],
+			[],
+			[{ feedbackId: 'power', options: { power: 'on' } }],
+		],
+		[
+			'System',
 			'Standby',
 			'PTZ\\nStandby',
 			'system_standby',
-			[],
+			[['system_power_action', 'system_standby', 0]],
 			[],
 			[{ feedbackId: 'power', options: { power: 'standby' } }],
 		],
@@ -264,7 +282,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up',
 			'Tilt Up',
 			'ptz_move_up',
@@ -272,7 +290,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down',
 			'Tilt Down',
 			'ptz_move_down',
@@ -280,7 +298,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Left',
 			'Pan Left',
 			'ptz_move_left',
@@ -288,7 +306,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Right',
 			'Pan Right',
 			'ptz_move_right',
@@ -296,7 +314,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up Left',
 			'Tilt Up Left',
 			'ptz_move_up_left',
@@ -304,7 +322,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up Right',
 			'Tilt Up Right',
 			'ptz_move_up_right',
@@ -312,7 +330,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down Left',
 			'Tilt Down Left',
 			'ptz_move_down_left',
@@ -320,7 +338,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down Right',
 			'Tilt Down Right',
 			'ptz_move_down_right',
@@ -328,7 +346,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Zoom',
 			'Tele',
 			'Zoom Tele',
 			'ptz_zoom_tele',
@@ -336,7 +354,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[['ptz_move_stop_action', 'stop_zoom', 0]],
 		],
 		[
-			'Pan/Tilt/Zoom',
+			'Pan/Tilt/Zoom - Zoom',
 			'Wide',
 			'Zoom Wide',
 			'ptz_zoom_wide',
@@ -345,17 +363,24 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		['Preset Call', 'Look Back', 'PTZ Preset\\nBack', 'preset_back', [], []],
 		['Preset Call', 'PTZ Home', 'PTZ Preset\\nHome', 'preset_home', [], []],
-		['Auto Focus', 'ON', 'Auto Focus\\nON (auto)', 'auto_focus_auto', [['focus_mode_action', 'focus_auto', 0]], []],
 		[
-			'Auto Focus',
+			'Auto Focus - Focus Mode',
+			'ON',
+			'Auto Focus\\nON',
+			'auto_focus_auto',
+			[['focus_mode_action', 'focus_auto', 0]],
+			[],
+		],
+		[
+			'Auto Focus - Focus Mode',
 			'OFF',
-			'Auto Focus\\nOFF (manual)',
+			'Manual Focus',
 			'auto_focus_manual',
 			[['focus_mode_action', 'focus_manual', 0]],
 			[],
 		],
 		[
-			'Auto Focus',
+			'Auto Focus - AF Mode',
 			'Normal Mode',
 			'Auto Focus\\nNormal Mode',
 			'afmode_normal',
@@ -363,7 +388,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Focus',
+			'Auto Focus - AF Mode',
 			'Interval Mode',
 			'Auto Focus\\nInterval Mode',
 			'afmode_interval',
@@ -371,7 +396,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Focus',
+			'Auto Focus - AF Mode',
 			'Zoom Trigger Mode',
 			'Auto Focus\\nZoom Trigger',
 			'afmode_zoomtrigger',
@@ -379,7 +404,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Focus',
+			'Auto Focus - Sensitivity',
 			'Normal Sensitivity',
 			'Auto Focus\\nNormal Sensitivity',
 			'afsensitivity_normal',
@@ -387,7 +412,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		],
 		[
-			'Auto Focus',
+			'Auto Focus - Sensitivity',
 			'Low Sensitivity',
 			'Auto Focus\\nLow Sensitivity',
 			'afsensitivity_low',
@@ -435,6 +460,47 @@ export function UpdatePresets(self: ModuleInstance): void {
 
 	const presets: CompanionPresetDefinitions = {}
 
+	// Map each authoring category to a broad top-level group plus a sub-section label.
+	// Buttons are grouped under the top-level category; the sub-label becomes a `type: 'text'`
+	// header inserted once before the group's first button. Categories absent from the map are
+	// left as their own single-section group (no sub-header).
+	const CATEGORY_MAP: Record<string, [topCategory: string, subLabel: string]> = {
+		'Auto Framing - Controls': ['Auto Framing', 'Controls'],
+		'Auto Framing - Mode': ['Auto Framing', 'Framing Mode'],
+		'Auto Framing - Shot Mode': ['Auto Framing', 'Shot Mode'],
+		'Auto Framing - Lead Room': ['Auto Framing', 'Lead Room'],
+		'Auto Framing - Frame/Area Indicator': ['Auto Framing', 'Frame/Area Indicator'],
+		'Auto Framing - Fixed Angle Position': ['Auto Framing', 'Fixed Angle Position'],
+		'Auto Framing - Multi Tracking': ['Auto Framing', 'Multi Tracking'],
+		'Auto Framing - Tracking Speed': ['Auto Framing', 'Tracking Speed'],
+		'Auto Framing - Tracking Sensitivity': ['Auto Framing', 'Tracking Sensitivity'],
+		'Auto Framing - Fixed Angle Fine Adjust': ['Auto Framing', 'Fixed Angle Fine Adjust'],
+		'Pan/Tilt/Zoom - Pan/Tilt': ['Pan/Tilt/Zoom', 'Pan / Tilt'],
+		'Pan/Tilt/Zoom - Zoom': ['Pan/Tilt/Zoom', 'Zoom'],
+		'Auto Focus - Focus Mode': ['Focus Controls', 'Focus Mode'],
+		'Auto Focus - AF Mode': ['Focus Controls', 'AF Mode'],
+		'Auto Focus - Sensitivity': ['Focus Controls', 'Sensitivity'],
+		'Preset Call': ['PTZ Presets', 'Recall'],
+		'Preset Set': ['PTZ Presets', 'Store'],
+		'Rotary Presets': ['Rotary', 'Pan / Tilt / Zoom'],
+		'Rotary (BRC-AM7)': ['Rotary', 'BRC-AM7'],
+		'Rotary (SRG-A12/A40)': ['Rotary', 'SRG-A12/A40'],
+	}
+
+	const seenSubHeaders = new Set<string>()
+	// Resolve an authoring category to its top-level group, emitting a one-time text header
+	// for the sub-section the first time it is encountered. Returns the top-level category to
+	// assign to the button preset.
+	function resolveCategory(authorCategory: string): string {
+		const [top, sub] = CATEGORY_MAP[authorCategory] ?? [authorCategory, authorCategory]
+		if (sub !== top && !seenSubHeaders.has(`${top}::${sub}`)) {
+			seenSubHeaders.add(`${top}::${sub}`)
+			const headerKey = `zz_header_${`${top}_${sub}`.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`
+			presets[headerKey] = { type: 'text', category: top, name: sub, text: '' }
+		}
+		return top
+	}
+
 	// 0:category, 1:name, 2:text, 3:key, 4:[actionId, choiceId, delay][]
 	PRESET_LIST.forEach((item) => {
 		const downSteps = item[4]
@@ -442,7 +508,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
-			category: item[0],
+			category: resolveCategory(item[0]),
 			name: item[1],
 			style: {
 				text: item[2],
@@ -488,6 +554,102 @@ export function UpdatePresets(self: ModuleInstance): void {
 		presets[item[3] + '_preset'] = preset
 	})
 
+	// Generic Button Presets — actions with custom option objects (tracking speed/sensitivity,
+	// fine adjustment of fixed angle position).
+	const AF_AXES = ['Pan', 'Tilt', 'Zoom'] as const
+	// Hex offset magnitude used by the fine-adjustment nudge presets (signed 16-bit). Forward = +0x0064.
+	const FINE_POS = '0064'
+	const FINE_NEG = 'FF9C'
+	const GENERIC_BUTTON_PRESET_LIST: GenericButtonPresetSpec[] = [
+		// Auto Framing Tracking Speed (1-5) per axis
+		...AF_AXES.flatMap((axis) =>
+			[1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+				'Auto Framing - Tracking Speed',
+				`${axis} ${v}`,
+				`${axis} Speed\\n${v}\\n$(this:trackingSpeed${axis})`,
+				`autoframing_tracking_speed_${axis.toLowerCase()}_${v}`,
+				[['autoframing_tracking_speed_action', { axis, value: v }]],
+			]),
+		),
+		// Auto Framing Tracking Sensitivity (0-5) per axis
+		...AF_AXES.flatMap((axis) =>
+			[0, 1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+				'Auto Framing - Tracking Sensitivity',
+				`${axis} ${v}`,
+				`${axis} Sens\\n${v}\\n$(this:trackingSensitivity${axis})`,
+				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_${v}`,
+				[['autoframing_tracking_sensitivity_action', { axis, value: v }]],
+			]),
+		),
+		// Fine Adjustment of Fixed Angle Position (relative hex nudges, angle #1)
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Pan Left',
+			'Fine Angle\\nPan Left',
+			'fixedangle_fine_pan_left',
+			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: FINE_NEG, val3: '0000' }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Pan Right',
+			'Fine Angle\\nPan Right',
+			'fixedangle_fine_pan_right',
+			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: FINE_POS, val3: '0000' }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Tilt Up',
+			'Fine Angle\\nTilt Up',
+			'fixedangle_fine_tilt_up',
+			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: '0000', val3: FINE_POS }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Tilt Down',
+			'Fine Angle\\nTilt Down',
+			'fixedangle_fine_tilt_down',
+			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: '0000', val3: FINE_NEG }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Zoom Tele',
+			'Fine Angle\\nZoom Tele',
+			'fixedangle_fine_zoom_tele',
+			[['fixed_angle_fine_zoom_action', { val1: '1', val2: FINE_POS }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Fine Adjust',
+			'Zoom Wide',
+			'Fine Angle\\nZoom Wide',
+			'fixedangle_fine_zoom_wide',
+			[['fixed_angle_fine_zoom_action', { val1: '1', val2: FINE_NEG }]],
+		],
+	]
+
+	GENERIC_BUTTON_PRESET_LIST.forEach((item) => {
+		const preset: CompanionPresetDefinition = {
+			type: 'button',
+			category: resolveCategory(item[0]),
+			name: item[1],
+			style: {
+				text: item[2],
+				size: FONT_SIZE,
+				show_topbar: false,
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: item[4].map(([actionId, options]) => ({ actionId, options, delay: 0 })),
+					up: [],
+				},
+			],
+			feedbacks: buildPresetFeedbacks(item[5]),
+		}
+
+		presets[item[3] + '_preset'] = preset
+	})
+
 	// Rotary Presets
 	const ROTARY_PRESET_LIST: RotaryPresetSpec[] = [
 		// [category, name, text, key, left[actionId, options], right[actionId, options]]
@@ -520,7 +682,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	ROTARY_PRESET_LIST.forEach((item) => {
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
-			category: item[0],
+			category: resolveCategory(item[0]),
 			name: item[1],
 			options: { rotaryActions: true },
 			style: {
@@ -603,7 +765,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	GENERIC_ROTARY_PRESET_LIST.forEach((item) => {
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
-			category: item[0],
+			category: resolveCategory(item[0]),
 			name: item[1],
 			options: { rotaryActions: true },
 			style: {
