@@ -468,15 +468,18 @@ export function UpdatePresets(self: ModuleInstance): void {
 			[],
 		]),
 		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(17)].map((x, i) => [
-			'Scene File Recall',
-			i === 0 ? 'Off' : `${i}`,
-			i === 0 ? presetText('Scene File', 'Off') : presetText('Scene File', `${i}`),
-			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
-			[],
-			[],
-			[{ feedbackId: 'sceneFile', options: { file: `${i}` } }],
-		]),
+		...[...Array(16)].map((x, i) => {
+			const fileNum = i + 1
+			return [
+				'Scene File Recall',
+				`${fileNum}`,
+				`Scene File\\n$(this:sceneFileName${fileNum})`,
+				`scenefile_set_${fileNum}`,
+				[],
+				[],
+				[{ feedbackId: 'sceneFile', options: { file: `${fileNum}` } }],
+			]
+		}),
 	]
 
 	const presets: CompanionPresetDefinitions = {}
