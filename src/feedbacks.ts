@@ -1,5 +1,6 @@
 import { combineRgb } from '@companion-module/base'
 import type { ModuleInstance } from './main.js'
+import type { StateKey } from './state/camera-state.js'
 
 export function UpdateFeedbacks(self: ModuleInstance): void {
 	self.setFeedbackDefinitions({
@@ -23,8 +24,8 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				},
 			],
 			callback: (feedback) => {
-				self.log('debug', `power: ${self.getFeedbackValue('power')}`)
-				return self.getFeedbackValue('power') === feedback.options.power
+				self.log('debug', `power: ${self.state.get('power')}`)
+				return self.state.get('power') === feedback.options.power
 			},
 		},
 		autoFraming: {
@@ -46,7 +47,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'on',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('autoFraming') === feedback.options.state,
+			callback: (feedback) => self.state.get('autoFraming') === feedback.options.state,
 		},
 		framingMode: {
 			type: 'boolean',
@@ -67,7 +68,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'person',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('framingMode') === feedback.options.mode,
+			callback: (feedback) => self.state.get('framingMode') === feedback.options.mode,
 		},
 		shotMode: {
 			type: 'boolean',
@@ -91,7 +92,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				},
 			],
 			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
-			callback: (feedback) => self.getFeedbackValue('shotMode') === feedback.options.mode,
+			callback: (feedback) => self.state.get('shotMode') === feedback.options.mode,
 		},
 		leadRoom: {
 			type: 'boolean',
@@ -114,7 +115,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'Off',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('leadRoom') === feedback.options.level,
+			callback: (feedback) => self.state.get('leadRoom') === feedback.options.level,
 		},
 		autoFramingFrameAreaIndicator: {
 			type: 'boolean',
@@ -135,7 +136,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'on',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('realtimeOverlay') === feedback.options.state,
+			callback: (feedback) => self.state.get('realtimeOverlay') === feedback.options.state,
 		},
 		fixedAngle: {
 			type: 'boolean',
@@ -156,7 +157,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'on',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('fixedAngle') === feedback.options.state,
+			callback: (feedback) => self.state.get('fixedAngle') === feedback.options.state,
 		},
 		sceneFile: {
 			type: 'boolean',
@@ -177,7 +178,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: '1',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('sceneFile') === feedback.options.file,
+			callback: (feedback) => self.state.get('sceneFile') === feedback.options.file,
 		},
 		trackingStatus: {
 			type: 'boolean',
@@ -203,7 +204,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'tracking',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('trackingStatus') === feedback.options.status,
+			callback: (feedback) => self.state.get('trackingStatus') === feedback.options.status,
 		},
 		trackingSpeed: {
 			type: 'boolean',
@@ -227,7 +228,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				{ type: 'number', label: 'Speed (1-5)', id: 'value', default: 4, min: 1, max: 5 },
 			],
 			callback: (feedback) => {
-				const cur = self.getFeedbackValue(`trackingSpeed${feedback.options.axis}`)
+				const cur = self.state.get(`trackingSpeed${feedback.options.axis}` as StateKey)
 				return cur !== undefined && cur !== '' && Number(cur) === Number(feedback.options.value)
 			},
 		},
@@ -253,7 +254,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				{ type: 'number', label: 'Sensitivity (0-5)', id: 'value', default: 3, min: 0, max: 5 },
 			],
 			callback: (feedback) => {
-				const cur = self.getFeedbackValue(`trackingSensitivity${feedback.options.axis}`)
+				const cur = self.state.get(`trackingSensitivity${feedback.options.axis}` as StateKey)
 				return cur !== undefined && cur !== '' && Number(cur) === Number(feedback.options.value)
 			},
 		},
@@ -277,11 +278,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				},
 			],
 			callback: (feedback) => {
-				const enable = self.getFeedbackValue('multiTracking')
+				const enable = self.state.get('multiTracking')
 				if (feedback.options.num === '1') return enable === 'off'
-				return (
-					enable === 'on' && String(self.getFeedbackValue('multiTrackingTargetNum')) === String(feedback.options.num)
-				)
+				return enable === 'on' && String(self.state.get('multiTrackingTargetNum')) === String(feedback.options.num)
 			},
 		},
 		focusMode: {
@@ -303,7 +302,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'auto',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('focusMode') === feedback.options.mode,
+			callback: (feedback) => self.state.get('focusMode') === feedback.options.mode,
 		},
 		afMode: {
 			type: 'boolean',
@@ -325,7 +324,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'normal',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('afMode') === feedback.options.mode,
+			callback: (feedback) => self.state.get('afMode') === feedback.options.mode,
 		},
 		focusSensitivity: {
 			type: 'boolean',
@@ -346,7 +345,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: 'normal',
 				},
 			],
-			callback: (feedback) => self.getFeedbackValue('focusSensitivity') === feedback.options.level,
+			callback: (feedback) => self.state.get('focusSensitivity') === feedback.options.level,
 		},
 	})
 }

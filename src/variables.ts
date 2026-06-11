@@ -1,6 +1,66 @@
+import type { CompanionVariableValues } from '@companion-module/base'
 import type { ModuleInstance } from './main.js'
+import type { CameraState, StateKey } from './state/camera-state.js'
 
 export const MAX_FOUND_DEVICES = 8
+
+// AdjustSetting zoom field -> friendly Auto Framing shot mode name (display only).
+const SHOT_MODE_NAMES: Record<string, string> = {
+	'1200': 'Full Body',
+	'510': 'Waist',
+	'310': 'Closeup',
+	'200': 'Closer Closeup',
+}
+
+export function deriveVariableValues(state: CameraState): CompanionVariableValues {
+	const str = (key: StateKey): string => {
+		const v = state.get(key)
+		return v === undefined ? '' : String(v)
+	}
+	const num = (key: StateKey): number => Number(state.get(key) ?? 0)
+	const shot = str('shotMode')
+
+	const sceneFileNames = Object.fromEntries(
+		Array.from({ length: 16 }, (_, i) => [`sceneFileName${i + 1}`, str(`sceneFileName${i + 1}`)]),
+	)
+
+	return {
+		modelName: str('modelName'),
+		name: str('name'),
+		power: str('power'),
+		serial: str('serial'),
+		softVersion: str('softVersion'),
+		autoFraming: str('autoFraming'),
+		trackingStatus: str('trackingStatus'),
+		framingMode: str('framingMode'),
+		shotMode: SHOT_MODE_NAMES[shot] || shot,
+		leadRoom: str('leadRoom'),
+		realtimeOverlay: str('realtimeOverlay'),
+		fixedAngle: str('fixedAngle'),
+		trackingSpeedPan: str('trackingSpeedPan'),
+		trackingSpeedTilt: str('trackingSpeedTilt'),
+		trackingSpeedZoom: str('trackingSpeedZoom'),
+		trackingSensitivityPan: str('trackingSensitivityPan'),
+		trackingSensitivityTilt: str('trackingSensitivityTilt'),
+		trackingSensitivityZoom: str('trackingSensitivityZoom'),
+		multiTracking: str('multiTracking'),
+		multiTrackingNum: str('multiTrackingNum'),
+		zoomMode: str('zoomMode'),
+		autoFocusMode: str('afMode'),
+		afSensitivity: str('focusSensitivity'),
+		focusMode: str('focusMode'),
+		absoluteFocus: str('absoluteFocus'),
+		panRangeLeft: num('panRangeLeft'),
+		panRangeRight: num('panRangeRight'),
+		tiltRangeLower: num('tiltRangeLower'),
+		tiltRangeUpper: num('tiltRangeUpper'),
+		zoomRangeWide: num('zoomRangeWide'),
+		zoomRangeTele: num('zoomRangeTele'),
+		streamMode: str('streamMode'),
+		currentSceneFile: str('sceneFile'),
+		...sceneFileNames,
+	}
+}
 
 export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	const vars = [

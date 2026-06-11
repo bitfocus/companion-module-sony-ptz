@@ -6,42 +6,11 @@ import {
 	CompanionPresetDefinitions,
 	CompanionPresetFeedback,
 } from '@companion-module/base'
-import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, DEFAULT_PTZ_STEP, SPEED_PARAM_ACTIONS } from './actions.js'
-
-type PresetSpec = [
-	category: string,
-	name: string,
-	text: string,
-	key: string,
-	down: [string, string, number][],
-	up: [string, string, number][],
-	// Use the CompanionPresetFeedback shape: { feedbackId, options, style?, isInverted? }.
-	// When a feedback omits `style`, the builder falls back to DEFAULT_ACTIVE_STYLE.
-	feedbacks?: CompanionPresetFeedback[],
-]
-type RotaryPresetSpec = [string, string, string, string, [string, any], [string, any], CompanionPresetFeedback[]?]
-// Button preset that pushes one action with an explicit options object (for actions
-// whose options don't fit the simple `{ val: choiceId }` shape used by PRESET_LIST).
-type GenericButtonPresetSpec = [
-	category: string,
-	name: string,
-	text: string,
-	key: string,
-	down: [actionId: string, options: Record<string, any>][],
-	feedbacks?: CompanionPresetFeedback[],
-]
-type GenericRotaryPresetSpec = [
-	string,
-	string,
-	string,
-	string,
-	[string, any],
-	[string, any],
-	CompanionPresetFeedback[]?,
-]
+import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_ZOOM_SPEED, DEFAULT_PTZ_STEP } from './actions/index.js'
 
 const FONT_SIZE = 12
-const SPEED_PARAM_ACTION_IDS = SPEED_PARAM_ACTIONS.map((x) => x.toLowerCase().split(' ').join('_') + '_action')
+const MOVE_SPEED = DEFAULT_PTZ_MOVE_SPEED.toString()
+const ZOOM_SPEED = DEFAULT_PTZ_ZOOM_SPEED.toString()
 
 // Default highlight applied to a preset feedback when it does not specify its own style.
 const DEFAULT_ACTIVE_STYLE: CompanionFeedbackButtonStyleResult = {
@@ -49,9 +18,13 @@ const DEFAULT_ACTIVE_STYLE: CompanionFeedbackButtonStyleResult = {
 	color: combineRgb(255, 255, 255),
 }
 
-// Normalize a spec's optional feedback list into CompanionPresetFeedback entries.
-function buildPresetFeedbacks(feedbacks?: CompanionPresetFeedback[]): CompanionPresetFeedback[] {
-	return (feedbacks ?? []).map((fb) => ({ ...fb, style: fb.style ?? DEFAULT_ACTIVE_STYLE }))
+// One action inside a step. delay is always 0 here; kept explicit to match the Companion shape.
+type Step = { actionId: string; options: Record<string, any>; delay: number }
+// A rotary side: the action and its options object.
+type RotaryAction = [actionId: string, options: Record<string, any>]
+
+function step(actionId: string, options: Record<string, any>): Step {
+	return { actionId, options, delay: 0 }
 }
 
 // Standard preset button label: "Group\\nVALUE" with VALUE in all caps.
@@ -59,429 +32,27 @@ function presetText(label: string, value: string): string {
 	return `${label}\\n${value.toUpperCase()}`
 }
 
+interface ButtonSpec {
+	category: string
+	name: string
+	text: string
+	key: string
+	down: Step[]
+	up?: Step[]
+	feedbacks?: CompanionPresetFeedback[]
+}
+
+interface RotarySpec {
+	category: string
+	name: string
+	text: string
+	key: string
+	left: RotaryAction
+	right: RotaryAction
+	feedbacks?: CompanionPresetFeedback[]
+}
+
 export function UpdatePresets(self: ModuleInstance): void {
-	const PRESET_LIST: PresetSpec[] = [
-		// [category, name, text, key, down[actionId, choiceId, delay][], up[actionId, choiceId, delay]]
-		[
-			'System',
-			'On',
-			presetText('PTZ', 'On'),
-			'system_on',
-			[['system_power_action', 'system_on', 0]],
-			[],
-			[{ feedbackId: 'power', options: { power: 'on' } }],
-		],
-		[
-			'System',
-			'Standby',
-			presetText('PTZ', 'Standby'),
-			'system_standby',
-			[['system_power_action', 'system_standby', 0]],
-			[],
-			[{ feedbackId: 'power', options: { power: 'standby' } }],
-		],
-		[
-			'Auto Framing - Controls',
-			'On',
-			presetText('Auto Framing', 'On'),
-			'autoframing_on',
-			[['auto_framing_action', 'autoframing_on', 0]],
-			[],
-			[{ feedbackId: 'autoFraming', options: { state: 'on' } }],
-		],
-		[
-			'Auto Framing - Controls',
-			'Off',
-			presetText('Auto Framing', 'Off'),
-			'autoframing_off',
-			[['auto_framing_action', 'autoframing_off', 0]],
-			[],
-			[{ feedbackId: 'autoFraming', options: { state: 'off' } }],
-		],
-		[
-			'Auto Framing - Controls',
-			'Pause On',
-			presetText('Auto Framing', 'Pause'),
-			'autoframing_pause_on',
-			[['auto_framing_action', 'autoframing_pause_on', 0]],
-			[],
-		],
-		[
-			'Auto Framing - Controls',
-			'Pause Off',
-			presetText('Auto Framing', 'Resume'),
-			'autoframing_pause_off',
-			[['auto_framing_action', 'autoframing_pause_off', 0]],
-			[],
-		],
-		[
-			'Auto Framing - Controls',
-			'Restart',
-			presetText('Auto Framing', 'Restart'),
-			'autoframing_restart',
-			[['auto_framing_action', 'autoframing_restart', 0]],
-			[],
-		],
-		[
-			'Auto Framing - Controls',
-			'Home',
-			presetText('Auto Framing', 'Home'),
-			'autoframing_home',
-			[['preset_call_action', 'autoframing_home', 0]],
-			[],
-		],
-		// Person/Ball Sports Framing switching (Framing Mode action)
-		[
-			'Auto Framing - Mode',
-			'Person',
-			presetText('Framing', 'Person'),
-			'autoframing_person',
-			[['framing_mode_action', 'autoframing_person', 0]],
-			[],
-			[{ feedbackId: 'framingMode', options: { mode: 'person' } }],
-		],
-
-		[
-			'Auto Framing - Mode',
-			'Ball Sports',
-			presetText('Framing', 'Ball Sports'),
-			'autoframing_ball',
-			[['framing_mode_action', 'autoframing_ball', 0]],
-			[],
-			[{ feedbackId: 'framingMode', options: { mode: 'ball_sports' } }],
-		],
-		//Shot Mode
-		[
-			'Auto Framing - Shot Mode',
-			'Mode:Fullbody',
-			presetText('AF Mode', 'Fullbody'),
-			'autoframing_fullbody',
-			[['auto_framing_shot_mode_action', 'autoframing_fullbody', 0]],
-			[],
-			[{ feedbackId: 'shotMode', options: { mode: '1200' } }],
-		],
-		[
-			'Auto Framing - Shot Mode',
-			'Mode:Waist',
-			presetText('AF Mode', 'Waist'),
-			'autoframing_waist',
-			[['auto_framing_shot_mode_action', 'autoframing_waist', 0]],
-			[],
-			[{ feedbackId: 'shotMode', options: { mode: '510' } }],
-		],
-		[
-			'Auto Framing - Shot Mode',
-			'Mode:Closeup',
-			presetText('AF Mode', 'Closeup'),
-			'autoframing_closeup',
-			[['auto_framing_shot_mode_action', 'autoframing_closeup', 0]],
-			[],
-			[{ feedbackId: 'shotMode', options: { mode: '310' } }],
-		],
-		[
-			'Auto Framing - Shot Mode',
-			'Mode:Closer Closeup',
-			presetText('AF Mode', 'Closer Closeup'),
-			'autoframing_closer_closeup',
-			[['auto_framing_shot_mode_action', 'autoframing_closer_closeup', 0]],
-			[],
-			[{ feedbackId: 'shotMode', options: { mode: '200' } }],
-		],
-		// Lead Room
-
-		[
-			'Auto Framing - Lead Room',
-			'Off',
-			presetText('Lead Room', 'Off'),
-			'autoframing_leadroom_off',
-			[['lead_room_action', 'autoframing_leadroom_off', 0]],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'Off' } }],
-		],
-
-		[
-			'Auto Framing - Lead Room',
-			'Low',
-			presetText('Lead Room', 'Low'),
-			'autoframing_leadroom_low',
-			[['lead_room_action', 'autoframing_leadroom_low', 0]],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'Low' } }],
-		],
-
-		[
-			'Auto Framing - Lead Room',
-			'Middle',
-			presetText('Lead Room', 'Middle'),
-			'autoframing_leadroom_middle',
-			[['lead_room_action', 'autoframing_leadroom_middle', 0]],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'Middle' } }],
-		],
-
-		[
-			'Auto Framing - Lead Room',
-			'High',
-			presetText('Lead Room', 'High'),
-			'autoframing_leadroom_high',
-			[['lead_room_action', 'autoframing_leadroom_high', 0]],
-			[],
-			[{ feedbackId: 'leadRoom', options: { level: 'High' } }],
-		],
-		// Real-time Overlay (Frame/Area Indicator)
-
-		[
-			'Auto Framing - Frame/Area Indicator',
-			'On',
-			presetText('Overlay', 'On'),
-			'autoframing_faceindicator_on',
-			[],
-			[],
-			[{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'on' } }],
-		],
-
-		[
-			'Auto Framing - Frame/Area Indicator',
-			'Off',
-			presetText('Overlay', 'Off'),
-			'autoframing_faceindicator_off',
-			[],
-			[],
-			[{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'off' } }],
-		],
-		// Fixed Angle Position (SRG-A40/A12) — Store/Recall are momentary, no state feedback
-
-		[
-			'Auto Framing - Fixed Angle Position',
-			'On',
-			presetText('Fixed Angle', 'On'),
-			'fixedangle_on',
-			[['fixed_angle_position_action', 'fixedangle_on', 0]],
-			[],
-			[{ feedbackId: 'fixedAngle', options: { state: 'on' } }],
-		],
-		[
-			'Auto Framing - Fixed Angle Position',
-			'Off',
-			presetText('Fixed Angle', 'Off'),
-			'fixedangle_off',
-			[['fixed_angle_position_action', 'fixedangle_off', 0]],
-			[],
-			[{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
-		],
-		[
-			'Auto Framing - Fixed Angle Position',
-			'Store',
-			presetText('Fixed Angle', 'Store'),
-			'fixedangle_store',
-			[['fixed_angle_position_action', 'fixedangle_store', 0]],
-			[],
-		],
-		[
-			'Auto Framing - Fixed Angle Position',
-			'Recall',
-			presetText('Fixed Angle', 'Recall'),
-			'fixedangle_recall',
-			[['fixed_angle_position_action', 'fixedangle_recall', 0]],
-			[],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Up',
-			presetText('Pan/Tilt', 'Up'),
-			'ptz_move_up',
-			[['ptz_move_action', 'move_up', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Down',
-			presetText('Pan/Tilt', 'Down'),
-			'ptz_move_down',
-			[['ptz_move_action', 'move_down', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Left',
-			presetText('Pan/Tilt', 'Left'),
-			'ptz_move_left',
-			[['ptz_move_action', 'move_left', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Right',
-			presetText('Pan/Tilt', 'Right'),
-			'ptz_move_right',
-			[['ptz_move_action', 'move_right', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Up Left',
-			presetText('Pan/Tilt', 'Up Left'),
-			'ptz_move_up_left',
-			[['ptz_move_action', 'move_up_left', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Up Right',
-			presetText('Pan/Tilt', 'Up Right'),
-			'ptz_move_up_right',
-			[['ptz_move_action', 'move_up_right', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Down Left',
-			presetText('Pan/Tilt', 'Down Left'),
-			'ptz_move_down_left',
-			[['ptz_move_action', 'move_down_left', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Pan/Tilt',
-			'Down Right',
-			presetText('Pan/Tilt', 'Down Right'),
-			'ptz_move_down_right',
-			[['ptz_move_action', 'move_down_right', 0]],
-			[['ptz_move_stop_action', 'stop_pantilt', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Zoom',
-			'Tele',
-			presetText('Zoom', 'Tele'),
-			'ptz_zoom_tele',
-			[['ptz_zoom_action', 'zoom_tele', 0]],
-			[['ptz_move_stop_action', 'stop_zoom', 0]],
-		],
-		[
-			'Pan/Tilt/Zoom - Zoom',
-			'Wide',
-			presetText('Zoom', 'Wide'),
-			'ptz_zoom_wide',
-			[['ptz_zoom_action', 'zoom_wide', 0]],
-			[['ptz_move_stop_action', 'stop_zoom', 0]],
-		],
-		['Preset Call', 'Look Back', presetText('PTZ Preset', 'Back'), 'preset_back', [], []],
-		['Preset Call', 'PTZ Home', presetText('PTZ Preset', 'Home'), 'preset_home', [], []],
-		[
-			'Auto Focus - Focus Mode',
-			'ON',
-			presetText('Auto Focus', 'On'),
-			'auto_focus_auto',
-			[['focus_mode_action', 'focus_auto', 0]],
-			[],
-			[{ feedbackId: 'focusMode', options: { mode: 'auto' } }],
-		],
-		[
-			'Auto Focus - Focus Mode',
-			'OFF',
-			presetText('Auto Focus', 'Off'),
-			'auto_focus_manual',
-			[['focus_mode_action', 'focus_manual', 0]],
-			[],
-			[{ feedbackId: 'focusMode', options: { mode: 'manual' } }],
-		],
-		[
-			'Auto Focus - AF Mode',
-			'Normal Mode',
-			presetText('AF Mode', 'Normal'),
-			'afmode_normal',
-			[['auto_focus_mode_action', 'afmode_normal', 0]],
-			[],
-			[{ feedbackId: 'afMode', options: { mode: 'normal' } }],
-		],
-		[
-			'Auto Focus - AF Mode',
-			'Interval Mode',
-			presetText('AF Mode', 'Interval'),
-			'afmode_interval',
-			[['auto_focus_mode_action', 'afmode_interval', 0]],
-			[],
-			[{ feedbackId: 'afMode', options: { mode: 'interval' } }],
-		],
-		[
-			'Auto Focus - AF Mode',
-			'Zoom Trigger Mode',
-			presetText('AF Mode', 'Zoom Trigger'),
-			'afmode_zoomtrigger',
-			[['auto_focus_mode_action', 'afmode_zoomtrigger', 0]],
-			[],
-			[{ feedbackId: 'afMode', options: { mode: 'zoomtrigger' } }],
-		],
-		[
-			'Auto Focus - Sensitivity',
-			'Normal Sensitivity',
-			presetText('AF Sens', 'Normal'),
-			'afsensitivity_normal',
-			[['auto_focus_sensitivity_action', 'afsensitivity_normal', 0]],
-			[],
-			[{ feedbackId: 'focusSensitivity', options: { level: 'normal' } }],
-		],
-		[
-			'Auto Focus - Sensitivity',
-			'Low Sensitivity',
-			presetText('AF Sens', 'Low'),
-			'afsensitivity_low',
-			[['auto_focus_sensitivity_action', 'afsensitivity_low', 0]],
-			[],
-			[{ feedbackId: 'focusSensitivity', options: { level: 'low' } }],
-		],
-		[
-			'Auto Framing - Multi Tracking',
-			'OFF',
-			presetText('Multi Tracking', 'Off'),
-			'multitrackingnum_1',
-			[['multi_tracking_num_action', 'multitrackingnum_1', 0]],
-			[],
-			[{ feedbackId: 'multiTracking', options: { num: '1' } }],
-		],
-		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(7)].map((x, i) => [
-			'Auto Framing - Multi Tracking',
-			`${i + 2}`,
-			presetText('Multi Tracking', `${i + 2}`),
-			`multitrackingnum_${i + 2}`,
-			[['multi_tracking_num_action', `multitrackingnum_${i + 2}`, 0]],
-			[],
-			[{ feedbackId: 'multiTracking', options: { num: `${i + 2}` } }],
-		]),
-		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(10)].map((x, i) => [
-			'Preset Call',
-			`${i + 1}`,
-			presetText('PTZ Preset', `${i + 1}`),
-			`preset_${i + 1}`,
-			[],
-			[],
-		]),
-		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(10)].map((x, i) => [
-			'Preset Set',
-			`${i + 1}`,
-			presetText('PTZ Preset', `Set ${i + 1}`),
-			`preset_set_${i + 1}`,
-			[],
-			[],
-		]),
-		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(16)].map((x, i) => {
-			const fileNum = i + 1
-			return [
-				'Scene File Recall',
-				`${fileNum}`,
-				`Scene File\\n$(this:sceneFileName${fileNum})`,
-				`scenefile_set_${fileNum}`,
-				[],
-				[],
-				[{ feedbackId: 'sceneFile', options: { file: `${fileNum}` } }],
-			]
-		}),
-	]
-
 	const presets: CompanionPresetDefinitions = {}
 
 	// Map each authoring category to a broad top-level group plus a sub-section label.
@@ -517,7 +88,9 @@ export function UpdatePresets(self: ModuleInstance): void {
 	// Models we know how to filter for. When the connected model is empty or not one of these,
 	// we fall back to showing everything (per the "default to showing it" requirement).
 	const KNOWN_MODELS = new Set(['BRC-AM7', 'SRG-A40', 'SRG-A12'])
-	const model = (self.model || '').trim().toUpperCase()
+	const model = String(self.state.get('modelName') ?? '')
+		.trim()
+		.toUpperCase()
 	const filterByModel = KNOWN_MODELS.has(model)
 
 	// Whether a category's presets should be exported for the connected model. Untagged
@@ -542,349 +115,551 @@ export function UpdatePresets(self: ModuleInstance): void {
 		return top
 	}
 
-	// Nudge magnitude (camera units) for the fixed-angle fine-adjust presets; the action converts to hex.
-	const FINE_NUDGE = 100
-	const FIXED_ANGLE_ADJUSTMENT_PRESET_LIST: GenericButtonPresetSpec[] = [
-		// Fine Adjustment of Fixed Angle Position — plain decimal nudges (converted to hex by the action)
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Pan Left',
-			presetText('Fixed Angle', 'Pan Left'),
-			'fixedangle_fine_pan_left',
-			[['fixed_angle_fine_action', { target: 'pan', step: -FINE_NUDGE }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Pan Right',
-			presetText('Fixed Angle', 'Pan Right'),
-			'fixedangle_fine_pan_right',
-			[['fixed_angle_fine_action', { target: 'pan', step: FINE_NUDGE }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Tilt Up',
-			presetText('Fixed Angle', 'Tilt Up'),
-			'fixedangle_fine_tilt_up',
-			[['fixed_angle_fine_action', { target: 'tilt', step: FINE_NUDGE }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Tilt Down',
-			presetText('Fixed Angle', 'Tilt Down'),
-			'fixedangle_fine_tilt_down',
-			[['fixed_angle_fine_action', { target: 'tilt', step: -FINE_NUDGE }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Zoom Tele',
-			presetText('Fixed Angle', 'Zoom Tele'),
-			'fixedangle_fine_zoom_tele',
-			[['fixed_angle_fine_action', { target: 'zoom', step: FINE_NUDGE }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Adjustment',
-			'Zoom Wide',
-			presetText('Fixed Angle', 'Zoom Wide'),
-			'fixedangle_fine_zoom_wide',
-			[['fixed_angle_fine_action', { target: 'zoom', step: -FINE_NUDGE }]],
-		],
-	]
+	function feedbacks(list?: CompanionPresetFeedback[]): CompanionPresetFeedback[] {
+		return (list ?? []).map((fb) => ({ ...fb, style: fb.style ?? DEFAULT_ACTIVE_STYLE }))
+	}
 
-	function addGenericButtonPresets(items: GenericButtonPresetSpec[]): void {
-		items.forEach((item) => {
-			if (!categoryVisible(item[0])) return
-			const preset: CompanionPresetDefinition = {
-				type: 'button',
-				category: resolveCategory(item[0]),
-				name: item[1],
-				style: {
-					text: item[2],
-					size: FONT_SIZE,
-					show_topbar: false,
-					color: combineRgb(255, 255, 255),
-					bgcolor: combineRgb(0, 0, 0),
+	// Register a normal button preset. Skips it when the category isn't visible for this model.
+	function button(spec: ButtonSpec): void {
+		if (!categoryVisible(spec.category)) return
+		const preset: CompanionPresetDefinition = {
+			type: 'button',
+			category: resolveCategory(spec.category),
+			name: spec.name,
+			style: {
+				text: spec.text,
+				size: FONT_SIZE,
+				show_topbar: false,
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [{ down: spec.down, up: spec.up ?? [] }],
+			feedbacks: feedbacks(spec.feedbacks),
+		}
+		presets[`${spec.key}_preset`] = preset
+	}
+
+	// Register a rotary (encoder) preset with left/right turn actions.
+	function rotary(spec: RotarySpec): void {
+		if (!categoryVisible(spec.category)) return
+		const preset: CompanionPresetDefinition = {
+			type: 'button',
+			category: resolveCategory(spec.category),
+			name: spec.name,
+			options: { rotaryActions: true },
+			style: {
+				text: spec.text,
+				size: FONT_SIZE,
+				show_topbar: false,
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: [],
+					up: [],
+					rotate_left: [{ actionId: spec.left[0], options: spec.left[1] }],
+					rotate_right: [{ actionId: spec.right[0], options: spec.right[1] }],
 				},
-				steps: [
-					{
-						down: item[4].map(([actionId, options]) => ({ actionId, options, delay: 0 })),
-						up: [],
-					},
-				],
-				feedbacks: buildPresetFeedbacks(item[5]),
-			}
+			],
+			feedbacks: feedbacks(spec.feedbacks),
+		}
+		presets[`${spec.key}_preset`] = preset
+	}
 
-			presets[item[3] + '_preset'] = preset
+	// ---- System ----------------------------------------------------------------
+	button({
+		category: 'System',
+		name: 'On',
+		text: presetText('PTZ', 'On'),
+		key: 'system_on',
+		down: [step('system_power_action', { val: 'system_on' })],
+		feedbacks: [{ feedbackId: 'power', options: { power: 'on' } }],
+	})
+	button({
+		category: 'System',
+		name: 'Standby',
+		text: presetText('PTZ', 'Standby'),
+		key: 'system_standby',
+		down: [step('system_power_action', { val: 'system_standby' })],
+		feedbacks: [{ feedbackId: 'power', options: { power: 'standby' } }],
+	})
+
+	// ---- Auto Framing: Controls -----------------------------------------------
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'On',
+		text: presetText('Auto Framing', 'On'),
+		key: 'autoframing_on',
+		down: [step('auto_framing_action', { val: 'autoframing_on' })],
+		feedbacks: [{ feedbackId: 'autoFraming', options: { state: 'on' } }],
+	})
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'Off',
+		text: presetText('Auto Framing', 'Off'),
+		key: 'autoframing_off',
+		down: [step('auto_framing_action', { val: 'autoframing_off' })],
+		feedbacks: [{ feedbackId: 'autoFraming', options: { state: 'off' } }],
+	})
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'Pause On',
+		text: presetText('Auto Framing', 'Pause'),
+		key: 'autoframing_pause_on',
+		down: [step('auto_framing_action', { val: 'autoframing_pause_on' })],
+	})
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'Pause Off',
+		text: presetText('Auto Framing', 'Resume'),
+		key: 'autoframing_pause_off',
+		down: [step('auto_framing_action', { val: 'autoframing_pause_off' })],
+	})
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'Restart',
+		text: presetText('Auto Framing', 'Restart'),
+		key: 'autoframing_restart',
+		down: [step('auto_framing_action', { val: 'autoframing_restart' })],
+	})
+	button({
+		category: 'Auto Framing - Controls',
+		name: 'Home',
+		text: presetText('Auto Framing', 'Home'),
+		key: 'autoframing_home',
+		down: [step('preset_call_action', { val: 'autoframing_home' })],
+	})
+
+	// ---- Auto Framing: Mode (Person / Ball Sports) ----------------------------
+	button({
+		category: 'Auto Framing - Mode',
+		name: 'Person',
+		text: presetText('Framing', 'Person'),
+		key: 'autoframing_person',
+		down: [step('framing_mode_action', { val: 'autoframing_person' })],
+		feedbacks: [{ feedbackId: 'framingMode', options: { mode: 'person' } }],
+	})
+	button({
+		category: 'Auto Framing - Mode',
+		name: 'Ball Sports',
+		text: presetText('Framing', 'Ball Sports'),
+		key: 'autoframing_ball',
+		down: [step('framing_mode_action', { val: 'autoframing_ball' })],
+		feedbacks: [{ feedbackId: 'framingMode', options: { mode: 'ball_sports' } }],
+	})
+
+	// ---- Auto Framing: Shot Mode ----------------------------------------------
+	const shotModes: [name: string, value: string, key: string, mode: string][] = [
+		['Mode:Fullbody', 'Fullbody', 'autoframing_fullbody', '1200'],
+		['Mode:Waist', 'Waist', 'autoframing_waist', '510'],
+		['Mode:Closeup', 'Closeup', 'autoframing_closeup', '310'],
+		['Mode:Closer Closeup', 'Closer Closeup', 'autoframing_closer_closeup', '200'],
+	]
+	for (const [name, value, key, mode] of shotModes) {
+		button({
+			category: 'Auto Framing - Shot Mode',
+			name,
+			text: presetText('AF Mode', value),
+			key,
+			down: [step('auto_framing_shot_mode_action', { val: key })],
+			feedbacks: [{ feedbackId: 'shotMode', options: { mode } }],
 		})
 	}
 
-	// 0:category, 1:name, 2:text, 3:key, 4:[actionId, choiceId, delay][]
-	PRESET_LIST.forEach((item) => {
-		if (!categoryVisible(item[0])) return
-		const downSteps = item[4]
-		const upSteps = item[5]
-
-		const preset: CompanionPresetDefinition = {
-			type: 'button',
-			category: resolveCategory(item[0]),
-			name: item[1],
-			style: {
-				text: item[2],
-				size: FONT_SIZE,
-				show_topbar: false,
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [{ down: [], up: [] }],
-			feedbacks: buildPresetFeedbacks(item[6]),
-		}
-
-		downSteps.forEach((step) => {
-			preset.steps[0].down.push({
-				actionId: step[0],
-				options: SPEED_PARAM_ACTION_IDS.includes(step[0])
-					? // Move/Zoom speed use variable-enabled text fields, so the default must be a string
-						{
-							val: step[1],
-							speed: (step[0] === 'ptz_move_action' ? DEFAULT_PTZ_MOVE_SPEED : DEFAULT_PTZ_ZOOM_SPEED).toString(),
-						}
-					: { val: step[1] },
-				delay: step[2],
-			})
+	// ---- Auto Framing: Lead Room ----------------------------------------------
+	const leadRooms: [name: string, key: string, level: string][] = [
+		['Off', 'autoframing_leadroom_off', 'Off'],
+		['Low', 'autoframing_leadroom_low', 'Low'],
+		['Middle', 'autoframing_leadroom_middle', 'Middle'],
+		['High', 'autoframing_leadroom_high', 'High'],
+	]
+	for (const [name, key, level] of leadRooms) {
+		button({
+			category: 'Auto Framing - Lead Room',
+			name,
+			text: presetText('Lead Room', name),
+			key,
+			down: [step('lead_room_action', { val: key })],
+			feedbacks: [{ feedbackId: 'leadRoom', options: { level } }],
 		})
+	}
 
-		upSteps.forEach((step) => {
-			preset.steps[0].up.push({
-				actionId: step[0],
-				options: { val: step[1] },
-				delay: step[2],
-			})
-		})
-
-		if (downSteps.length == 0) {
-			preset.steps[0].down.push({
-				actionId: item[0].toLowerCase().replace(/\s/g, '_') + '_action',
-				options: { val: item[3] },
-				delay: 0,
-			})
-		}
-
-		presets[item[3] + '_preset'] = preset
-
-		if (item[3] === 'fixedangle_recall') {
-			addGenericButtonPresets(FIXED_ANGLE_ADJUSTMENT_PRESET_LIST)
-		}
+	// ---- Auto Framing: Frame/Area Indicator -----------------------------------
+	button({
+		category: 'Auto Framing - Frame/Area Indicator',
+		name: 'On',
+		text: presetText('Overlay', 'On'),
+		key: 'autoframing_faceindicator_on',
+		down: [step('auto_framing_frame_area_indicator_action', { val: 'autoframing_faceindicator_on' })],
+		feedbacks: [{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'on' } }],
+	})
+	button({
+		category: 'Auto Framing - Frame/Area Indicator',
+		name: 'Off',
+		text: presetText('Overlay', 'Off'),
+		key: 'autoframing_faceindicator_off',
+		down: [step('auto_framing_frame_area_indicator_action', { val: 'autoframing_faceindicator_off' })],
+		feedbacks: [{ feedbackId: 'autoFramingFrameAreaIndicator', options: { state: 'off' } }],
 	})
 
-	// Generic Button Presets — actions with custom option objects (tracking speed/sensitivity).
+	// ---- Auto Framing: Fixed Angle Position (SRG-A40/A12) ----------------------
+	// Store/Recall are momentary, so they carry no state feedback.
+	button({
+		category: 'Auto Framing - Fixed Angle Position',
+		name: 'On',
+		text: presetText('Fixed Angle', 'On'),
+		key: 'fixedangle_on',
+		down: [step('fixed_angle_position_action', { val: 'fixedangle_on' })],
+		feedbacks: [{ feedbackId: 'fixedAngle', options: { state: 'on' } }],
+	})
+	button({
+		category: 'Auto Framing - Fixed Angle Position',
+		name: 'Off',
+		text: presetText('Fixed Angle', 'Off'),
+		key: 'fixedangle_off',
+		down: [step('fixed_angle_position_action', { val: 'fixedangle_off' })],
+		feedbacks: [{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
+	})
+	button({
+		category: 'Auto Framing - Fixed Angle Position',
+		name: 'Store',
+		text: presetText('Fixed Angle', 'Store'),
+		key: 'fixedangle_store',
+		down: [step('fixed_angle_position_action', { val: 'fixedangle_store' })],
+	})
+	button({
+		category: 'Auto Framing - Fixed Angle Position',
+		name: 'Recall',
+		text: presetText('Fixed Angle', 'Recall'),
+		key: 'fixedangle_recall',
+		down: [step('fixed_angle_position_action', { val: 'fixedangle_recall' })],
+	})
+
+	// ---- Auto Framing: Fixed Angle fine adjustment (SRG-A40/A12) ---------------
+	// Plain decimal nudges; the action converts them to the hex the camera expects.
+	const FINE_NUDGE = 100
+	const fineAdjusts: [name: string, key: string, target: string, step: number][] = [
+		['Pan Left', 'fixedangle_fine_pan_left', 'pan', -FINE_NUDGE],
+		['Pan Right', 'fixedangle_fine_pan_right', 'pan', FINE_NUDGE],
+		['Tilt Up', 'fixedangle_fine_tilt_up', 'tilt', FINE_NUDGE],
+		['Tilt Down', 'fixedangle_fine_tilt_down', 'tilt', -FINE_NUDGE],
+		['Zoom Tele', 'fixedangle_fine_zoom_tele', 'zoom', FINE_NUDGE],
+		['Zoom Wide', 'fixedangle_fine_zoom_wide', 'zoom', -FINE_NUDGE],
+	]
+	for (const [name, key, target, stepValue] of fineAdjusts) {
+		button({
+			category: 'Auto Framing - Fixed Angle Adjustment',
+			name,
+			text: presetText('Fixed Angle', name),
+			key,
+			down: [step('fixed_angle_fine_action', { target, step: stepValue })],
+		})
+	}
+
+	// ---- Pan / Tilt ------------------------------------------------------------
+	const moves: [name: string, key: string, choice: string][] = [
+		['Up', 'ptz_move_up', 'move_up'],
+		['Down', 'ptz_move_down', 'move_down'],
+		['Left', 'ptz_move_left', 'move_left'],
+		['Right', 'ptz_move_right', 'move_right'],
+		['Up Left', 'ptz_move_up_left', 'move_up_left'],
+		['Up Right', 'ptz_move_up_right', 'move_up_right'],
+		['Down Left', 'ptz_move_down_left', 'move_down_left'],
+		['Down Right', 'ptz_move_down_right', 'move_down_right'],
+	]
+	for (const [name, key, choice] of moves) {
+		button({
+			category: 'Pan/Tilt/Zoom - Pan/Tilt',
+			name,
+			text: presetText('Pan/Tilt', name),
+			key,
+			down: [step('ptz_move_action', { val: choice, speed: MOVE_SPEED })],
+			up: [step('ptz_move_stop_action', { val: 'stop_pantilt' })],
+		})
+	}
+
+	// ---- Zoom ------------------------------------------------------------------
+	for (const [name, key, choice] of [
+		['Tele', 'ptz_zoom_tele', 'zoom_tele'],
+		['Wide', 'ptz_zoom_wide', 'zoom_wide'],
+	] as const) {
+		button({
+			category: 'Pan/Tilt/Zoom - Zoom',
+			name,
+			text: presetText('Zoom', name),
+			key,
+			down: [step('ptz_zoom_action', { val: choice, speed: ZOOM_SPEED })],
+			up: [step('ptz_move_stop_action', { val: 'stop_zoom' })],
+		})
+	}
+
+	// ---- Preset Call -----------------------------------------------------------
+	button({
+		category: 'Preset Call',
+		name: 'Look Back',
+		text: presetText('PTZ Preset', 'Back'),
+		key: 'preset_back',
+		down: [step('preset_call_action', { val: 'preset_back' })],
+	})
+	button({
+		category: 'Preset Call',
+		name: 'PTZ Home',
+		text: presetText('PTZ Preset', 'Home'),
+		key: 'preset_home',
+		down: [step('preset_call_action', { val: 'preset_home' })],
+	})
+	for (let n = 1; n <= 10; n++) {
+		button({
+			category: 'Preset Call',
+			name: `${n}`,
+			text: presetText('PTZ Preset', `${n}`),
+			key: `preset_${n}`,
+			down: [step('preset_call_action', { val: `preset_${n}` })],
+		})
+	}
+
+	// ---- Preset Set ------------------------------------------------------------
+	for (let n = 1; n <= 10; n++) {
+		button({
+			category: 'Preset Set',
+			name: `${n}`,
+			text: presetText('PTZ Preset', `Set ${n}`),
+			key: `preset_set_${n}`,
+			down: [step('preset_set_action', { val: `preset_set_${n}` })],
+		})
+	}
+
+	// ---- Focus: Focus Mode -----------------------------------------------------
+	button({
+		category: 'Auto Focus - Focus Mode',
+		name: 'ON',
+		text: presetText('Auto Focus', 'On'),
+		key: 'auto_focus_auto',
+		down: [step('focus_mode_action', { val: 'focus_auto' })],
+		feedbacks: [{ feedbackId: 'focusMode', options: { mode: 'auto' } }],
+	})
+	button({
+		category: 'Auto Focus - Focus Mode',
+		name: 'OFF',
+		text: presetText('Auto Focus', 'Off'),
+		key: 'auto_focus_manual',
+		down: [step('focus_mode_action', { val: 'focus_manual' })],
+		feedbacks: [{ feedbackId: 'focusMode', options: { mode: 'manual' } }],
+	})
+
+	// ---- Focus: AF Mode --------------------------------------------------------
+	const afModes: [name: string, value: string, key: string, mode: string][] = [
+		['Normal Mode', 'Normal', 'afmode_normal', 'normal'],
+		['Interval Mode', 'Interval', 'afmode_interval', 'interval'],
+		['Zoom Trigger Mode', 'Zoom Trigger', 'afmode_zoomtrigger', 'zoomtrigger'],
+	]
+	for (const [name, value, key, mode] of afModes) {
+		button({
+			category: 'Auto Focus - AF Mode',
+			name,
+			text: presetText('AF Mode', value),
+			key,
+			down: [step('auto_focus_mode_action', { val: key })],
+			feedbacks: [{ feedbackId: 'afMode', options: { mode } }],
+		})
+	}
+
+	// ---- Focus: Sensitivity ----------------------------------------------------
+	const afSensitivities: [name: string, value: string, key: string, level: string][] = [
+		['Normal Sensitivity', 'Normal', 'afsensitivity_normal', 'normal'],
+		['Low Sensitivity', 'Low', 'afsensitivity_low', 'low'],
+	]
+	for (const [name, value, key, level] of afSensitivities) {
+		button({
+			category: 'Auto Focus - Sensitivity',
+			name,
+			text: presetText('AF Sens', value),
+			key,
+			down: [step('auto_focus_sensitivity_action', { val: key })],
+			feedbacks: [{ feedbackId: 'focusSensitivity', options: { level } }],
+		})
+	}
+
+	// ---- Auto Framing: Multi Tracking -----------------------------------------
+	button({
+		category: 'Auto Framing - Multi Tracking',
+		name: 'OFF',
+		text: presetText('Multi Tracking', 'Off'),
+		key: 'multitrackingnum_1',
+		down: [step('multi_tracking_num_action', { val: 'multitrackingnum_1' })],
+		feedbacks: [{ feedbackId: 'multiTracking', options: { num: '1' } }],
+	})
+	for (let n = 2; n <= 8; n++) {
+		button({
+			category: 'Auto Framing - Multi Tracking',
+			name: `${n}`,
+			text: presetText('Multi Tracking', `${n}`),
+			key: `multitrackingnum_${n}`,
+			down: [step('multi_tracking_num_action', { val: `multitrackingnum_${n}` })],
+			feedbacks: [{ feedbackId: 'multiTracking', options: { num: `${n}` } }],
+		})
+	}
+
+	// ---- Scene File Recall (BRC-AM7) -------------------------------------------
+	for (let n = 1; n <= 16; n++) {
+		button({
+			category: 'Scene File Recall',
+			name: `${n}`,
+			text: `Scene File\\n$(this:sceneFileName${n})`,
+			key: `scenefile_set_${n}`,
+			down: [step('scene_file_recall_action', { val: `scenefile_set_${n}` })],
+			feedbacks: [{ feedbackId: 'sceneFile', options: { file: `${n}` } }],
+		})
+	}
+
+	// ---- Auto Framing: Tracking Speed / Sensitivity (BRC-AM7) ------------------
+	// Per axis: a current-value readout, two ±1 adjust buttons, then SET buttons for each value.
 	const AF_AXES = ['Pan', 'Tilt', 'Zoom'] as const
-	const GENERIC_BUTTON_PRESET_LIST: GenericButtonPresetSpec[] = [
-		// Auto Framing Tracking Speed (1-5) per axis: one current-value readout, then SET buttons
-		...AF_AXES.flatMap((axis): GenericButtonPresetSpec[] => [
-			[
-				'Auto Framing - Tracking Speed',
-				`${axis} Current`,
-				`Auto Framing\\n${axis} Speed\\n$(this:trackingSpeed${axis})`,
-				`autoframing_tracking_speed_${axis.toLowerCase()}_current`,
-				[],
-			],
-			[
-				'Auto Framing - Tracking Speed',
-				`${axis} Adjust -1`,
-				`Auto Framing\\n${axis} Speed\\nADJUST -1`,
-				`autoframing_tracking_speed_${axis.toLowerCase()}_adjust_down`,
-				[['autoframing_tracking_step_action', { kind: 'Speed', axis, step: -1 }]],
-			],
-			[
-				'Auto Framing - Tracking Speed',
-				`${axis} Adjust +1`,
-				`Auto Framing\\n${axis} Speed\\nADJUST +1`,
-				`autoframing_tracking_speed_${axis.toLowerCase()}_adjust_up`,
-				[['autoframing_tracking_step_action', { kind: 'Speed', axis, step: 1 }]],
-			],
-			...[1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
-				'Auto Framing - Tracking Speed',
-				`${axis} Set ${v}`,
-				`Auto Framing\\n${axis} Speed\\nSET ${v}`,
-				`autoframing_tracking_speed_${axis.toLowerCase()}_${v}`,
-				[['autoframing_tracking_speed_action', { axis, value: v }]],
-				[{ feedbackId: 'trackingSpeed', options: { axis, value: v } }],
-			]),
-		]),
-		// Auto Framing Tracking Sensitivity (0-5) per axis: one current-value readout, then SET buttons
-		...AF_AXES.flatMap((axis): GenericButtonPresetSpec[] => [
-			[
-				'Auto Framing - Tracking Sensitivity',
-				`${axis} Current`,
-				`Auto Framing\\n${axis} Sens\\n$(this:trackingSensitivity${axis})`,
-				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_current`,
-				[],
-			],
-			[
-				'Auto Framing - Tracking Sensitivity',
-				`${axis} Adjust -1`,
-				`Auto Framing\\n${axis} Sens\\nADJUST -1`,
-				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_adjust_down`,
-				[['autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: -1 }]],
-			],
-			[
-				'Auto Framing - Tracking Sensitivity',
-				`${axis} Adjust +1`,
-				`Auto Framing\\n${axis} Sens\\nADJUST +1`,
-				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_adjust_up`,
-				[['autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: 1 }]],
-			],
-			...[0, 1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
-				'Auto Framing - Tracking Sensitivity',
-				`${axis} Set ${v}`,
-				`Auto Framing\\n${axis} Sens\\nSET ${v}`,
-				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_${v}`,
-				[['autoframing_tracking_sensitivity_action', { axis, value: v }]],
-				[{ feedbackId: 'trackingSensitivity', options: { axis, value: v } }],
-			]),
-		]),
-	]
-
-	addGenericButtonPresets(GENERIC_BUTTON_PRESET_LIST)
-
-	// Rotary Presets
-	const ROTARY_PRESET_LIST: RotaryPresetSpec[] = [
-		// [category, name, text, key, left[actionId, options], right[actionId, options]]
-		[
-			'Rotary Presets',
-			'Rotary Pan',
-			'Pan\\n$(this:panPos)',
-			'rotary_pan',
-			['ptz_step_action', { target: 'pan', step: -DEFAULT_PTZ_STEP }],
-			['ptz_step_action', { target: 'pan', step: DEFAULT_PTZ_STEP }],
-		],
-		[
-			'Rotary Presets',
-			'Rotary Tilt',
-			'Tilt\\n$(this:tiltPos)',
-			'rotary_tilt',
-			['ptz_step_action', { target: 'tilt', step: -DEFAULT_PTZ_STEP }],
-			['ptz_step_action', { target: 'tilt', step: DEFAULT_PTZ_STEP }],
-		],
-		[
-			'Rotary Presets',
-			'Rotary Zoom',
-			'Zoom\\n$(this:zoomPos)',
-			'rotary_zoom',
-			['ptz_step_action', { target: 'zoom', step: -DEFAULT_PTZ_STEP }],
-			['ptz_step_action', { target: 'zoom', step: DEFAULT_PTZ_STEP }],
-		],
-	]
-
-	ROTARY_PRESET_LIST.forEach((item) => {
-		if (!categoryVisible(item[0])) return
-		const preset: CompanionPresetDefinition = {
-			type: 'button',
-			category: resolveCategory(item[0]),
-			name: item[1],
-			options: { rotaryActions: true },
-			style: {
-				text: item[2],
-				size: FONT_SIZE,
-				show_topbar: false,
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: [],
-					up: [],
-					rotate_left: [{ actionId: item[4][0], options: item[4][1] }],
-					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
-				},
-			],
-			feedbacks: buildPresetFeedbacks(item[6]),
+	for (const axis of AF_AXES) {
+		const lower = axis.toLowerCase()
+		button({
+			category: 'Auto Framing - Tracking Speed',
+			name: `${axis} Current`,
+			text: `Auto Framing\\n${axis} Speed\\n$(this:trackingSpeed${axis})`,
+			key: `autoframing_tracking_speed_${lower}_current`,
+			down: [],
+		})
+		button({
+			category: 'Auto Framing - Tracking Speed',
+			name: `${axis} Adjust -1`,
+			text: `Auto Framing\\n${axis} Speed\\nADJUST -1`,
+			key: `autoframing_tracking_speed_${lower}_adjust_down`,
+			down: [step('autoframing_tracking_step_action', { kind: 'Speed', axis, step: -1 })],
+		})
+		button({
+			category: 'Auto Framing - Tracking Speed',
+			name: `${axis} Adjust +1`,
+			text: `Auto Framing\\n${axis} Speed\\nADJUST +1`,
+			key: `autoframing_tracking_speed_${lower}_adjust_up`,
+			down: [step('autoframing_tracking_step_action', { kind: 'Speed', axis, step: 1 })],
+		})
+		for (const v of [1, 2, 3, 4, 5]) {
+			button({
+				category: 'Auto Framing - Tracking Speed',
+				name: `${axis} Set ${v}`,
+				text: `Auto Framing\\n${axis} Speed\\nSET ${v}`,
+				key: `autoframing_tracking_speed_${lower}_${v}`,
+				down: [step('autoframing_tracking_speed_action', { axis, value: v })],
+				feedbacks: [{ feedbackId: 'trackingSpeed', options: { axis, value: v } }],
+			})
 		}
+	}
+	for (const axis of AF_AXES) {
+		const lower = axis.toLowerCase()
+		button({
+			category: 'Auto Framing - Tracking Sensitivity',
+			name: `${axis} Current`,
+			text: `Auto Framing\\n${axis} Sens\\n$(this:trackingSensitivity${axis})`,
+			key: `autoframing_tracking_sensitivity_${lower}_current`,
+			down: [],
+		})
+		button({
+			category: 'Auto Framing - Tracking Sensitivity',
+			name: `${axis} Adjust -1`,
+			text: `Auto Framing\\n${axis} Sens\\nADJUST -1`,
+			key: `autoframing_tracking_sensitivity_${lower}_adjust_down`,
+			down: [step('autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: -1 })],
+		})
+		button({
+			category: 'Auto Framing - Tracking Sensitivity',
+			name: `${axis} Adjust +1`,
+			text: `Auto Framing\\n${axis} Sens\\nADJUST +1`,
+			key: `autoframing_tracking_sensitivity_${lower}_adjust_up`,
+			down: [step('autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: 1 })],
+		})
+		for (const v of [0, 1, 2, 3, 4, 5]) {
+			button({
+				category: 'Auto Framing - Tracking Sensitivity',
+				name: `${axis} Set ${v}`,
+				text: `Auto Framing\\n${axis} Sens\\nSET ${v}`,
+				key: `autoframing_tracking_sensitivity_${lower}_${v}`,
+				down: [step('autoframing_tracking_sensitivity_action', { axis, value: v })],
+				feedbacks: [{ feedbackId: 'trackingSensitivity', options: { axis, value: v } }],
+			})
+		}
+	}
 
-		presets[item[3] + '_preset'] = preset
+	// ---- Rotary (Pan / Tilt / Zoom) -------------------------------------------
+	const rotarySteps: [name: string, key: string, target: string, variable: string][] = [
+		['Rotary Pan', 'rotary_pan', 'pan', 'panPos'],
+		['Rotary Tilt', 'rotary_tilt', 'tilt', 'tiltPos'],
+		['Rotary Zoom', 'rotary_zoom', 'zoom', 'zoomPos'],
+	]
+	for (const [name, key, target, variable] of rotarySteps) {
+		rotary({
+			category: 'Rotary Presets',
+			name,
+			text: `${target.charAt(0).toUpperCase() + target.slice(1)}\\n$(this:${variable})`,
+			key,
+			left: ['ptz_step_action', { target, step: -DEFAULT_PTZ_STEP }],
+			right: ['ptz_step_action', { target, step: DEFAULT_PTZ_STEP }],
+		})
+	}
+
+	// ---- Rotary: exposure (BRC-AM7) -------------------------------------------
+	const imaging = (param: string, step: number, min: number, max: number): RotaryAction => [
+		'generic_step_action',
+		{ path: 'command/imaging.cgi', param, step, min, max },
+	]
+	const paint = (param: string, step: number, min: number, max: number): RotaryAction => [
+		'generic_step_action',
+		{ path: 'command/paint.cgi', param, step, min, max },
+	]
+	rotary({
+		category: 'Rotary (BRC-AM7)',
+		name: 'Gain',
+		text: 'Gain\\n$(this:exposureGain)',
+		key: 'am7_rotary_gain',
+		left: imaging('ExposureGain', -1, 6, 45),
+		right: imaging('ExposureGain', 1, 6, 45),
+	})
+	rotary({
+		category: 'Rotary (BRC-AM7)',
+		name: 'Iris',
+		text: 'Iris\\n$(this:exposureIris)',
+		key: 'am7_rotary_iris',
+		left: imaging('ExposureIris', -20, 30975, 32000),
+		right: imaging('ExposureIris', 20, 30975, 32000),
+	})
+	rotary({
+		category: 'Rotary (BRC-AM7)',
+		name: 'ExposureNDVariable',
+		text: 'ND Variable\\n$(this:exposureNDVariable)',
+		key: 'am7_rotary_ndvariable',
+		left: imaging('ExposureNDVariable', -1, 0, 20),
+		right: imaging('ExposureNDVariable', 1, 0, 20),
+	})
+	rotary({
+		category: 'Rotary (BRC-AM7)',
+		name: 'Master Black',
+		text: 'Master Black\\n$(this:masterBlack)',
+		key: 'am7_rotary_masterblack',
+		left: paint('MasterBlack', -10, -990, 990),
+		right: paint('MasterBlack', 10, -990, 990),
 	})
 
-	// GenericRotary Presets
-	const GENERIC_ROTARY_PRESET_LIST: GenericRotaryPresetSpec[] = [
-		// [category, name, text, key, left[actionId, options], right[actionId, options]]
-		[
-			'Rotary (BRC-AM7)',
-			'Gain',
-			'Gain\\n$(this:exposureGain)',
-			'am7_rotary_gain',
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: -1, min: 6, max: 45 }],
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: 1, min: 6, max: 45 }],
-		],
-		[
-			'Rotary (BRC-AM7)',
-			'Iris',
-			'Iris\\n$(this:exposureIris)',
-			'am7_rotary_iris',
-			[
-				'generic_step_action',
-				{ path: 'command/imaging.cgi', param: 'ExposureIris', step: -20, min: 30975, max: 32000 },
-			],
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: 20, min: 30975, max: 32000 }],
-		],
-		[
-			'Rotary (BRC-AM7)',
-			'ExposureNDVariable',
-			'ND Variable\\n$(this:exposureNDVariable)',
-			'am7_rotary_ndvariable',
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureNDVariable', step: -1, min: 0, max: 20 }],
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureNDVariable', step: 1, min: 0, max: 20 }],
-		],
-		[
-			'Rotary (BRC-AM7)',
-			'Master Black',
-			'Master Black\\n$(this:masterBlack)',
-			'am7_rotary_masterblack',
-			['generic_step_action', { path: 'command/paint.cgi', param: 'MasterBlack', step: -10, min: -990, max: 990 }],
-			['generic_step_action', { path: 'command/paint.cgi', param: 'MasterBlack', step: 10, min: -990, max: 990 }],
-		],
-		[
-			'Rotary (SRG-A12/A40)',
-			'Gain',
-			'Gain\\n$(this:exposureGain)',
-			'srg_rotary_gain',
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: -1, min: 1, max: 13 }],
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureGain', step: 1, min: 1, max: 13 }],
-		],
-		[
-			'Rotary (SRG-A12/A40)',
-			'Iris',
-			'Iris\\n$(this:exposureIris)',
-			'srg_rotary_iris',
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: -1, min: 0, max: 25 }],
-			['generic_step_action', { path: 'command/imaging.cgi', param: 'ExposureIris', step: 1, min: 0, max: 25 }],
-		],
-	]
-
-	GENERIC_ROTARY_PRESET_LIST.forEach((item) => {
-		if (!categoryVisible(item[0])) return
-		const preset: CompanionPresetDefinition = {
-			type: 'button',
-			category: resolveCategory(item[0]),
-			name: item[1],
-			options: { rotaryActions: true },
-			style: {
-				text: item[2],
-				size: FONT_SIZE,
-				show_topbar: false,
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: [],
-					up: [],
-					rotate_left: [{ actionId: item[4][0], options: item[4][1] }],
-					rotate_right: [{ actionId: item[5][0], options: item[5][1] }],
-				},
-			],
-			feedbacks: buildPresetFeedbacks(item[6]),
-		}
-
-		presets[item[3] + '_preset'] = preset
+	// ---- Rotary: exposure (SRG-A12/A40) ---------------------------------------
+	rotary({
+		category: 'Rotary (SRG-A12/A40)',
+		name: 'Gain',
+		text: 'Gain\\n$(this:exposureGain)',
+		key: 'srg_rotary_gain',
+		left: imaging('ExposureGain', -1, 1, 13),
+		right: imaging('ExposureGain', 1, 1, 13),
+	})
+	rotary({
+		category: 'Rotary (SRG-A12/A40)',
+		name: 'Iris',
+		text: 'Iris\\n$(this:exposureIris)',
+		key: 'srg_rotary_iris',
+		left: imaging('ExposureIris', -1, 0, 25),
+		right: imaging('ExposureIris', 1, 0, 25),
 	})
 
 	self.setPresetDefinitions(presets)
