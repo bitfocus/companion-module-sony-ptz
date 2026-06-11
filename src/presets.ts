@@ -14,8 +14,7 @@ const ZOOM_SPEED = DEFAULT_PTZ_ZOOM_SPEED.toString()
 
 // Default highlight applied to a preset feedback when it does not specify its own style.
 const DEFAULT_ACTIVE_STYLE: CompanionFeedbackButtonStyleResult = {
-	bgcolor: combineRgb(0, 153, 51),
-	color: combineRgb(255, 255, 255),
+	bgcolor: combineRgb(243, 174, 61),
 }
 
 // One action inside a step. delay is always 0 here; kept explicit to match the Companion shape.
@@ -122,7 +121,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				size: FONT_SIZE,
 				show_topbar: false,
 				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
+				bgcolor: combineRgb(32, 32, 32),
 			},
 			steps: [{ down: spec.down, up: spec.up ?? [] }],
 			feedbacks: feedbacks(spec.feedbacks),
@@ -143,7 +142,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				size: FONT_SIZE,
 				show_topbar: false,
 				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
+				bgcolor: combineRgb(32, 32, 32),
 			},
 			steps: [
 				{
