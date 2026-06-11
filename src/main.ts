@@ -128,10 +128,9 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 					)
 				}
 				this.setFeedbackValue('multiTracking', params.get('PtzAutoFramingMultiTrackingEnable') || undefined)
-				this.setFeedbackValue(
-					'multiTrackingNum',
-					params.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || undefined,
-				)
+				// Configured target count (what the preset sets), not the live tracked count
+				// (CurrentTargetNum, which is "0,0" when nothing is tracked).
+				this.setFeedbackValue('multiTrackingTargetNum', params.get('PtzAutoFramingMultiTrackingTargetNum') || undefined)
 				break
 			case 'ptzf':
 				this.setFeedbackValue('focusMode', params.get('FocusMode') || undefined)

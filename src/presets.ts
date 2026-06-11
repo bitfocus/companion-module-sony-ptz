@@ -54,13 +54,18 @@ function buildPresetFeedbacks(feedbacks?: CompanionPresetFeedback[]): CompanionP
 	return (feedbacks ?? []).map((fb) => ({ ...fb, style: fb.style ?? DEFAULT_ACTIVE_STYLE }))
 }
 
+// Standard preset button label: "Group\\nVALUE" with VALUE in all caps.
+function presetText(label: string, value: string): string {
+	return `${label}\\n${value.toUpperCase()}`
+}
+
 export function UpdatePresets(self: ModuleInstance): void {
 	const PRESET_LIST: PresetSpec[] = [
 		// [category, name, text, key, down[actionId, choiceId, delay][], up[actionId, choiceId, delay]]
 		[
 			'System',
 			'On',
-			'PTZ\\nOn',
+			presetText('PTZ', 'On'),
 			'system_on',
 			[['system_power_action', 'system_on', 0]],
 			[],
@@ -69,7 +74,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'System',
 			'Standby',
-			'PTZ\\nStandby',
+			presetText('PTZ', 'Standby'),
 			'system_standby',
 			[['system_power_action', 'system_standby', 0]],
 			[],
@@ -78,7 +83,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'On',
-			'Auto Framing\\nOn',
+			presetText('Auto Framing', 'On'),
 			'autoframing_on',
 			[['auto_framing_action', 'autoframing_on', 0]],
 			[],
@@ -87,7 +92,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'Off',
-			'Auto Framing\\nOff',
+			presetText('Auto Framing', 'Off'),
 			'autoframing_off',
 			[['auto_framing_action', 'autoframing_off', 0]],
 			[],
@@ -96,7 +101,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'Pause On',
-			'Auto Framing\\nPause On',
+			presetText('Auto Framing', 'Pause'),
 			'autoframing_pause_on',
 			[['auto_framing_action', 'autoframing_pause_on', 0]],
 			[],
@@ -104,7 +109,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'Pause Off',
-			'Auto Framing\\nPause Off',
+			presetText('Auto Framing', 'Resume'),
 			'autoframing_pause_off',
 			[['auto_framing_action', 'autoframing_pause_off', 0]],
 			[],
@@ -112,7 +117,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'Restart',
-			'Auto Framing\\nRestart',
+			presetText('Auto Framing', 'Restart'),
 			'autoframing_restart',
 			[['auto_framing_action', 'autoframing_restart', 0]],
 			[],
@@ -120,7 +125,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Controls',
 			'Home',
-			'Auto Framing\\nHome',
+			presetText('Auto Framing', 'Home'),
 			'autoframing_home',
 			[['preset_call_action', 'autoframing_home', 0]],
 			[],
@@ -129,7 +134,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Mode',
 			'Person',
-			'Framing\\nPerson',
+			presetText('Framing', 'Person'),
 			'autoframing_person',
 			[['framing_mode_action', 'autoframing_person', 0]],
 			[],
@@ -139,7 +144,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Mode',
 			'Ball Sports',
-			'Framing\\nBall',
+			presetText('Framing', 'Ball Sports'),
 			'autoframing_ball',
 			[['framing_mode_action', 'autoframing_ball', 0]],
 			[],
@@ -149,7 +154,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Shot Mode',
 			'Mode:Fullbody',
-			'AF Mode\\nFullbody',
+			presetText('AF Mode', 'Fullbody'),
 			'autoframing_fullbody',
 			[['auto_framing_shot_mode_action', 'autoframing_fullbody', 0]],
 			[],
@@ -158,7 +163,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Shot Mode',
 			'Mode:Waist',
-			'AF Mode\\nWaist',
+			presetText('AF Mode', 'Waist'),
 			'autoframing_waist',
 			[['auto_framing_shot_mode_action', 'autoframing_waist', 0]],
 			[],
@@ -167,7 +172,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Shot Mode',
 			'Mode:Closeup',
-			'AF Mode\\nCloseup',
+			presetText('AF Mode', 'Closeup'),
 			'autoframing_closeup',
 			[['auto_framing_shot_mode_action', 'autoframing_closeup', 0]],
 			[],
@@ -176,7 +181,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Shot Mode',
 			'Mode:Closer Closeup',
-			'AF Mode\\nCloser Closeup',
+			presetText('AF Mode', 'Closer Closeup'),
 			'autoframing_closer_closeup',
 			[['auto_framing_shot_mode_action', 'autoframing_closer_closeup', 0]],
 			[],
@@ -187,7 +192,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Lead Room',
 			'Off',
-			'Lead Room\\nOff',
+			presetText('Lead Room', 'Off'),
 			'autoframing_leadroom_off',
 			[['lead_room_action', 'autoframing_leadroom_off', 0]],
 			[],
@@ -197,7 +202,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Lead Room',
 			'Low',
-			'Lead Room\\nLow',
+			presetText('Lead Room', 'Low'),
 			'autoframing_leadroom_low',
 			[['lead_room_action', 'autoframing_leadroom_low', 0]],
 			[],
@@ -207,7 +212,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Lead Room',
 			'Middle',
-			'Lead Room\\nMiddle',
+			presetText('Lead Room', 'Middle'),
 			'autoframing_leadroom_middle',
 			[['lead_room_action', 'autoframing_leadroom_middle', 0]],
 			[],
@@ -217,7 +222,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Lead Room',
 			'High',
-			'Lead Room\\nHigh',
+			presetText('Lead Room', 'High'),
 			'autoframing_leadroom_high',
 			[['lead_room_action', 'autoframing_leadroom_high', 0]],
 			[],
@@ -228,7 +233,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Frame/Area Indicator',
 			'On',
-			'Overlay\\nOn',
+			presetText('Overlay', 'On'),
 			'autoframing_faceindicator_on',
 			[],
 			[],
@@ -238,7 +243,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Frame/Area Indicator',
 			'Off',
-			'Overlay\\nOff',
+			presetText('Overlay', 'Off'),
 			'autoframing_faceindicator_off',
 			[],
 			[],
@@ -248,18 +253,8 @@ export function UpdatePresets(self: ModuleInstance): void {
 
 		[
 			'Auto Framing - Fixed Angle Position',
-			'Off',
-			'Fixed Angle\\nOff',
-			'fixedangle_off',
-			[['fixed_angle_position_action', 'fixedangle_off', 0]],
-			[],
-			[{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
-		],
-
-		[
-			'Auto Framing - Fixed Angle Position',
 			'On',
-			'Fixed Angle\\nOn',
+			presetText('Fixed Angle', 'On'),
 			'fixedangle_on',
 			[['fixed_angle_position_action', 'fixedangle_on', 0]],
 			[],
@@ -267,8 +262,17 @@ export function UpdatePresets(self: ModuleInstance): void {
 		],
 		[
 			'Auto Framing - Fixed Angle Position',
+			'Off',
+			presetText('Fixed Angle', 'Off'),
+			'fixedangle_off',
+			[['fixed_angle_position_action', 'fixedangle_off', 0]],
+			[],
+			[{ feedbackId: 'fixedAngle', options: { state: 'off' } }],
+		],
+		[
+			'Auto Framing - Fixed Angle Position',
 			'Store',
-			'Fixed Angle\\nStore',
+			presetText('Fixed Angle', 'Store'),
 			'fixedangle_store',
 			[['fixed_angle_position_action', 'fixedangle_store', 0]],
 			[],
@@ -276,7 +280,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Fixed Angle Position',
 			'Recall',
-			'Fixed Angle\\nRecall',
+			presetText('Fixed Angle', 'Recall'),
 			'fixedangle_recall',
 			[['fixed_angle_position_action', 'fixedangle_recall', 0]],
 			[],
@@ -284,7 +288,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up',
-			'Tilt Up',
+			presetText('Pan/Tilt', 'Up'),
 			'ptz_move_up',
 			[['ptz_move_action', 'move_up', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -292,7 +296,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down',
-			'Tilt Down',
+			presetText('Pan/Tilt', 'Down'),
 			'ptz_move_down',
 			[['ptz_move_action', 'move_down', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -300,7 +304,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Left',
-			'Pan Left',
+			presetText('Pan/Tilt', 'Left'),
 			'ptz_move_left',
 			[['ptz_move_action', 'move_left', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -308,7 +312,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Right',
-			'Pan Right',
+			presetText('Pan/Tilt', 'Right'),
 			'ptz_move_right',
 			[['ptz_move_action', 'move_right', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -316,7 +320,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up Left',
-			'Tilt Up Left',
+			presetText('Pan/Tilt', 'Up Left'),
 			'ptz_move_up_left',
 			[['ptz_move_action', 'move_up_left', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -324,7 +328,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Up Right',
-			'Tilt Up Right',
+			presetText('Pan/Tilt', 'Up Right'),
 			'ptz_move_up_right',
 			[['ptz_move_action', 'move_up_right', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -332,7 +336,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down Left',
-			'Tilt Down Left',
+			presetText('Pan/Tilt', 'Down Left'),
 			'ptz_move_down_left',
 			[['ptz_move_action', 'move_down_left', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -340,7 +344,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Pan/Tilt',
 			'Down Right',
-			'Tilt Down Right',
+			presetText('Pan/Tilt', 'Down Right'),
 			'ptz_move_down_right',
 			[['ptz_move_action', 'move_down_right', 0]],
 			[['ptz_move_stop_action', 'stop_pantilt', 0]],
@@ -348,7 +352,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Zoom',
 			'Tele',
-			'Zoom Tele',
+			presetText('Zoom', 'Tele'),
 			'ptz_zoom_tele',
 			[['ptz_zoom_action', 'zoom_tele', 0]],
 			[['ptz_move_stop_action', 'stop_zoom', 0]],
@@ -356,17 +360,17 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Pan/Tilt/Zoom - Zoom',
 			'Wide',
-			'Zoom Wide',
+			presetText('Zoom', 'Wide'),
 			'ptz_zoom_wide',
 			[['ptz_zoom_action', 'zoom_wide', 0]],
 			[['ptz_move_stop_action', 'stop_zoom', 0]],
 		],
-		['Preset Call', 'Look Back', 'PTZ Preset\\nBack', 'preset_back', [], []],
-		['Preset Call', 'PTZ Home', 'PTZ Preset\\nHome', 'preset_home', [], []],
+		['Preset Call', 'Look Back', presetText('PTZ Preset', 'Back'), 'preset_back', [], []],
+		['Preset Call', 'PTZ Home', presetText('PTZ Preset', 'Home'), 'preset_home', [], []],
 		[
 			'Auto Focus - Focus Mode',
 			'ON',
-			'Auto Focus\\nON',
+			presetText('Auto Focus', 'On'),
 			'auto_focus_auto',
 			[['focus_mode_action', 'focus_auto', 0]],
 			[],
@@ -375,7 +379,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - Focus Mode',
 			'OFF',
-			'Manual Focus',
+			presetText('Auto Focus', 'Off'),
 			'auto_focus_manual',
 			[['focus_mode_action', 'focus_manual', 0]],
 			[],
@@ -384,7 +388,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - AF Mode',
 			'Normal Mode',
-			'Auto Focus\\nNormal Mode',
+			presetText('AF Mode', 'Normal'),
 			'afmode_normal',
 			[['auto_focus_mode_action', 'afmode_normal', 0]],
 			[],
@@ -393,7 +397,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - AF Mode',
 			'Interval Mode',
-			'Auto Focus\\nInterval Mode',
+			presetText('AF Mode', 'Interval'),
 			'afmode_interval',
 			[['auto_focus_mode_action', 'afmode_interval', 0]],
 			[],
@@ -402,7 +406,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - AF Mode',
 			'Zoom Trigger Mode',
-			'Auto Focus\\nZoom Trigger',
+			presetText('AF Mode', 'Zoom Trigger'),
 			'afmode_zoomtrigger',
 			[['auto_focus_mode_action', 'afmode_zoomtrigger', 0]],
 			[],
@@ -411,7 +415,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - Sensitivity',
 			'Normal Sensitivity',
-			'Auto Focus\\nNormal Sensitivity',
+			presetText('AF Sens', 'Normal'),
 			'afsensitivity_normal',
 			[['auto_focus_sensitivity_action', 'afsensitivity_normal', 0]],
 			[],
@@ -420,7 +424,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Focus - Sensitivity',
 			'Low Sensitivity',
-			'Auto Focus\\nLow Sensitivity',
+			presetText('AF Sens', 'Low'),
 			'afsensitivity_low',
 			[['auto_focus_sensitivity_action', 'afsensitivity_low', 0]],
 			[],
@@ -429,7 +433,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		[
 			'Auto Framing - Multi Tracking',
 			'OFF',
-			'Multi Tracking OFF',
+			presetText('Multi Tracking', 'Off'),
 			'multitrackingnum_1',
 			[['multi_tracking_num_action', 'multitrackingnum_1', 0]],
 			[],
@@ -439,19 +443,26 @@ export function UpdatePresets(self: ModuleInstance): void {
 		...[...Array(7)].map((x, i) => [
 			'Auto Framing - Multi Tracking',
 			`${i + 2}`,
-			`Multi Tracking Targets\n${i + 2}`,
+			presetText('Multi Tracking', `${i + 2}`),
 			`multitrackingnum_${i + 2}`,
 			[['multi_tracking_num_action', `multitrackingnum_${i + 2}`, 0]],
 			[],
 			[{ feedbackId: 'multiTracking', options: { num: `${i + 2}` } }],
 		]),
 		// @ts-expect-error  The first param 'x' will not be used
-		...[...Array(10)].map((x, i) => ['Preset Call', `${i + 1}`, `PTZ Preset ${i + 1}`, `preset_${i + 1}`, [], []]),
+		...[...Array(10)].map((x, i) => [
+			'Preset Call',
+			`${i + 1}`,
+			presetText('PTZ Preset', `${i + 1}`),
+			`preset_${i + 1}`,
+			[],
+			[],
+		]),
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(10)].map((x, i) => [
 			'Preset Set',
 			`${i + 1}`,
-			`PTZ Preset Set ${i + 1}`,
+			presetText('PTZ Preset', `Set ${i + 1}`),
 			`preset_set_${i + 1}`,
 			[],
 			[],
@@ -460,7 +471,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		...[...Array(17)].map((x, i) => [
 			'Scene File Recall',
 			i === 0 ? 'Off' : `${i}`,
-			i === 0 ? 'Scene File\\nOff' : `Scene File ${i}`,
+			i === 0 ? presetText('Scene File', 'Off') : presetText('Scene File', `${i}`),
 			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
 			[],
 			[],
@@ -481,10 +492,10 @@ export function UpdatePresets(self: ModuleInstance): void {
 		'Auto Framing - Lead Room': ['Auto Framing', 'Lead Room'],
 		'Auto Framing - Frame/Area Indicator': ['Auto Framing', 'Frame/Area Indicator'],
 		'Auto Framing - Fixed Angle Position': ['Auto Framing', 'Fixed Angle Position'],
+		'Auto Framing - Fixed Angle Adjustment': ['Auto Framing', 'Fixed Angle Adjustment'],
 		'Auto Framing - Multi Tracking': ['Auto Framing', 'Multi Tracking'],
 		'Auto Framing - Tracking Speed': ['Auto Framing', 'Tracking Speed'],
 		'Auto Framing - Tracking Sensitivity': ['Auto Framing', 'Tracking Sensitivity'],
-		'Auto Framing - Fixed Angle Fine Adjust': ['Auto Framing', 'Fixed Angle Fine Adjust'],
 		'Pan/Tilt/Zoom - Pan/Tilt': ['Pan/Tilt/Zoom', 'Pan / Tilt'],
 		'Pan/Tilt/Zoom - Zoom': ['Pan/Tilt/Zoom', 'Zoom'],
 		'Auto Focus - Focus Mode': ['Focus Controls', 'Focus Mode'],
@@ -509,6 +520,80 @@ export function UpdatePresets(self: ModuleInstance): void {
 			presets[headerKey] = { type: 'text', category: top, name: sub, text: '' }
 		}
 		return top
+	}
+
+	// Nudge magnitude (camera units) for the fixed-angle fine-adjust presets; the action converts to hex.
+	const FINE_NUDGE = 100
+	const FIXED_ANGLE_ADJUSTMENT_PRESET_LIST: GenericButtonPresetSpec[] = [
+		// Fine Adjustment of Fixed Angle Position — plain decimal nudges (converted to hex by the action)
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Pan Left',
+			presetText('Fixed Angle', 'Pan Left'),
+			'fixedangle_fine_pan_left',
+			[['fixed_angle_fine_action', { target: 'pan', step: -FINE_NUDGE }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Pan Right',
+			presetText('Fixed Angle', 'Pan Right'),
+			'fixedangle_fine_pan_right',
+			[['fixed_angle_fine_action', { target: 'pan', step: FINE_NUDGE }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Tilt Up',
+			presetText('Fixed Angle', 'Tilt Up'),
+			'fixedangle_fine_tilt_up',
+			[['fixed_angle_fine_action', { target: 'tilt', step: FINE_NUDGE }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Tilt Down',
+			presetText('Fixed Angle', 'Tilt Down'),
+			'fixedangle_fine_tilt_down',
+			[['fixed_angle_fine_action', { target: 'tilt', step: -FINE_NUDGE }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Zoom Tele',
+			presetText('Fixed Angle', 'Zoom Tele'),
+			'fixedangle_fine_zoom_tele',
+			[['fixed_angle_fine_action', { target: 'zoom', step: FINE_NUDGE }]],
+		],
+		[
+			'Auto Framing - Fixed Angle Adjustment',
+			'Zoom Wide',
+			presetText('Fixed Angle', 'Zoom Wide'),
+			'fixedangle_fine_zoom_wide',
+			[['fixed_angle_fine_action', { target: 'zoom', step: -FINE_NUDGE }]],
+		],
+	]
+
+	function addGenericButtonPresets(items: GenericButtonPresetSpec[]): void {
+		items.forEach((item) => {
+			const preset: CompanionPresetDefinition = {
+				type: 'button',
+				category: resolveCategory(item[0]),
+				name: item[1],
+				style: {
+					text: item[2],
+					size: FONT_SIZE,
+					show_topbar: false,
+					color: combineRgb(255, 255, 255),
+					bgcolor: combineRgb(0, 0, 0),
+				},
+				steps: [
+					{
+						down: item[4].map(([actionId, options]) => ({ actionId, options, delay: 0 })),
+						up: [],
+					},
+				],
+				feedbacks: buildPresetFeedbacks(item[5]),
+			}
+
+			presets[item[3] + '_preset'] = preset
+		})
 	}
 
 	// 0:category, 1:name, 2:text, 3:key, 4:[actionId, choiceId, delay][]
@@ -562,14 +647,14 @@ export function UpdatePresets(self: ModuleInstance): void {
 		}
 
 		presets[item[3] + '_preset'] = preset
+
+		if (item[3] === 'fixedangle_recall') {
+			addGenericButtonPresets(FIXED_ANGLE_ADJUSTMENT_PRESET_LIST)
+		}
 	})
 
-	// Generic Button Presets — actions with custom option objects (tracking speed/sensitivity,
-	// fine adjustment of fixed angle position).
+	// Generic Button Presets — actions with custom option objects (tracking speed/sensitivity).
 	const AF_AXES = ['Pan', 'Tilt', 'Zoom'] as const
-	// Hex offset magnitude used by the fine-adjustment nudge presets (signed 16-bit). Forward = +0x0064.
-	const FINE_POS = '0064'
-	const FINE_NEG = 'FF9C'
 	const GENERIC_BUTTON_PRESET_LIST: GenericButtonPresetSpec[] = [
 		// Auto Framing Tracking Speed (1-5) per axis: one current-value readout, then SET buttons
 		...AF_AXES.flatMap((axis): GenericButtonPresetSpec[] => [
@@ -635,74 +720,9 @@ export function UpdatePresets(self: ModuleInstance): void {
 				[{ feedbackId: 'trackingSensitivity', options: { axis, value: v } }],
 			]),
 		]),
-		// Fine Adjustment of Fixed Angle Position (relative hex nudges, angle #1)
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Pan Left',
-			'Fine Angle\\nPan Left',
-			'fixedangle_fine_pan_left',
-			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: FINE_NEG, val3: '0000' }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Pan Right',
-			'Fine Angle\\nPan Right',
-			'fixedangle_fine_pan_right',
-			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: FINE_POS, val3: '0000' }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Tilt Up',
-			'Fine Angle\\nTilt Up',
-			'fixedangle_fine_tilt_up',
-			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: '0000', val3: FINE_POS }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Tilt Down',
-			'Fine Angle\\nTilt Down',
-			'fixedangle_fine_tilt_down',
-			[['fixed_angle_fine_pantilt_action', { val1: '1', val2: '0000', val3: FINE_NEG }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Zoom Tele',
-			'Fine Angle\\nZoom Tele',
-			'fixedangle_fine_zoom_tele',
-			[['fixed_angle_fine_zoom_action', { val1: '1', val2: FINE_POS }]],
-		],
-		[
-			'Auto Framing - Fixed Angle Fine Adjust',
-			'Zoom Wide',
-			'Fine Angle\\nZoom Wide',
-			'fixedangle_fine_zoom_wide',
-			[['fixed_angle_fine_zoom_action', { val1: '1', val2: FINE_NEG }]],
-		],
 	]
 
-	GENERIC_BUTTON_PRESET_LIST.forEach((item) => {
-		const preset: CompanionPresetDefinition = {
-			type: 'button',
-			category: resolveCategory(item[0]),
-			name: item[1],
-			style: {
-				text: item[2],
-				size: FONT_SIZE,
-				show_topbar: false,
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: item[4].map(([actionId, options]) => ({ actionId, options, delay: 0 })),
-					up: [],
-				},
-			],
-			feedbacks: buildPresetFeedbacks(item[5]),
-		}
-
-		presets[item[3] + '_preset'] = preset
-	})
+	addGenericButtonPresets(GENERIC_BUTTON_PRESET_LIST)
 
 	// Rotary Presets
 	const ROTARY_PRESET_LIST: RotaryPresetSpec[] = [
