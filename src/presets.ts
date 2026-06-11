@@ -488,17 +488,18 @@ export function UpdatePresets(self: ModuleInstance): void {
 	// Buttons are grouped under the top-level category; the sub-label becomes a `type: 'text'`
 	// header inserted once before the group's first button. Categories absent from the map are
 	// left as their own single-section group (no sub-header).
-	const CATEGORY_MAP: Record<string, [topCategory: string, subLabel: string]> = {
+	// Optional third element lists the models a category applies to; absent = all models.
+	const CATEGORY_MAP: Record<string, [topCategory: string, subLabel: string, models?: string[]]> = {
 		'Auto Framing - Controls': ['Auto Framing', 'Controls'],
 		'Auto Framing - Mode': ['Auto Framing', 'Framing Mode'],
 		'Auto Framing - Shot Mode': ['Auto Framing', 'Shot Mode'],
 		'Auto Framing - Lead Room': ['Auto Framing', 'Lead Room'],
 		'Auto Framing - Frame/Area Indicator': ['Auto Framing', 'Frame/Area Indicator'],
-		'Auto Framing - Fixed Angle Position': ['Auto Framing', 'Fixed Angle Position'],
-		'Auto Framing - Fixed Angle Adjustment': ['Auto Framing', 'Fixed Angle Adjustment'],
+		'Auto Framing - Fixed Angle Position': ['Auto Framing', 'Fixed Angle Position', ['SRG-A40', 'SRG-A12']],
+		'Auto Framing - Fixed Angle Adjustment': ['Auto Framing', 'Fixed Angle Adjustment', ['SRG-A40', 'SRG-A12']],
 		'Auto Framing - Multi Tracking': ['Auto Framing', 'Multi Tracking'],
-		'Auto Framing - Tracking Speed': ['Auto Framing', 'Tracking Speed'],
-		'Auto Framing - Tracking Sensitivity': ['Auto Framing', 'Tracking Sensitivity'],
+		'Auto Framing - Tracking Speed': ['Auto Framing', 'Tracking Speed', ['BRC-AM7']],
+		'Auto Framing - Tracking Sensitivity': ['Auto Framing', 'Tracking Sensitivity', ['BRC-AM7']],
 		'Pan/Tilt/Zoom - Pan/Tilt': ['Pan/Tilt/Zoom', 'Pan / Tilt'],
 		'Pan/Tilt/Zoom - Zoom': ['Pan/Tilt/Zoom', 'Zoom'],
 		'Auto Focus - Focus Mode': ['Focus Controls', 'Focus Mode'],
@@ -506,9 +507,25 @@ export function UpdatePresets(self: ModuleInstance): void {
 		'Auto Focus - Sensitivity': ['Focus Controls', 'Sensitivity'],
 		'Preset Call': ['PTZ Presets', 'Recall'],
 		'Preset Set': ['PTZ Presets', 'Store'],
+		// Same top/sub (no sub-header), tagged so it only shows for the BRC-AM7.
+		'Scene File Recall': ['Scene File Recall', 'Scene File Recall', ['BRC-AM7']],
 		'Rotary Presets': ['Rotary', 'Pan / Tilt / Zoom'],
-		'Rotary (BRC-AM7)': ['Rotary', 'BRC-AM7'],
-		'Rotary (SRG-A12/A40)': ['Rotary', 'SRG-A12/A40'],
+		'Rotary (BRC-AM7)': ['Rotary', 'BRC-AM7', ['BRC-AM7']],
+		'Rotary (SRG-A12/A40)': ['Rotary', 'SRG-A12/A40', ['SRG-A40', 'SRG-A12']],
+	}
+
+	// Models we know how to filter for. When the connected model is empty or not one of these,
+	// we fall back to showing everything (per the "default to showing it" requirement).
+	const KNOWN_MODELS = new Set(['BRC-AM7', 'SRG-A40', 'SRG-A12'])
+	const model = (self.model || '').trim().toUpperCase()
+	const filterByModel = KNOWN_MODELS.has(model)
+
+	// Whether a category's presets should be exported for the connected model. Untagged
+	// categories and unrecognized/unknown models always pass.
+	function categoryVisible(authorCategory: string): boolean {
+		if (!filterByModel) return true
+		const models = CATEGORY_MAP[authorCategory]?.[2]
+		return !models || models.some((m) => m.toUpperCase() === model)
 	}
 
 	const seenSubHeaders = new Set<string>()
@@ -575,6 +592,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 
 	function addGenericButtonPresets(items: GenericButtonPresetSpec[]): void {
 		items.forEach((item) => {
+			if (!categoryVisible(item[0])) return
 			const preset: CompanionPresetDefinition = {
 				type: 'button',
 				category: resolveCategory(item[0]),
@@ -601,6 +619,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 
 	// 0:category, 1:name, 2:text, 3:key, 4:[actionId, choiceId, delay][]
 	PRESET_LIST.forEach((item) => {
+		if (!categoryVisible(item[0])) return
 		const downSteps = item[4]
 		const upSteps = item[5]
 
@@ -757,6 +776,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	]
 
 	ROTARY_PRESET_LIST.forEach((item) => {
+		if (!categoryVisible(item[0])) return
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
 			category: resolveCategory(item[0]),
@@ -840,6 +860,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	]
 
 	GENERIC_ROTARY_PRESET_LIST.forEach((item) => {
+		if (!categoryVisible(item[0])) return
 		const preset: CompanionPresetDefinition = {
 			type: 'button',
 			category: resolveCategory(item[0]),

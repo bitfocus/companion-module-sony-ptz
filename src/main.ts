@@ -62,6 +62,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 	_status: InstanceStatus = InstanceStatus.Disconnected
 	feedbackProperties: { [key: string]: string | boolean | undefined } = {}
 	lastStepTime: number = 0
+	// Camera model reported by ModelName; drives model-specific preset filtering. Empty until first poll.
+	model: string = ''
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -251,8 +253,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 
 			this.status = InstanceStatus.Ok
 
+			// Re-export presets when the model is first learned or changes, so the preset list
+			// reflects only the connected camera's features.
+			const modelName = systemParams.get('ModelName') || ''
+			if (modelName !== this.model) {
+				this.model = modelName
+				this.updatePresets()
+			}
+
 			const variables: Record<string, any> = {
-				modelName: systemParams.get('ModelName') || '',
+				modelName: modelName,
 				name: sysinfoParams.get('NetworkCameraName') || '',
 				power: power,
 				serial: serial,
