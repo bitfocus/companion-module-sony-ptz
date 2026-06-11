@@ -4,10 +4,13 @@ export interface ModuleConfig {
 	host: string
 	port: number
 	user: string
-	pass: string
 	referer: boolean
 	polling: boolean
 	interval: number
+}
+
+export interface ModuleSecrets {
+	pass: string
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
@@ -36,7 +39,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			regex: Regex.SOMETHING,
 		},
 		{
-			type: 'textinput',
+			type: 'secret-text',
 			id: 'pass',
 			label: 'Password',
 			width: 6,

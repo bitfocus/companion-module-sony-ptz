@@ -35,8 +35,12 @@ function to16(num: number): string {
 export function UpdateActions(self: ModuleInstance): void {
 	const COMMAND_LIST: CommandSpec[] = [
 		// [actionId, choiceLabel, choiceId, commandPath, commandParams, isDefault]
+
+		//System Power
 		['System Power', 'ON', 'system_on', 'command/main.cgi', { System: 'on' }, true],
 		['System Power', 'Standby', 'system_standby', 'command/main.cgi', { System: 'standby' }, false],
+
+		//Auto Framing
 		['Auto Framing', 'ON', 'autoframing_on', 'analytics/ptzautoframing.cgi', { PtzAutoFraming: 'on' }, false],
 		['Auto Framing', 'OFF', 'autoframing_off', 'analytics/ptzautoframing.cgi', { PtzAutoFraming: 'off' }, true],
 		[
@@ -63,15 +67,79 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingRestart: 'on' },
 			false,
 		],
-		['PTZ Reset', 'Reset', 'ptzf_reset', 'command/ptzf.cgi', { PanTiltReset: 'on' }, true],
-		['Preset Call', 'Look Back', 'preset_back', 'command/ptzf.cgi', { AbsolutePanTilt: '2200,0,24' }, false],
-		['Preset Call', 'PTZ Home', 'preset_home', 'command/presetposition.cgi', { HomePos: 'recall' }, false],
+		// Person/Ball Sports Framing switching (PtzAutoFramingFramingMode)
 		[
-			'Preset Call',
-			'Auto Framing Start Position',
-			'autoframing_home',
-			'analytics/ptzautoframingexe.cgi',
-			{ PtzAutoFramingMoveStartPosition: 'on' },
+			'Framing Mode',
+			'Person',
+			'autoframing_person',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFramingMode: 'person' },
+			true,
+		],
+		[
+			'Framing Mode',
+			'Ball Sports',
+			'autoframing_ball',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFramingMode: 'ball_sports' },
+			false,
+		],
+		// Lead Room (PtzAutoFramingLeadRoomLevel)
+		[
+			'Lead Room',
+			'OFF',
+			'autoframing_leadroom_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'off' },
+			false,
+		],
+		[
+			'Lead Room',
+			'Low',
+			'autoframing_leadroom_low',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'low' },
+			false,
+		],
+		[
+			'Lead Room',
+			'Middle',
+			'autoframing_leadroom_middle',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'middle' },
+			true,
+		],
+		[
+			'Lead Room',
+			'High',
+			'autoframing_leadroom_high',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingLeadRoomLevel: 'high' },
+			false,
+		],
+		// Real-time Overlay (Frame/Area Indicator) ON/OFF (PtzAutoFramingFaceIndicatorEnable3)
+		[
+			'Auto Framing - Frame/Area Indicator',
+			'ON',
+			'autoframing_faceindicator_on',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFaceIndicatorEnable3: 'on' },
+			true,
+		],
+		[
+			'Auto Framing - Frame/Area Indicator',
+			'OFF',
+			'autoframing_faceindicator_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFaceIndicatorEnable3: 'off' },
+			false,
+		],
+		[
+			'Auto Framing Shot Mode',
+			'Closer Closeup',
+			'autoframing_closer_closeup',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingAdjustSetting: '0,0,200' },
 			false,
 		],
 		[
@@ -114,6 +182,31 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PtzAutoFramingMoveStartPosition: 'on' },
 			true,
 		],
+		[
+			'Multi Tracking Num',
+			'1',
+			'multitrackingnum_1',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingMultiTrackingEnable: 'off' },
+			true,
+		],
+
+		//PTZ Reset
+		['PTZ Reset', 'Reset', 'ptzf_reset', 'command/ptzf.cgi', { PanTiltReset: 'on' }, true],
+
+		//Presets
+		['Preset Call', 'Look Back', 'preset_back', 'command/ptzf.cgi', { AbsolutePanTilt: '2200,0,24' }, false],
+		['Preset Call', 'PTZ Home', 'preset_home', 'command/presetposition.cgi', { HomePos: 'recall' }, false],
+		[
+			'Preset Call',
+			'Auto Framing Start Position',
+			'autoframing_home',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingMoveStartPosition: 'on' },
+			false,
+		],
+
+		//PTZ Movement
 		['PTZ Move', 'Up', 'move_up', 'command/ptzf.cgi', { PanTiltMove: 'up,0,{speed}' }, true],
 		['PTZ Move', 'Down', 'move_down', 'command/ptzf.cgi', { PanTiltMove: 'down,0,{speed}' }, false],
 		['PTZ Move', 'Left', 'move_left', 'command/ptzf.cgi', { PanTiltMove: 'left,{speed},0' }, false],
@@ -142,14 +235,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		['PTZ Move Stop', 'Tele/Wide', 'stop_zoom', 'command/ptzf.cgi', { ZoomMove: 'stop,0' }, false],
 		['PTZ Move Stop', 'Focus', 'stop_focus', 'command/ptzf.cgi', { Move: 'stop,focus' }, false],
 		['PTZ Move Stop', 'Motor', 'stop_motor', 'command/ptzf.cgi', { Move: 'stop,motor' }, false],
-		[
-			'Multi Tracking Num',
-			'1',
-			'multitrackingnum_1',
-			'analytics/ptzautoframing.cgi',
-			{ PtzAutoFramingMultiTrackingEnable: 'off' },
-			true,
-		],
+
+		//Focus Mode
 		['Auto Focus Mode', 'Normal', 'afmode_normal', 'command/ptzf.cgi', { AFMode: 'normal' }, true],
 		['Auto Focus Mode', 'Interval', 'afmode_interval', 'command/ptzf.cgi', { AFMode: 'interval' }, false],
 		['Auto Focus Mode', 'Zoom Trigger', 'afmode_zoomtrigger', 'command/ptzf.cgi', { AFMode: 'zoomtrigger' }, false],
@@ -157,6 +244,40 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Auto Focus Sensitivity', 'Low', 'afsensitivity_low', 'command/ptzf.cgi', { AFSensitivity: 'low' }, false],
 		['Focus Mode', 'Auto', 'focus_auto', 'command/ptzf.cgi', { FocusMode: 'auto' }, true],
 		['Focus Mode', 'Manual', 'focus_manual', 'command/ptzf.cgi', { FocusMode: 'manual' }, false],
+
+		//Fixed Angle Position (SRG-A40/A12)
+		[
+			'Fixed Angle Position',
+			'OFF',
+			'fixedangle_off',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFixedAngleEnable: '1,off' },
+			true,
+		],
+		[
+			'Fixed Angle Position',
+			'ON',
+			'fixedangle_on',
+			'analytics/ptzautoframing.cgi',
+			{ PtzAutoFramingFixedAngleEnable: '1,on' },
+			false,
+		],
+		[
+			'Fixed Angle Position',
+			'Store Current Position',
+			'fixedangle_store',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingFixedAnglePositionSet: '1' },
+			false,
+		],
+		[
+			'Fixed Angle Position',
+			'Recall Position',
+			'fixedangle_recall',
+			'analytics/ptzautoframingexe.cgi',
+			{ PtzAutoFramingFixedAnglePositionCall: '1' },
+			false,
+		],
 		// @ts-expect-error  The first param will not be used
 		...[...Array(7)].map((x, i) => [
 			'Multi Tracking Num',
@@ -193,6 +314,16 @@ export function UpdateActions(self: ModuleInstance): void {
 			{ PresetSet: `${i + 1},Preset${i + 1},on` },
 			i ? false : true,
 		]),
+		// Scene File Recall (BRC-AM7) — SceneFileCurrentSceneFile: 0=Off, 1-16=scene file
+		// @ts-expect-error  The first param will not be used
+		...[...Array(17)].map((x, i) => [
+			'Scene File Recall',
+			i === 0 ? 'Off' : i.toString(),
+			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
+			'command/scenefile.cgi',
+			{ SceneFileCurrentSceneFile: `${i}` },
+			i === 0,
+		]),
 	]
 
 	interface Commands {
@@ -212,8 +343,14 @@ export function UpdateActions(self: ModuleInstance): void {
 	const SPEED_PARAM_ACTION_FUNC = async (event: CompanionActionEvent) => {
 		const v = commands[event.options.val as string]
 		const p = structuredClone(v.params)
-		const speed = (event.options.speed as number).toString()
-		const half = Math.floor((event.options.speed as number) / 2).toString()
+		const isZoom = !!p.ZoomMove
+		const fallback = isZoom ? DEFAULT_PTZ_ZOOM_SPEED : DEFAULT_PTZ_MOVE_SPEED
+		const max = isZoom ? 32766 : 24
+		// `speed` may be a plain number (preset / older config) or a resolved string from useVariables.
+		const parsed = Math.round(Number(String(event.options.speed ?? '')))
+		const speedNum = Math.min(Math.max(Number.isFinite(parsed) ? parsed : fallback, 0), max)
+		const speed = speedNum.toString()
+		const half = Math.floor(speedNum / 2).toString()
 		if (p.PanTiltMove) {
 			p.PanTiltMove = (p.PanTiltMove as string).replaceAll('{speed}', speed).replaceAll('{speed/2}', half)
 		} else if (p.ZoomMove) {
@@ -248,21 +385,21 @@ export function UpdateActions(self: ModuleInstance): void {
 			if (item[0] === 'PTZ Move') {
 				action.options.push({
 					id: 'speed',
-					type: 'number',
-					label: 'Speed',
-					default: DEFAULT_PTZ_MOVE_SPEED,
-					min: 0,
-					max: 24,
+					type: 'textinput',
+					label: 'Speed (0-24)',
+					tooltip: 'Pan/tilt speed. Supports variables; value is clamped to 0-24.',
+					default: DEFAULT_PTZ_MOVE_SPEED.toString(),
+					useVariables: true,
 				})
 				action.callback = SPEED_PARAM_ACTION_FUNC
 			} else if (item[0] === 'PTZ Zoom') {
 				action.options.push({
 					id: 'speed',
-					type: 'number',
-					label: 'Speed',
-					default: DEFAULT_PTZ_ZOOM_SPEED,
-					min: 0,
-					max: 32766,
+					type: 'textinput',
+					label: 'Speed (0-32766)',
+					tooltip: 'Zoom speed. Supports variables; value is clamped to 0-32766.',
+					default: DEFAULT_PTZ_ZOOM_SPEED.toString(),
+					useVariables: true,
 				})
 				action.callback = SPEED_PARAM_ACTION_FUNC
 			}
@@ -350,12 +487,106 @@ export function UpdateActions(self: ModuleInstance): void {
 				useVariables: true,
 			})),
 			callback: async (event: CompanionActionEvent) => {
-				const vars: string[] = item[4].map((_, idx) => event.options['val' + (idx + 1)]!.toString())
+				const vars = item[4].map((_, idx) => String(event.options['val' + (idx + 1)] ?? ''))
 				await self.sendCommand(item[2], { [item[3]]: vars.join(',') })
 			},
 		}
 		actions[k] = action
 	})
+
+	actions['fixed_angle_fine_action'] = {
+		name: 'Fixed Angle Fine Adjust',
+		options: [
+			{
+				id: 'target',
+				type: 'dropdown',
+				label: 'Target',
+				choices: [
+					{ id: 'pan', label: 'Pan' },
+					{ id: 'tilt', label: 'Tilt' },
+					{ id: 'zoom', label: 'Zoom' },
+				],
+				default: 'pan',
+			},
+			{ id: 'step', type: 'number', label: 'Step', default: 100, min: -32768, max: 32767 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const offset = to16(event.options.step as number)
+			if (event.options.target === 'zoom') {
+				await self.sendCommand('analytics/ptzautoframingexe.cgi', {
+					PtzAutoFramingFixedAngleRelativeZoom: `1,${offset}`,
+				})
+			} else {
+				const pan = event.options.target === 'pan' ? offset : '0000'
+				const tilt = event.options.target === 'tilt' ? offset : '0000'
+				await self.sendCommand('analytics/ptzautoframingexe.cgi', {
+					PtzAutoFramingFixedAngleRelativePanTilt: `1,${pan},${tilt}`,
+				})
+			}
+		},
+	}
+
+	// Auto Framing tracking Speed / Sensitivity per axis (BRC-AM7)
+	const AF_AXIS_CHOICES = [
+		{ id: 'Pan', label: 'Pan' },
+		{ id: 'Tilt', label: 'Tilt' },
+		{ id: 'Zoom', label: 'Zoom' },
+	]
+	actions['autoframing_tracking_speed_action'] = {
+		name: 'Auto Framing Tracking Speed',
+		options: [
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'value', type: 'number', label: 'Speed (1-5)', default: 4, min: 1, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFramingSpeed${event.options.axis}`]: (event.options.value as number).toString(),
+			})
+		},
+	}
+	actions['autoframing_tracking_sensitivity_action'] = {
+		name: 'Auto Framing Tracking Sensitivity',
+		options: [
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'value', type: 'number', label: 'Sensitivity (0-5)', default: 3, min: 0, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFramingSensitivity${event.options.axis}`]: (event.options.value as number).toString(),
+			})
+		},
+	}
+	actions['autoframing_tracking_step_action'] = {
+		name: 'Auto Framing Tracking Step (Speed/Sensitivity)',
+		options: [
+			{
+				id: 'kind',
+				type: 'dropdown',
+				label: 'Adjust',
+				choices: [
+					{ id: 'Speed', label: 'Speed (1-5)' },
+					{ id: 'Sensitivity', label: 'Sensitivity (0-5)' },
+				],
+				default: 'Speed',
+			},
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'step', type: 'number', label: 'Step', default: 1, min: -5, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const kind = event.options.kind as string
+			const axis = event.options.axis as string
+			const step = event.options.step as number
+			const min = kind === 'Speed' ? 1 : 0
+			const max = 5
+			const varName = `tracking${kind}${axis}`
+			const current = Number(self.getVariableValue(varName))
+			const value = Math.min(Math.max((isNaN(current) ? min : current) + step, min), max)
+			self.setVariableValues({ [varName]: value })
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFraming${kind}${axis}`]: value.toString(),
+			})
+		},
+	}
 
 	actions['generic_step_action'] = {
 		name: 'Generic Step',
@@ -400,8 +631,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		callback: async (event: CompanionActionEvent) => {
 			self.lastStepTime = Date.now()
 
-			const path = await self.parseVariablesInString(event.options.path as string)
-			const param = await self.parseVariablesInString(event.options.param as string)
+			const path = event.options.path as string
+			const param = event.options.param as string
 			const step = event.options.step as number
 			const max = event.options.max as number
 			const min = event.options.min as number
@@ -435,8 +666,8 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
-			const path = await self.parseVariablesInString(event.options.path as string)
-			const paramsStr = await self.parseVariablesInString(event.options.params as string)
+			const path = event.options.path as string
+			const paramsStr = event.options.params as string
 			const params = Object.fromEntries(paramsStr.split('&').map((x) => x.split(/(?<=^[^=]+)=/)))
 			await self.sendCommand(path, params)
 		},
@@ -468,10 +699,12 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
-			const host = await self.parseVariablesInString(event.options.host as string)
+			const host = event.options.host as string
 			if (host && self.config.host !== host) {
 				const newConfig = { ...self.config, host }
-				self.saveConfig(newConfig)
+				self.saveConfig(newConfig, self.secrets)
+				// saveConfig only persists to the UI; apply it so the module reconnects to the new host.
+				await self.configUpdated(newConfig, self.secrets)
 			}
 		},
 	}
