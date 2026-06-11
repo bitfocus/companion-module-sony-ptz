@@ -473,21 +473,6 @@ export function UpdateActions(self: ModuleInstance): void {
 		['Absolute PTZF', 'Absolute PTZF', 'command/ptzf.cgi', 'AbsolutePTZF', ['00000', '00000', '0000', '0000']],
 		['Absolute PanTilt', 'Absolute PanTilt', 'command/ptzf.cgi', 'AbsolutePanTilt', ['0000', '0000', '12']],
 		['Relative PanTilt', 'Relative PanTilt', 'command/ptzf.cgi', 'RelativePanTilt', ['0000', '0000', '12']],
-		// Fine Adjustment of Fixed Angle Position (SRG-A40/A12) — Value1=angle #, then relative hex offsets
-		[
-			'Fixed Angle Fine PanTilt',
-			'Fixed Angle Fine Pan/Tilt',
-			'analytics/ptzautoframingexe.cgi',
-			'PtzAutoFramingFixedAngleRelativePanTilt',
-			['1', '0000', '0000'],
-		],
-		[
-			'Fixed Angle Fine Zoom',
-			'Fixed Angle Fine Zoom',
-			'analytics/ptzautoframingexe.cgi',
-			'PtzAutoFramingFixedAngleRelativeZoom',
-			['1', '0000'],
-		],
 	]
 
 	COMMAND_LIST_WITH_VALUES.forEach((item) => {
@@ -511,6 +496,38 @@ export function UpdateActions(self: ModuleInstance): void {
 		}
 		actions[k] = action
 	})
+
+	actions['fixed_angle_fine_action'] = {
+		name: 'Fixed Angle Fine Adjust',
+		options: [
+			{
+				id: 'target',
+				type: 'dropdown',
+				label: 'Target',
+				choices: [
+					{ id: 'pan', label: 'Pan' },
+					{ id: 'tilt', label: 'Tilt' },
+					{ id: 'zoom', label: 'Zoom' },
+				],
+				default: 'pan',
+			},
+			{ id: 'step', type: 'number', label: 'Step', default: 100, min: -32768, max: 32767 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const offset = to16(event.options.step as number)
+			if (event.options.target === 'zoom') {
+				await self.sendCommand('analytics/ptzautoframingexe.cgi', {
+					PtzAutoFramingFixedAngleRelativeZoom: `1,${offset}`,
+				})
+			} else {
+				const pan = event.options.target === 'pan' ? offset : '0000'
+				const tilt = event.options.target === 'tilt' ? offset : '0000'
+				await self.sendCommand('analytics/ptzautoframingexe.cgi', {
+					PtzAutoFramingFixedAngleRelativePanTilt: `1,${pan},${tilt}`,
+				})
+			}
+		},
+	}
 
 	// Auto Framing tracking Speed / Sensitivity per axis (BRC-AM7)
 	const AF_AXIS_CHOICES = [
