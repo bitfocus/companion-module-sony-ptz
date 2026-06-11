@@ -43,7 +43,6 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		{ variableId: 'exposureGain', name: 'Exposure Gain' },
 		{ variableId: 'exposureIris', name: 'Exposure Iris' },
 		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
-		{ variableId: 'exposureNDVariable', name: 'Exposure ND Variable' },
 		{ variableId: 'masterBlack', name: 'Master Black' },
 		{ variableId: 'currentSceneFile', name: 'Current Scene File Number' },
 		...Array.from({ length: 16 }, (_, i) => ({

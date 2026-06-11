@@ -346,8 +346,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		const isZoom = !!p.ZoomMove
 		const fallback = isZoom ? DEFAULT_PTZ_ZOOM_SPEED : DEFAULT_PTZ_MOVE_SPEED
 		const max = isZoom ? 32766 : 24
-		// `speed` may be a plain number (preset / older config) or a string with variables.
-		const parsed = Math.round(Number(await self.parseVariablesInString(String(event.options.speed ?? ''))))
+		// `speed` may be a plain number (preset / older config) or a resolved string from useVariables.
+		const parsed = Math.round(Number(String(event.options.speed ?? '')))
 		const speedNum = Math.min(Math.max(Number.isFinite(parsed) ? parsed : fallback, 0), max)
 		const speed = speedNum.toString()
 		const half = Math.floor(speedNum / 2).toString()
@@ -487,10 +487,7 @@ export function UpdateActions(self: ModuleInstance): void {
 				useVariables: true,
 			})),
 			callback: async (event: CompanionActionEvent) => {
-				// Fields declare useVariables, so resolve any variable references before sending.
-				const vars: string[] = await Promise.all(
-					item[4].map(async (_, idx) => self.parseVariablesInString(String(event.options['val' + (idx + 1)] ?? ''))),
-				)
+				const vars = item[4].map((_, idx) => String(event.options['val' + (idx + 1)] ?? ''))
 				await self.sendCommand(item[2], { [item[3]]: vars.join(',') })
 			},
 		}
@@ -634,8 +631,8 @@ export function UpdateActions(self: ModuleInstance): void {
 		callback: async (event: CompanionActionEvent) => {
 			self.lastStepTime = Date.now()
 
-			const path = await self.parseVariablesInString(event.options.path as string)
-			const param = await self.parseVariablesInString(event.options.param as string)
+			const path = event.options.path as string
+			const param = event.options.param as string
 			const step = event.options.step as number
 			const max = event.options.max as number
 			const min = event.options.min as number
@@ -669,8 +666,8 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
-			const path = await self.parseVariablesInString(event.options.path as string)
-			const paramsStr = await self.parseVariablesInString(event.options.params as string)
+			const path = event.options.path as string
+			const paramsStr = event.options.params as string
 			const params = Object.fromEntries(paramsStr.split('&').map((x) => x.split(/(?<=^[^=]+)=/)))
 			await self.sendCommand(path, params)
 		},
@@ -702,7 +699,7 @@ export function UpdateActions(self: ModuleInstance): void {
 			},
 		],
 		callback: async (event: CompanionActionEvent) => {
-			const host = await self.parseVariablesInString(event.options.host as string)
+			const host = event.options.host as string
 			if (host && self.config.host !== host) {
 				const newConfig = { ...self.config, host }
 				self.saveConfig(newConfig, self.secrets)
