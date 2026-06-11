@@ -1,6 +1,6 @@
 ## Sony PTZ Camera Module
 
-A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based commands with digest authentication
+A module for controlling Sony PTZ Cameras via HTTP.
 
 ### Supported Devices
 
@@ -8,6 +8,17 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - SRG-A40
 - SRG-A12
 - ILME-FR7
+
+### Getting Started
+
+Add the connection and enter the camera's details:
+
+- **Target IP** — IP address of the Sony PTZ camera.
+- **Target Port** — HTTP port the camera listens on (default: 80).
+- **User** / **Password** — HTTP digest authentication credentials configured on the camera.
+- **Referer** — Send a Referer header with each request. Leave enabled unless you have modified the "Referer Check" settings on your camera.
+- **Status Check** — Periodically poll the camera for status updates used by feedbacks and variables.
+- **Status Check Interval** — How often to poll, in milliseconds (default: 10000).
 
 ### Actions
 
