@@ -24,7 +24,6 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				},
 			],
 			callback: (feedback) => {
-				self.log('debug', `power: ${self.state.get('power')}`)
 				return self.state.get('power') === feedback.options.power
 			},
 		},
@@ -91,7 +90,6 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 					default: '1200',
 				},
 			],
-			// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
 			callback: (feedback) => self.state.get('shotMode') === feedback.options.mode,
 		},
 		leadRoom: {
