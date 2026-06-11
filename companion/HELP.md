@@ -45,10 +45,8 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
   - On
   - Store Current Position
   - Recall Position
-- Fixed Angle Fine Pan/Tilt \*SRG only
-  - Relative Pan/Tilt nudge of the stored fixed angle (hex offsets)
-- Fixed Angle Fine Zoom \*SRG only
-  - Relative Zoom nudge of the stored fixed angle (hex offset)
+- Fixed Angle Fine Adjust \*SRG only
+  - Adjust the stored fixed angle
 - Scene File Recall \*BRC-AM7 only
   - Off (0)
   - Scene File Number (1-16)
@@ -84,8 +82,8 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
   - Wide/Tele
 - Auto Focus
   - On/Off
-  - Mode (Normal/Interval/Zoom Trigger)
-  - Sensitivity (Normal/Low)
+  - Mode (Normal/Interval/Zoom Trigger) \*SRG only
+  - Sensitivity (Normal/Low) \*SRG only
 - Absolute Focus \*SRG only
 - Absolute Zoom \*SRG only
 - Absolute PTZF
@@ -93,46 +91,69 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - Relative PanTilt \*SRG only
 - Other Command
   - Any Command Can Be Sent
+- Discover Cameras
+  - Broadcasts for Sony PTZ cameras and stores results in `foundDevice` variables
+- Update Target IP via Variable
+  - Sets the connection host from a variable and reconnects immediately
 
 ### Presets
 
 - System Power
 - Auto Framing
 - Framing Mode
+- Shot Mode
 - Lead Room
 - Real-time Overlay
 - Fixed Angle Position \*SRG only
-- Scene File Recall \*BRC-AM7 only
+- Fixed Angle Fine Adjustment (Pan/Tilt/Zoom) \*SRG only
 - Multi-Person Tracking
+- Auto Framing Tracking Speed \*BRC-AM7 only
+- Auto Framing Tracking Sensitivity \*BRC-AM7 only
+- Scene File Recall \*BRC-AM7 only
 - Pan/Tilt/Zoom
   - Down: Start
   - Up: Stop
 - Preset Call
 - Preset Set
+- Focus Controls
+  - Focus Mode
+  - AF Mode \*SRG only
+  - Sensitivity \*SRG only
 - Rotary Button
   - Pan
   - Tilt
   - Zoom
   - Gain
   - Iris
-  - ND Variable
-  - Master Black
-- Auto Focus
+  - ND Variable \*BRC-AM7 only
+  - Master Black \*BRC-AM7 only
+
+> Model-specific presets are filtered to the connected camera once its model is known. When the camera is offline or its model is unrecognized, all presets are shown.
 
 ### Feedbacks
 
 - System Power (On/Standby)
+- Auto Framing (On/Off)
 - Framing Mode (Person/Ball Sports)
+- Shot Mode (Closer Close Up/Close Up/Waist/Full Body)
 - Lead Room (Off/Low/Middle/High)
-- Real-time Overlay (On/Off)
+- Real-time Overlay / Frame-Area Indicator (On/Off)
 - Fixed Angle Position Enabled (On/Off) \*SRG only
+- Scene File - Current Scene File (matches value) \*BRC-AM7 only
 - Auto Framing Tracking Status (Idle/Missing/Preparing/Searching/Tracking/Waiting/Fixed Angle)
+- Auto Framing Tracking Speed (matches value) \*BRC-AM7 only
+- Auto Framing Tracking Sensitivity (matches value) \*BRC-AM7 only
+- Multi-Person Tracking Targets (matches value)
+- Focus Mode (Auto/Manual)
+- Auto Focus Mode (Normal/Interval/Zoom Trigger) \*SRG only
+- Auto Focus Sensitivity (Normal/Low) \*SRG only
 
 ### Variables
 
 - `$(this:autoFraming)` - Auto Framing Status
 - `$(this:trackingStatus)` - Auto Framing Tracking Status (Idle/Missing/Preparing/Searching/Tracking/Waiting/Fixed Angle)
 - `$(this:framingMode)` - Framing Mode (Person/Ball Sports)
+- `$(this:shotMode)` - Auto Framing Shot Mode (Closer Close Up/Close Up/Waist/Full Body)
 - `$(this:leadRoom)` - Lead Room Level (Off/Low/Middle/High)
 - `$(this:realtimeOverlay)` - Real-time Overlay (Frame/Area Indicator) State (On/Off)
 - `$(this:fixedAngle)` - Fixed Angle Position Enabled (On/Off) \*SRG only
@@ -162,12 +183,15 @@ A module for controlling Sony PTZ Camera BRC and SRG series using HTTP-based com
 - `$(this:zoomRangeWide)` - Possible Wide Movement Range of Zoom
 - `$(this:zoomRangeTele)` - Possible Tele Movement Range of Zoom
 - `$(this:absoluteFocus)` - Absolute Focus Value
-- `$(this:afSensitivity)` - Auto Focus Sensitivity
+- `$(this:afSensitivity)` - Auto Focus Sensitivity \*SRG only
 - `$(this:autoFocusMode)` - Auto Focus Mode (Normal/Interval/Zoom Trigger) \*SRG only
 - `$(this:focusMode)` - Focus Mode (Auto/Manual)
 - `$(this:exposureGain)` - Exposure Gain Value
 - `$(this:exposureIris)` - Exposure Iris Value
 - `$(this:exposureNDVariable)` - Exposure ND Variable Value \*BRC-AM7 only
 - `$(this:masterBlack)` - Master Black Value \*BRC-AM7 only
+- `$(this:currentSceneFile)` - Current Scene File Number \*BRC-AM7 only
+- `$(this:sceneFileName1)` … `$(this:sceneFileName16)` - Scene File Names (Slots 1–16) \*BRC-AM7 only
+- `$(this:foundDevice1)` … `$(this:foundDevice8)` - IP addresses of cameras found by Discover Cameras
 
 https://github.com/bitfocus/companion-module-sony-ptz/issues

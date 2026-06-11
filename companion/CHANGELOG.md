@@ -9,25 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **PTZ Move** and **PTZ Zoom** speed fields now accept variables, so pan/tilt and zoom speeds can be driven dynamically (values are parsed and clamped to 0-24 and 0-32766 respectively).
-- **Auto Framing — Framing Mode** action (Person / Ball Sports) — BRC-AM7 & SRG-A40/A12.
-- **Auto Framing — Lead Room** action (Off / Low / Middle / High).
-- **Auto Framing — Real-time Overlay (Frame/Area Indicator)** action (On / Off).
-- **Auto Framing Shot Mode — Closer Close Up** option (tighter than the existing Close Up).
-- **Auto Framing Tracking Speed** and **Tracking Sensitivity** actions with per-axis (Pan/Tilt/Zoom) selection — BRC-AM7 only.
-- **Fixed Angle Position** action (Off / On / Store Current Position / Recall Position) — SRG-A40/A12 only.
-- **Fixed Angle Fine Pan/Tilt** and **Fixed Angle Fine Zoom** actions for nudging the stored fixed angle — SRG-A40/A12 only.
-- **Scene File Recall** action (Off / 1–16) — BRC-AM7 only.
-- Boolean **feedbacks** for Auto Framing On/Off, Shot Mode, Framing Mode, Lead Room, Real-time Overlay, Fixed Angle Position, and Auto Framing Tracking Status.
-- **Variables** for tracking status, framing mode, shot mode (friendly name), lead room level, real-time overlay state, fixed angle enabled, and per-axis tracking speed/sensitivity.
-- Matching **presets** for the new actions, with feedback highlighting on the relevant buttons.
+- **Auto Framing — Framing Mode** action (Person / Ball Sports), feedback and `framingMode` variable
+- **Auto Framing — Lead Room** action (Off / Low / Middle / High), feedback and `leadRoom` variable
+- **Auto Framing — Frame/Area Indicator** action (On / Off), feedback and `realtimeOverlay` variable
+- **Auto Framing Shot Mode — Closer Close Up** option, feedback and `shotMode` variable
+- **Auto Framing Tracking Speed** and **Tracking Sensitivity** actions with per-axis (Pan/Tilt/Zoom) selection — BRC-AM7 only — plus matching feedbacks and variables (`trackingSpeedPan`/`Tilt`/`Zoom`, `trackingSensitivityPan`/`Tilt`/`Zoom`)
+- **Fixed Angle Position** action (Off / On / Store Current Position / Recall Position) — SRG-A40/A12 only — feedback and `fixedAngle` variable
+- **Fixed Angle Fine Adjust** for fine adjustment of the stored fixed angle — SRG-A40/A12 only
+- **Scene File Recall** action (Off / 1–16) — BRC-AM7 only — feedback and variables for the current scene file number (`currentSceneFile`) and each slot's name (`sceneFileName1`–`sceneFileName16`)
+- **Auto Framing On/Off** feedback and `autoFraming` variable
+- **Auto Framing Tracking Status** feedback and `trackingStatus` variable
+- **Multi-Person Tracking** feedback and `multiTracking` / `multiTrackingNum` variables
+- **Focus Mode**, **Auto Focus Mode**, and **Auto Focus Sensitivity** feedbacks for the existing focus actions
+- Matching **presets** for the new actions, organized into categories, with feedback highlighting on the relevant buttons.
+- Presets are now **filtered to the connected camera model** once it is known; model-specific presets are hidden for other models. When the camera is offline or its model is unrecognized, all presets are shown.
 - Support for attaching feedbacks to presets via an optional trailing element on the preset specs.
+
+### Changed
+
+- - **PTZ Move** and **PTZ Zoom** speed fields now accept variables, so pan/tilt and zoom speeds can be driven dynamically
 
 ### Fixed
 
-- Actions, feedbacks, variables, and presets are now registered immediately, so they can be configured while the camera is offline or unreachable (e.g. building a show at home before connecting the PTZs on site). Previously these were not exported until a connection attempt completed.
-- Multi-value actions (Absolute Focus / Zoom / PTZF / Pan-Tilt, Relative Pan-Tilt, Fixed Angle Fine Pan/Tilt & Zoom) now resolve variables in their value fields instead of sending the raw `$(...)` text.
-- "Update Target IP via Variable" now reconnects to the new host immediately, rather than only persisting the change.
+- Actions, feedbacks, variables, and presets are now registered immediately, so they can be configured while the camera is offline or unreachable.
+- An unreachable camera no longer prevents editing the connection configuration.
+- Feedbacks now refresh immediately after action runs, rather than waiting for the next poll.
 
 ## [1.2.0] - 2025-12-07
 
