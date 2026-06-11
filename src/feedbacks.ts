@@ -279,7 +279,9 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			callback: (feedback) => {
 				const enable = self.getFeedbackValue('multiTracking')
 				if (feedback.options.num === '1') return enable === 'off'
-				return enable === 'on' && String(self.getFeedbackValue('multiTrackingNum')) === String(feedback.options.num)
+				return (
+					enable === 'on' && String(self.getFeedbackValue('multiTrackingTargetNum')) === String(feedback.options.num)
+				)
 			},
 		},
 		focusMode: {
