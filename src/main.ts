@@ -70,6 +70,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 	async sendCommand(path: string, params: PtzCommandParams): Promise<void> {
 		try {
 			await this.ptz?.send({ path, params })
+			// Check feedbacks after command is sent to avoid waiting for the next poll.
+			await this.refreshFeedbacksAfterCommand(params)
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				this.log('debug', `statusCode = ${e.statusCode}`)
@@ -95,6 +97,73 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 			this.feedbackProperties[id] = value
 			//this.checkFeedbacksById(id);
 			this.checkFeedbacks()
+		}
+	}
+
+	private applyFeedbacks(inq: string, params: URLSearchParams): void {
+		switch (inq) {
+			case 'ptzautoframing':
+				this.setFeedbackValue(FB_ID.AUTO_FRAMING, params.get('PtzAutoFraming') || '')
+				this.setFeedbackValue(FB_ID.FRAMING_MODE, params.get('PtzAutoFramingFramingMode') || '')
+				// AdjustSetting inquiry returns "<pan>,<tilt>,<zoom>"; the shot mode is the 3rd field
+				this.setFeedbackValue(FB_ID.SHOT_MODE, (params.get('PtzAutoFramingAdjustSetting') || '').split(',')[2] || '')
+				this.setFeedbackValue(
+					FB_ID.LEAD_ROOM,
+					LEAD_ROOM_NAMES[(params.get('PtzAutoFramingLeadRoomLevel') || '').toLowerCase()] ||
+						params.get('PtzAutoFramingLeadRoomLevel') ||
+						'',
+				)
+				this.setFeedbackValue(FB_ID.REALTIME_OVERLAY, params.get('PtzAutoFramingFaceIndicatorEnable3') || '')
+				// FixedAngleEnable inquiry returns "<number>,<on|off>"; the enabled state is the 2nd field
+				this.setFeedbackValue(
+					FB_ID.FIXED_ANGLE,
+					(params.get('PtzAutoFramingFixedAngleEnable') || '').split(',')[1] || '',
+				)
+				this.setFeedbackValue(FB_ID.TRACKING_STATUS, params.get('PtzAutoFramingTrackingStatus') || '')
+				for (const axis of ['Pan', 'Tilt', 'Zoom']) {
+					this.setFeedbackValue(`trackingSpeed${axis}`, params.get(`PtzAutoFramingSpeed${axis}`) || undefined)
+					this.setFeedbackValue(
+						`trackingSensitivity${axis}`,
+						params.get(`PtzAutoFramingSensitivity${axis}`) || undefined,
+					)
+				}
+				this.setFeedbackValue('multiTracking', params.get('PtzAutoFramingMultiTrackingEnable') || undefined)
+				this.setFeedbackValue(
+					'multiTrackingNum',
+					params.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || undefined,
+				)
+				break
+			case 'ptzf':
+				this.setFeedbackValue('focusMode', params.get('FocusMode') || undefined)
+				this.setFeedbackValue('focusSensitivity', params.get('AFSensitivity') || undefined)
+				this.setFeedbackValue('afMode', params.get('AFMode') || undefined)
+				break
+			case 'scenefile':
+				this.setFeedbackValue(FB_ID.SCENE_FILE, params.get('SceneFileCurrentSceneFile') ?? undefined)
+				break
+		}
+	}
+
+	private async refreshFeedbacksAfterCommand(params: PtzCommandParams): Promise<void> {
+		if (!this.ptz) return
+		const inqs = new Set<string>()
+		for (const key of Object.keys(params)) {
+			if (key.startsWith('PtzAutoFraming')) inqs.add('ptzautoframing')
+			else if (key === 'FocusMode' || key === 'AFMode' || key === 'AFSensitivity') inqs.add('ptzf')
+			else if (key.startsWith('SceneFile')) inqs.add('scenefile')
+			else if (key === 'System') inqs.add('power')
+		}
+		for (const inq of inqs) {
+			try {
+				if (inq === 'power') {
+					const p = await this.ptz.sendInq({ inq: 'sysinfo' })
+					this.setFeedbackValue(FB_ID.POWER, p.get('Power') || '')
+				} else {
+					this.applyFeedbacks(inq, await this.ptz.sendInq({ inq }))
+				}
+			} catch {
+				// Best-effort: the next regular poll will reconcile if this targeted refresh fails.
+			}
 		}
 	}
 
@@ -235,33 +304,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 
 			this.setVariableValues(variables)
 
+			// power spans sysinfo+system, so set it from the combined value; the rest map per inquiry.
 			this.setFeedbackValue(FB_ID.POWER, power)
-			this.setFeedbackValue(FB_ID.AUTO_FRAMING, autoFraming)
-			this.setFeedbackValue(FB_ID.FRAMING_MODE, framingMode)
-			this.setFeedbackValue(FB_ID.SHOT_MODE, shotMode)
-			this.setFeedbackValue(FB_ID.LEAD_ROOM, leadRoom)
-			this.setFeedbackValue(FB_ID.REALTIME_OVERLAY, realtimeOverlay)
-			this.setFeedbackValue(FB_ID.FIXED_ANGLE, fixedAngle)
-			this.setFeedbackValue(FB_ID.TRACKING_STATUS, trackingStatus)
-			this.setFeedbackValue(FB_ID.SCENE_FILE, sceneFileParams.get('SceneFileCurrentSceneFile') ?? undefined)
-			for (const axis of ['Pan', 'Tilt', 'Zoom']) {
-				this.setFeedbackValue(
-					`trackingSpeed${axis}`,
-					ptzautoframingParams.get(`PtzAutoFramingSpeed${axis}`) || undefined,
-				)
-				this.setFeedbackValue(
-					`trackingSensitivity${axis}`,
-					ptzautoframingParams.get(`PtzAutoFramingSensitivity${axis}`) || undefined,
-				)
-			}
-			this.setFeedbackValue('multiTracking', ptzautoframingParams.get('PtzAutoFramingMultiTrackingEnable') || undefined)
-			this.setFeedbackValue(
-				'multiTrackingNum',
-				ptzautoframingParams.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || undefined,
-			)
-			this.setFeedbackValue('focusMode', ptzfParams.get('FocusMode') || undefined)
-			this.setFeedbackValue('focusSensitivity', ptzfParams.get('AFSensitivity') || undefined)
-			this.setFeedbackValue('afMode', ptzfParams.get('AFMode') || undefined)
+			this.applyFeedbacks('ptzautoframing', ptzautoframingParams)
+			this.applyFeedbacks('ptzf', ptzfParams)
+			this.applyFeedbacks('scenefile', sceneFileParams)
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				if (e.statusCode === 401) {
