@@ -205,5 +205,146 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			],
 			callback: (feedback) => self.getFeedbackValue('trackingStatus') === feedback.options.status,
 		},
+		trackingSpeed: {
+			type: 'boolean',
+			name: 'Auto Framing -  Tracking Speed (matches value)',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Axis',
+					id: 'axis',
+					choices: [
+						{ id: 'Pan', label: 'Pan' },
+						{ id: 'Tilt', label: 'Tilt' },
+						{ id: 'Zoom', label: 'Zoom' },
+					],
+					default: 'Pan',
+				},
+				{ type: 'number', label: 'Speed (1-5)', id: 'value', default: 4, min: 1, max: 5 },
+			],
+			callback: (feedback) => {
+				const cur = self.getFeedbackValue(`trackingSpeed${feedback.options.axis}`)
+				return cur !== undefined && cur !== '' && Number(cur) === Number(feedback.options.value)
+			},
+		},
+		trackingSensitivity: {
+			type: 'boolean',
+			name: 'Auto Framing -  Tracking Sensitivity (matches value)',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Axis',
+					id: 'axis',
+					choices: [
+						{ id: 'Pan', label: 'Pan' },
+						{ id: 'Tilt', label: 'Tilt' },
+						{ id: 'Zoom', label: 'Zoom' },
+					],
+					default: 'Pan',
+				},
+				{ type: 'number', label: 'Sensitivity (0-5)', id: 'value', default: 3, min: 0, max: 5 },
+			],
+			callback: (feedback) => {
+				const cur = self.getFeedbackValue(`trackingSensitivity${feedback.options.axis}`)
+				return cur !== undefined && cur !== '' && Number(cur) === Number(feedback.options.value)
+			},
+		},
+		multiTracking: {
+			type: 'boolean',
+			name: 'Auto Framing -  Multi Tracking Targets',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Targets',
+					id: 'num',
+					choices: [
+						{ id: '1', label: 'Off (single)' },
+						...Array.from({ length: 7 }, (_, i) => ({ id: `${i + 2}`, label: `${i + 2} Targets` })),
+					],
+					default: '1',
+				},
+			],
+			callback: (feedback) => {
+				const enable = self.getFeedbackValue('multiTracking')
+				if (feedback.options.num === '1') return enable === 'off'
+				return enable === 'on' && String(self.getFeedbackValue('multiTrackingNum')) === String(feedback.options.num)
+			},
+		},
+		focusMode: {
+			type: 'boolean',
+			name: 'Focus -  Focus Mode (Auto/Manual)',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Focus Mode',
+					id: 'mode',
+					choices: [
+						{ id: 'auto', label: 'Auto' },
+						{ id: 'manual', label: 'Manual' },
+					],
+					default: 'auto',
+				},
+			],
+			callback: (feedback) => self.getFeedbackValue('focusMode') === feedback.options.mode,
+		},
+		afMode: {
+			type: 'boolean',
+			name: 'Focus -  Auto Focus Mode',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'AF Mode',
+					id: 'mode',
+					choices: [
+						{ id: 'normal', label: 'Normal' },
+						{ id: 'interval', label: 'Interval' },
+						{ id: 'zoomtrigger', label: 'Zoom Trigger' },
+					],
+					default: 'normal',
+				},
+			],
+			callback: (feedback) => self.getFeedbackValue('afMode') === feedback.options.mode,
+		},
+		focusSensitivity: {
+			type: 'boolean',
+			name: 'Focus -  Auto Focus Sensitivity',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Sensitivity',
+					id: 'level',
+					choices: [
+						{ id: 'normal', label: 'Normal' },
+						{ id: 'low', label: 'Low' },
+					],
+					default: 'normal',
+				},
+			],
+			callback: (feedback) => self.getFeedbackValue('focusSensitivity') === feedback.options.level,
+		},
 	})
 }

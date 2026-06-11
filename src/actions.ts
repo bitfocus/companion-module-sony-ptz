@@ -542,6 +542,37 @@ export function UpdateActions(self: ModuleInstance): void {
 			})
 		},
 	}
+	actions['autoframing_tracking_step_action'] = {
+		name: 'Auto Framing Tracking Step (Speed/Sensitivity)',
+		options: [
+			{
+				id: 'kind',
+				type: 'dropdown',
+				label: 'Adjust',
+				choices: [
+					{ id: 'Speed', label: 'Speed (1-5)' },
+					{ id: 'Sensitivity', label: 'Sensitivity (0-5)' },
+				],
+				default: 'Speed',
+			},
+			{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
+			{ id: 'step', type: 'number', label: 'Step', default: 1, min: -5, max: 5 },
+		],
+		callback: async (event: CompanionActionEvent) => {
+			const kind = event.options.kind as string
+			const axis = event.options.axis as string
+			const step = event.options.step as number
+			const min = kind === 'Speed' ? 1 : 0
+			const max = 5
+			const varName = `tracking${kind}${axis}`
+			const current = Number(self.getVariableValue(varName))
+			const value = Math.min(Math.max((isNaN(current) ? min : current) + step, min), max)
+			self.setVariableValues({ [varName]: value })
+			await self.sendCommand('analytics/ptzautoframing.cgi', {
+				[`PtzAutoFraming${kind}${axis}`]: value.toString(),
+			})
+		},
+	}
 
 	actions['generic_step_action'] = {
 		name: 'Generic Step',

@@ -205,7 +205,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 				multiTracking: ptzautoframingParams.get('PtzAutoFramingMultiTrackingEnable') || '',
 				multiTrackingNum: ptzautoframingParams.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || '',
 				zoomMode: ptzfParams.get('ZoomMode') || '',
-				autoFocusMode: ptzfParams.get('FocusMode') || '',
+				autoFocusMode: ptzfParams.get('AFMode') || '',
 				afSensitivity: ptzfParams.get('AFSensitivity') || '',
 				focusMode: ptzfParams.get('FocusMode') || '',
 				absoluteFocus: ptzfParams.get('AbsoluteFocus') || '',
@@ -244,6 +244,24 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 			this.setFeedbackValue(FB_ID.FIXED_ANGLE, fixedAngle)
 			this.setFeedbackValue(FB_ID.TRACKING_STATUS, trackingStatus)
 			this.setFeedbackValue(FB_ID.SCENE_FILE, sceneFileParams.get('SceneFileCurrentSceneFile') ?? undefined)
+			for (const axis of ['Pan', 'Tilt', 'Zoom']) {
+				this.setFeedbackValue(
+					`trackingSpeed${axis}`,
+					ptzautoframingParams.get(`PtzAutoFramingSpeed${axis}`) || undefined,
+				)
+				this.setFeedbackValue(
+					`trackingSensitivity${axis}`,
+					ptzautoframingParams.get(`PtzAutoFramingSensitivity${axis}`) || undefined,
+				)
+			}
+			this.setFeedbackValue('multiTracking', ptzautoframingParams.get('PtzAutoFramingMultiTrackingEnable') || undefined)
+			this.setFeedbackValue(
+				'multiTrackingNum',
+				ptzautoframingParams.get('PtzAutoFramingMultiTrackingCurrentTargetNum') || undefined,
+			)
+			this.setFeedbackValue('focusMode', ptzfParams.get('FocusMode') || undefined)
+			this.setFeedbackValue('focusSensitivity', ptzfParams.get('AFSensitivity') || undefined)
+			this.setFeedbackValue('afMode', ptzfParams.get('AFMode') || undefined)
 		} catch (e: any) {
 			if (e instanceof PtzError) {
 				if (e.statusCode === 401) {

@@ -370,6 +370,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'auto_focus_auto',
 			[['focus_mode_action', 'focus_auto', 0]],
 			[],
+			[{ feedbackId: 'focusMode', options: { mode: 'auto' } }],
 		],
 		[
 			'Auto Focus - Focus Mode',
@@ -378,6 +379,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'auto_focus_manual',
 			[['focus_mode_action', 'focus_manual', 0]],
 			[],
+			[{ feedbackId: 'focusMode', options: { mode: 'manual' } }],
 		],
 		[
 			'Auto Focus - AF Mode',
@@ -386,6 +388,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'afmode_normal',
 			[['auto_focus_mode_action', 'afmode_normal', 0]],
 			[],
+			[{ feedbackId: 'afMode', options: { mode: 'normal' } }],
 		],
 		[
 			'Auto Focus - AF Mode',
@@ -394,6 +397,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'afmode_interval',
 			[['auto_focus_mode_action', 'afmode_interval', 0]],
 			[],
+			[{ feedbackId: 'afMode', options: { mode: 'interval' } }],
 		],
 		[
 			'Auto Focus - AF Mode',
@@ -402,6 +406,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'afmode_zoomtrigger',
 			[['auto_focus_mode_action', 'afmode_zoomtrigger', 0]],
 			[],
+			[{ feedbackId: 'afMode', options: { mode: 'zoomtrigger' } }],
 		],
 		[
 			'Auto Focus - Sensitivity',
@@ -410,6 +415,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'afsensitivity_normal',
 			[['auto_focus_sensitivity_action', 'afsensitivity_normal', 0]],
 			[],
+			[{ feedbackId: 'focusSensitivity', options: { level: 'normal' } }],
 		],
 		[
 			'Auto Focus - Sensitivity',
@@ -418,6 +424,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'afsensitivity_low',
 			[['auto_focus_sensitivity_action', 'afsensitivity_low', 0]],
 			[],
+			[{ feedbackId: 'focusSensitivity', options: { level: 'low' } }],
 		],
 		[
 			'Auto Framing - Multi Tracking',
@@ -426,6 +433,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			'multitrackingnum_1',
 			[['multi_tracking_num_action', 'multitrackingnum_1', 0]],
 			[],
+			[{ feedbackId: 'multiTracking', options: { num: '1' } }],
 		],
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(7)].map((x, i) => [
@@ -435,6 +443,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			`multitrackingnum_${i + 2}`,
 			[['multi_tracking_num_action', `multitrackingnum_${i + 2}`, 0]],
 			[],
+			[{ feedbackId: 'multiTracking', options: { num: `${i + 2}` } }],
 		]),
 		// @ts-expect-error  The first param 'x' will not be used
 		...[...Array(10)].map((x, i) => ['Preset Call', `${i + 1}`, `PTZ Preset ${i + 1}`, `preset_${i + 1}`, [], []]),
@@ -455,6 +464,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			i === 0 ? 'scenefile_off' : `scenefile_set_${i}`,
 			[],
 			[],
+			[{ feedbackId: 'sceneFile', options: { file: `${i}` } }],
 		]),
 	]
 
@@ -561,26 +571,70 @@ export function UpdatePresets(self: ModuleInstance): void {
 	const FINE_POS = '0064'
 	const FINE_NEG = 'FF9C'
 	const GENERIC_BUTTON_PRESET_LIST: GenericButtonPresetSpec[] = [
-		// Auto Framing Tracking Speed (1-5) per axis
-		...AF_AXES.flatMap((axis) =>
-			[1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+		// Auto Framing Tracking Speed (1-5) per axis: one current-value readout, then SET buttons
+		...AF_AXES.flatMap((axis): GenericButtonPresetSpec[] => [
+			[
 				'Auto Framing - Tracking Speed',
-				`${axis} ${v}`,
-				`${axis} Speed\\n${v}\\n$(this:trackingSpeed${axis})`,
+				`${axis} Current`,
+				`Auto Framing\\n${axis} Speed\\n$(this:trackingSpeed${axis})`,
+				`autoframing_tracking_speed_${axis.toLowerCase()}_current`,
+				[],
+			],
+			[
+				'Auto Framing - Tracking Speed',
+				`${axis} Adjust -1`,
+				`Auto Framing\\n${axis} Speed\\nADJUST -1`,
+				`autoframing_tracking_speed_${axis.toLowerCase()}_adjust_down`,
+				[['autoframing_tracking_step_action', { kind: 'Speed', axis, step: -1 }]],
+			],
+			[
+				'Auto Framing - Tracking Speed',
+				`${axis} Adjust +1`,
+				`Auto Framing\\n${axis} Speed\\nADJUST +1`,
+				`autoframing_tracking_speed_${axis.toLowerCase()}_adjust_up`,
+				[['autoframing_tracking_step_action', { kind: 'Speed', axis, step: 1 }]],
+			],
+			...[1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+				'Auto Framing - Tracking Speed',
+				`${axis} Set ${v}`,
+				`Auto Framing\\n${axis} Speed\\nSET ${v}`,
 				`autoframing_tracking_speed_${axis.toLowerCase()}_${v}`,
 				[['autoframing_tracking_speed_action', { axis, value: v }]],
+				[{ feedbackId: 'trackingSpeed', options: { axis, value: v } }],
 			]),
-		),
-		// Auto Framing Tracking Sensitivity (0-5) per axis
-		...AF_AXES.flatMap((axis) =>
-			[0, 1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+		]),
+		// Auto Framing Tracking Sensitivity (0-5) per axis: one current-value readout, then SET buttons
+		...AF_AXES.flatMap((axis): GenericButtonPresetSpec[] => [
+			[
 				'Auto Framing - Tracking Sensitivity',
-				`${axis} ${v}`,
-				`${axis} Sens\\n${v}\\n$(this:trackingSensitivity${axis})`,
+				`${axis} Current`,
+				`Auto Framing\\n${axis} Sens\\n$(this:trackingSensitivity${axis})`,
+				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_current`,
+				[],
+			],
+			[
+				'Auto Framing - Tracking Sensitivity',
+				`${axis} Adjust -1`,
+				`Auto Framing\\n${axis} Sens\\nADJUST -1`,
+				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_adjust_down`,
+				[['autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: -1 }]],
+			],
+			[
+				'Auto Framing - Tracking Sensitivity',
+				`${axis} Adjust +1`,
+				`Auto Framing\\n${axis} Sens\\nADJUST +1`,
+				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_adjust_up`,
+				[['autoframing_tracking_step_action', { kind: 'Sensitivity', axis, step: 1 }]],
+			],
+			...[0, 1, 2, 3, 4, 5].map<GenericButtonPresetSpec>((v) => [
+				'Auto Framing - Tracking Sensitivity',
+				`${axis} Set ${v}`,
+				`Auto Framing\\n${axis} Sens\\nSET ${v}`,
 				`autoframing_tracking_sensitivity_${axis.toLowerCase()}_${v}`,
 				[['autoframing_tracking_sensitivity_action', { axis, value: v }]],
+				[{ feedbackId: 'trackingSensitivity', options: { axis, value: v } }],
 			]),
-		),
+		]),
 		// Fine Adjustment of Fixed Angle Position (relative hex nudges, angle #1)
 		[
 			'Auto Framing - Fixed Angle Fine Adjust',
