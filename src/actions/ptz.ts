@@ -3,11 +3,19 @@ import type { ModuleInstance } from '../main.js'
 import { resolveSpeed } from './helpers.js'
 import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_STEP, DEFAULT_PTZ_ZOOM_SPEED } from './constants.js'
 
+// Absolute positions are 16-bit signed (see to16); fall back to that full range when the
+// camera's reported movement range hasn't been polled yet.
+const INT16_MIN = -0x8000
+const INT16_MAX = 0x7fff
+
 /** Clamp a value to the camera's reported movement range (variables), with hardware fallbacks. */
 function clamp(self: ModuleInstance, value: number, min: string, max: string): number {
 	const _min = self.getVariableValue(min)
 	const _max = self.getVariableValue(max)
-	return Math.min(Math.max(value, _min === '' ? -0xffff : (_min as number)), _max === '' ? 0xffff : (_max as number))
+	return Math.min(
+		Math.max(value, _min === '' ? INT16_MIN : (_min as number)),
+		_max === '' ? INT16_MAX : (_max as number),
+	)
 }
 
 export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {

@@ -210,6 +210,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 	stopPolling(): void {
 		clearTimeout(this.timeoutID)
 		this.api = undefined
+		// Clear the in-flight guard so a reconnect can start a fresh check immediately
+		this.isChecking = false
 	}
 
 	startPolling(interval: number): void {
