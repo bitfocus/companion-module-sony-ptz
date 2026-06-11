@@ -56,10 +56,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	const presets: CompanionPresetDefinitions = {}
 
 	// Map each authoring category to a broad top-level group plus a sub-section label.
-	// Buttons are grouped under the top-level category; the sub-label becomes a `type: 'text'`
-	// header inserted once before the group's first button. Categories absent from the map are
-	// left as their own single-section group (no sub-header).
-	// Optional third element lists the models a category applies to; absent = all models.
+	// Optional third element lists the models a category applies to
 	const CATEGORY_MAP: Record<string, [topCategory: string, subLabel: string, models?: string[]]> = {
 		'Auto Framing - Controls': ['Auto Framing', 'Controls'],
 		'Auto Framing - Mode': ['Auto Framing', 'Framing Mode'],
@@ -78,23 +75,19 @@ export function UpdatePresets(self: ModuleInstance): void {
 		'Auto Focus - Sensitivity': ['Focus Controls', 'Sensitivity'],
 		'Preset Call': ['PTZ Presets', 'Recall'],
 		'Preset Set': ['PTZ Presets', 'Store'],
-		// Same top/sub (no sub-header), tagged so it only shows for the BRC-AM7.
 		'Scene File Recall': ['Scene File Recall', 'Scene File Recall', ['BRC-AM7']],
 		'Rotary Presets': ['Rotary', 'Pan / Tilt / Zoom'],
 		'Rotary (BRC-AM7)': ['Rotary', 'BRC-AM7', ['BRC-AM7']],
 		'Rotary (SRG-A12/A40)': ['Rotary', 'SRG-A12/A40', ['SRG-A40', 'SRG-A12']],
 	}
 
-	// Models we know how to filter for. When the connected model is empty or not one of these,
-	// we fall back to showing everything (per the "default to showing it" requirement).
 	const KNOWN_MODELS = new Set(['BRC-AM7', 'SRG-A40', 'SRG-A12'])
 	const model = String(self.state.get('modelName') ?? '')
 		.trim()
 		.toUpperCase()
 	const filterByModel = KNOWN_MODELS.has(model)
 
-	// Whether a category's presets should be exported for the connected model. Untagged
-	// categories and unrecognized/unknown models always pass.
+	// Whether a category's presets should be exported for the connected model
 	function categoryVisible(authorCategory: string): boolean {
 		if (!filterByModel) return true
 		const models = CATEGORY_MAP[authorCategory]?.[2]
@@ -102,9 +95,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 	}
 
 	const seenSubHeaders = new Set<string>()
-	// Resolve an authoring category to its top-level group, emitting a one-time text header
-	// for the sub-section the first time it is encountered. Returns the top-level category to
-	// assign to the button preset.
+	// Resolve an authoring category to its top-level group
 	function resolveCategory(authorCategory: string): string {
 		const [top, sub] = CATEGORY_MAP[authorCategory] ?? [authorCategory, authorCategory]
 		if (sub !== top && !seenSubHeaders.has(`${top}::${sub}`)) {

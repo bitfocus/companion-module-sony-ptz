@@ -11,7 +11,7 @@ const AF_AXIS_CHOICES = [
 export function autoFramingActions(self: ModuleInstance): CompanionActionDefinitions {
 	return {
 		auto_framing_action: {
-			name: 'Auto Framing',
+			name: 'Auto Framing - Control',
 			options: [
 				{
 					id: 'val',
@@ -48,7 +48,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		framing_mode_action: {
-			name: 'Framing Mode',
+			name: 'Auto Framing - Framing Mode',
 			options: [
 				{
 					id: 'val',
@@ -73,7 +73,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		lead_room_action: {
-			name: 'Lead Room',
+			name: 'Auto Framing - Lead Room',
 			options: [
 				{
 					id: 'val',
@@ -131,7 +131,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		auto_framing_shot_mode_action: {
-			name: 'Auto Framing Shot Mode',
+			name: 'Auto Framing - Shot Mode',
 			options: [
 				{
 					id: 'val',
@@ -164,7 +164,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		auto_framing_start_position_action: {
-			name: 'Auto Framing Start Position',
+			name: 'Auto Framing - Start Position',
 			options: [
 				{
 					id: 'val',
@@ -189,12 +189,12 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		multi_tracking_num_action: {
-			name: 'Multi Tracking Num',
+			name: 'Auto Framing - Multi Tracking Targets',
 			options: [
 				{
 					id: 'val',
 					type: 'dropdown',
-					label: 'Multi Tracking Num',
+					label: 'Targets',
 					default: 'multitrackingnum_1',
 					// '1' disables multi-tracking; 2-8 enable with that target count.
 					choices: Array.from({ length: 8 }, (_, i) => ({
@@ -209,7 +209,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		multi_tracking_wait_time_action: {
-			name: 'Multi Tracking Wait Time',
+			name: 'Auto Framing - Multi Tracking Wait Time',
 			options: [
 				{
 					id: 'val',
@@ -225,7 +225,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		fixed_angle_position_action: {
-			name: 'Fixed Angle Position',
+			name: 'Auto Framing - Fixed Angle Position',
 			options: [
 				{
 					id: 'val',
@@ -257,8 +257,30 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 				}
 			},
 		},
+		fixed_angle_fine_action: {
+			name: 'Auto Framing - Fixed Angle Fine Adjustment',
+			options: [
+				{
+					id: 'target',
+					type: 'dropdown',
+					label: 'Target',
+					choices: [
+						{ id: 'pan', label: 'Pan' },
+						{ id: 'tilt', label: 'Tilt' },
+						{ id: 'zoom', label: 'Zoom' },
+					],
+					default: 'pan',
+				},
+				{ id: 'step', type: 'number', label: 'Step', default: 100, min: -32768, max: 32767 },
+			],
+			callback: async ({ options }) => {
+				const axisMap: Record<string, Axis> = { pan: 'Pan', tilt: 'Tilt', zoom: 'Zoom' }
+				const axis = axisMap[options.target as string]
+				await self.api?.autoFraming.fixedAngle.fineAdjust(axis, options.step as number)
+			},
+		},
 		autoframing_tracking_speed_action: {
-			name: 'Auto Framing Tracking Speed',
+			name: 'Auto Framing - Tracking Speed',
 			options: [
 				{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
 				{ id: 'value', type: 'number', label: 'Speed (1-5)', default: 4, min: 1, max: 5 },
@@ -268,7 +290,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		autoframing_tracking_sensitivity_action: {
-			name: 'Auto Framing Tracking Sensitivity',
+			name: 'Auto Framing - Tracking Sensitivity',
 			options: [
 				{ id: 'axis', type: 'dropdown', label: 'Axis', choices: AF_AXIS_CHOICES, default: 'Pan' },
 				{ id: 'value', type: 'number', label: 'Sensitivity (0-5)', default: 3, min: 0, max: 5 },
@@ -278,7 +300,7 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 			},
 		},
 		autoframing_tracking_step_action: {
-			name: 'Auto Framing Tracking Step (Speed/Sensitivity)',
+			name: 'Auto Framing - Tracking Step (Speed/Sensitivity)',
 			options: [
 				{
 					id: 'kind',
@@ -305,28 +327,6 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 				self.setVariableValues({ [varName]: value })
 				if (kind === 'Speed') await self.api?.autoFraming.setTrackingSpeed(axis, value)
 				else await self.api?.autoFraming.setTrackingSensitivity(axis, value)
-			},
-		},
-		fixed_angle_fine_action: {
-			name: 'Fixed Angle Fine Adjust',
-			options: [
-				{
-					id: 'target',
-					type: 'dropdown',
-					label: 'Target',
-					choices: [
-						{ id: 'pan', label: 'Pan' },
-						{ id: 'tilt', label: 'Tilt' },
-						{ id: 'zoom', label: 'Zoom' },
-					],
-					default: 'pan',
-				},
-				{ id: 'step', type: 'number', label: 'Step', default: 100, min: -32768, max: 32767 },
-			],
-			callback: async ({ options }) => {
-				const axisMap: Record<string, Axis> = { pan: 'Pan', tilt: 'Tilt', zoom: 'Zoom' }
-				const axis = axisMap[options.target as string]
-				await self.api?.autoFraming.fixedAngle.fineAdjust(axis, options.step as number)
 			},
 		},
 	}

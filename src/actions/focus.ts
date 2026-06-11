@@ -9,7 +9,7 @@ export function focusActions(self: ModuleInstance): CompanionActionDefinitions {
 				{
 					id: 'val',
 					type: 'dropdown',
-					label: 'Auto Focus Mode',
+					label: 'Focus - Auto Focus Mode',
 					default: 'afmode_normal',
 					choices: [
 						{ id: 'afmode_normal', label: 'Normal' },
@@ -33,7 +33,7 @@ export function focusActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		auto_focus_sensitivity_action: {
-			name: 'Auto Focus Sensitivity',
+			name: 'Focus - Auto Focus Sensitivity',
 			options: [
 				{
 					id: 'val',
@@ -58,7 +58,7 @@ export function focusActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		focus_mode_action: {
-			name: 'Focus Mode',
+			name: 'Focus - Mode (Auto/Manual)',
 			options: [
 				{
 					id: 'val',

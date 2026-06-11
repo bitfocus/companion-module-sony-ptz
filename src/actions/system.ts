@@ -4,12 +4,12 @@ import type { ModuleInstance } from '../main.js'
 export function systemActions(self: ModuleInstance): CompanionActionDefinitions {
 	return {
 		system_power_action: {
-			name: 'System Power',
+			name: 'System - Power',
 			options: [
 				{
 					id: 'val',
 					type: 'dropdown',
-					label: 'System Power',
+					label: 'State',
 					default: 'system_on',
 					choices: [
 						{ id: 'system_on', label: 'ON' },

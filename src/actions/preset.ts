@@ -4,7 +4,7 @@ import type { ModuleInstance } from '../main.js'
 export function presetActions(self: ModuleInstance): CompanionActionDefinitions {
 	return {
 		preset_call_action: {
-			name: 'Preset Call',
+			name: 'PTZ Presets - Recall',
 			options: [
 				{
 					id: 'val',
@@ -34,7 +34,7 @@ export function presetActions(self: ModuleInstance): CompanionActionDefinitions 
 			},
 		},
 		preset_set_action: {
-			name: 'Preset Set',
+			name: 'PTZ Presets - Store',
 			options: [
 				{
 					id: 'val',

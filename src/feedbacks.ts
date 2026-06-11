@@ -6,7 +6,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 	self.setFeedbackDefinitions({
 		power: {
 			type: 'boolean',
-			name: 'System power',
+			name: 'System - Power',
 			defaultStyle: {
 				bgcolor: combineRgb(255, 0, 0),
 				color: combineRgb(0, 0, 0),
@@ -51,7 +51,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		framingMode: {
 			type: 'boolean',
-			name: 'Auto Framing -  Framing Mode (Person/Ball Sports)',
+			name: 'Auto Framing - Framing Mode (Person/Ball Sports)',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -72,7 +72,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		shotMode: {
 			type: 'boolean',
-			name: 'Auto Framing -  Shot Mode',
+			name: 'Auto Framing - Shot Mode',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -96,7 +96,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		leadRoom: {
 			type: 'boolean',
-			name: 'Auto Framing -  Lead Room',
+			name: 'Auto Framing - Lead Room',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -140,7 +140,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		fixedAngle: {
 			type: 'boolean',
-			name: 'Auto Framing -  Fixed Angle Position Enabled',
+			name: 'Auto Framing - Fixed Angle Position Enabled',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -161,7 +161,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		sceneFile: {
 			type: 'boolean',
-			name: 'Scene File: Current Scene File',
+			name: 'Scene File - Current Scene File',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 102, 204),
 				color: combineRgb(255, 255, 255),
@@ -182,7 +182,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		trackingStatus: {
 			type: 'boolean',
-			name: 'Auto Framing -  Tracking Status',
+			name: 'Auto Framing - Tracking Status',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),
@@ -208,7 +208,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		trackingSpeed: {
 			type: 'boolean',
-			name: 'Auto Framing -  Tracking Speed (matches value)',
+			name: 'Auto Framing - Tracking Speed',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),
@@ -234,7 +234,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		trackingSensitivity: {
 			type: 'boolean',
-			name: 'Auto Framing -  Tracking Sensitivity (matches value)',
+			name: 'Auto Framing - Tracking Sensitivity',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),
@@ -260,7 +260,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		multiTracking: {
 			type: 'boolean',
-			name: 'Auto Framing -  Multi Tracking Targets',
+			name: 'Auto Framing - Multi Tracking Targets',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),
@@ -285,7 +285,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		focusMode: {
 			type: 'boolean',
-			name: 'Focus -  Focus Mode (Auto/Manual)',
+			name: 'Focus - Mode (Auto/Manual)',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),
@@ -306,7 +306,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		},
 		afMode: {
 			type: 'boolean',
-			name: 'Focus -  Auto Focus Mode',
+			name: 'Focus - Auto Focus Mode',
 			defaultStyle: {
 				bgcolor: combineRgb(0, 153, 51),
 				color: combineRgb(255, 255, 255),

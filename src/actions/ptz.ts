@@ -13,7 +13,7 @@ function clamp(self: ModuleInstance, value: number, min: string, max: string): n
 export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 	return {
 		ptz_reset_action: {
-			name: 'PTZ Reset',
+			name: 'PTZ - Reset',
 			options: [
 				{
 					id: 'val',
@@ -28,7 +28,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		ptz_move_action: {
-			name: 'PTZ Move',
+			name: 'PTZ - Move',
 			options: [
 				{
 					id: 'val',
@@ -79,7 +79,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		ptz_zoom_action: {
-			name: 'PTZ Zoom',
+			name: 'PTZ - Zoom',
 			options: [
 				{
 					id: 'val',
@@ -112,7 +112,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		ptz_move_stop_action: {
-			name: 'PTZ Move Stop',
+			name: 'PTZ - Move Stop',
 			options: [
 				{
 					id: 'val',
@@ -145,7 +145,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			},
 		},
 		ptz_step_action: {
-			name: 'PTZ Step',
+			name: 'PTZ - Step',
 			options: [
 				{
 					id: 'target',
