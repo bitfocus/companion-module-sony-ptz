@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PTZ Presets — Recall** and **Store** gain a "Custom Number / Variable" option in the preset dropdown, allowing the preset number to be driven by a value or variable — including presets beyond the listed range
 - **PTZ Move** and **PTZ Zoom** speed fields now accept variables, so pan/tilt and zoom speeds can be driven dynamically
 - Configuration password is now stored as a secret
 

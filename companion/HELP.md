@@ -67,9 +67,11 @@ Add the connection and enter the camera's details:
 - Preset Call
   - Look Back
   - PTZ Home (Center Position)
+  - Custom Number / Variable (any preset number, supports variables)
   - Preset Number (1-10)
 - Preset Set
   - Preset Number (1-10)
+  - Custom Number / Variable (any preset number, supports variables)
 - Number of Multi-Person Tracking Target
   - 1 (Off)
   - 2-8 (On)
