@@ -18,8 +18,12 @@ import type {
 	StreamStatus,
 	SysInfoStatus,
 	SystemStatus,
+	TallyStatus,
+	WhiteBalanceMode,
 	ZoomDirection,
 } from './types.js'
+
+export const MAX_WB_GAIN = 255
 
 export const MAX_PT_SPEED = 24
 export const MAX_ZOOM_SPEED = 32766
@@ -158,6 +162,22 @@ export class CameraApi {
 			this.exec('command/ptzf.cgi', { AFSensitivity: sensitivity }),
 	}
 
+	imaging = {
+		setWhiteBalanceMode: async (mode: WhiteBalanceMode): Promise<void> =>
+			this.exec('command/imaging.cgi', { WhiteBalanceMode: mode }),
+		setStabilizer: async (on: boolean): Promise<void> =>
+			this.exec('command/imaging.cgi', { Stabilizer: on ? 'on' : 'off' }),
+		setWhiteBalanceCbGain: async (value: number): Promise<void> =>
+			this.exec('command/imaging.cgi', { WhiteBalanceCbGain: clampInt(value, 0, MAX_WB_GAIN).toString() }),
+		setWhiteBalanceCrGain: async (value: number): Promise<void> =>
+			this.exec('command/imaging.cgi', { WhiteBalanceCrGain: clampInt(value, 0, MAX_WB_GAIN).toString() }),
+	}
+
+	tally = {
+		setControl: async (on: boolean): Promise<void> =>
+			this.exec('command/tally.cgi', { TallyControl: on ? 'on' : 'off' }),
+	}
+
 	preset = {
 		call: async (num: number): Promise<void> => this.exec('command/presetposition.cgi', { PresetCall: num.toString() }),
 		set: async (num: number): Promise<void> =>
@@ -206,11 +226,23 @@ export class CameraApi {
 				exposureGain: Number(p.get('ExposureGain')) || 0,
 				exposureIris: Number(p.get('ExposureIris')) || 0,
 				exposureNDVariable: Number(p.get('ExposureNDVariable')) || 0,
+				whiteBalanceMode: p.get('WhiteBalanceMode') || '',
+				whiteBalanceCbGain: Number(p.get('WhiteBalanceCbGain')) || 0,
+				whiteBalanceCrGain: Number(p.get('WhiteBalanceCrGain')) || 0,
+				stabilizer: p.get('Stabilizer') || '',
 			}
 		},
 		paint: async (): Promise<PaintStatus> => {
 			const p = await this.transport.sendInq({ inq: 'paint' })
 			return { masterBlack: Number(p.get('MasterBlack')) || 0 }
+		},
+		tally: async (): Promise<TallyStatus> => {
+			const p = await this.transport.sendInq({ inq: 'tally' })
+			return {
+				tallyControl: p.get('TallyControl') || '',
+				// RTallyStatus reports "1"/"0" (not on/off); normalize so the variable and feedback match the others.
+				rTallyStatus: p.get('RTallyStatus') === '1' ? 'on' : 'off',
+			}
 		},
 	}
 }

@@ -72,6 +72,10 @@ export function UpdatePresets(self: ModuleInstance): void {
 		'Auto Focus - Focus Mode': ['Focus Controls', 'Focus Mode'],
 		'Auto Focus - AF Mode': ['Focus Controls', 'AF Mode'],
 		'Auto Focus - Sensitivity': ['Focus Controls', 'Sensitivity'],
+		'Imaging - White Balance': ['Imaging', 'White Balance'],
+		'Imaging - White Balance Gain': ['Imaging', 'White Balance Gain'],
+		'Imaging - Stabilizer': ['Imaging', 'Stabilizer'],
+		'Tally - Control': ['Tally', 'Control'],
 		'Preset Call': ['PTZ Presets', 'Recall'],
 		'Preset Set': ['PTZ Presets', 'Store'],
 		'Scene File Recall': ['Scene File Recall', 'Scene File Recall', ['BRC-AM7']],
@@ -470,6 +474,107 @@ export function UpdatePresets(self: ModuleInstance): void {
 			feedbacks: [{ feedbackId: 'focusSensitivity', options: { level } }],
 		})
 	}
+
+	// ---- Imaging: White Balance Mode ------------------------------------------
+	const wbModes: [name: string, value: string, key: string, mode: string][] = [
+		['Auto', 'Auto', 'whitebalancemode_auto', 'auto'],
+		['Indoor', 'Indoor', 'whitebalancemode_indoor', 'indoor'],
+		['Outdoor', 'Outdoor', 'whitebalancemode_outdoor', 'outdoor'],
+		['One Push WB', 'One Push', 'whitebalancemode_onepushwb', 'onepushwb'],
+		['ATW', 'ATW', 'whitebalancemode_atw', 'atw'],
+		['Manual', 'Manual', 'whitebalancemode_manual', 'manual'],
+	]
+	for (const [name, value, key, mode] of wbModes) {
+		button({
+			category: 'Imaging - White Balance',
+			name,
+			text: presetText('White Balance', value),
+			key,
+			down: [step('white_balance_mode_action', { val: `wb_${mode}` })],
+			feedbacks: [{ feedbackId: 'whiteBalanceMode', options: { mode } }],
+		})
+	}
+
+	// ---- Imaging: White Balance Gain (Blue/Red readout + rotary nudge) --------
+	const wbGain = (param: string, step: number): RotaryAction => [
+		'generic_step_action',
+		{ path: 'command/imaging.cgi', param, step, min: 0, max: 255 },
+	]
+	button({
+		category: 'Imaging - White Balance Gain',
+		name: 'Blue (Cb) Gain Current',
+		text: 'White Balance\\nBlue Gain\\n$(this:whiteBalanceCbGain)',
+		key: 'whitebalance_cbgain_current',
+		down: [],
+	})
+	rotary({
+		category: 'Imaging - White Balance Gain',
+		name: 'Blue (Cb) Gain',
+		text: 'WB Blue Gain\\n$(this:whiteBalanceCbGain)',
+		key: 'whitebalance_cbgain_rotary',
+		left: wbGain('WhiteBalanceCbGain', -1),
+		right: wbGain('WhiteBalanceCbGain', 1),
+	})
+	button({
+		category: 'Imaging - White Balance Gain',
+		name: 'Red (Cr) Gain Current',
+		text: 'White Balance\\nRed Gain\\n$(this:whiteBalanceCrGain)',
+		key: 'whitebalance_crgain_current',
+		down: [],
+	})
+	rotary({
+		category: 'Imaging - White Balance Gain',
+		name: 'Red (Cr) Gain',
+		text: 'WB Red Gain\\n$(this:whiteBalanceCrGain)',
+		key: 'whitebalance_crgain_rotary',
+		left: wbGain('WhiteBalanceCrGain', -1),
+		right: wbGain('WhiteBalanceCrGain', 1),
+	})
+
+	// ---- Imaging: Image Stabilizer --------------------------------------------
+	button({
+		category: 'Imaging - Stabilizer',
+		name: 'On',
+		text: presetText('Stabilizer', 'On'),
+		key: 'stabilizer_on',
+		down: [step('image_stabilizer_action', { val: 'stabilizer_on' })],
+		feedbacks: [{ feedbackId: 'stabilizer', options: { state: 'on' } }],
+	})
+	button({
+		category: 'Imaging - Stabilizer',
+		name: 'Off',
+		text: presetText('Stabilizer', 'Off'),
+		key: 'stabilizer_off',
+		down: [step('image_stabilizer_action', { val: 'stabilizer_off' })],
+		feedbacks: [{ feedbackId: 'stabilizer', options: { state: 'off' } }],
+	})
+
+	// ---- Tally: Control + Red Tally indicator ---------------------------------
+	button({
+		category: 'Tally - Control',
+		name: 'On',
+		text: presetText('Tally', 'On'),
+		key: 'tallycontrol_on',
+		down: [step('tally_control_action', { val: 'tally_on' })],
+		feedbacks: [{ feedbackId: 'tallyControl', options: { state: 'on' } }],
+	})
+	button({
+		category: 'Tally - Control',
+		name: 'Off',
+		text: presetText('Tally', 'Off'),
+		key: 'tallycontrol_off',
+		down: [step('tally_control_action', { val: 'tally_off' })],
+		feedbacks: [{ feedbackId: 'tallyControl', options: { state: 'off' } }],
+	})
+	// Read-only red/program tally indicator (no action).
+	button({
+		category: 'Tally - Control',
+		name: 'Red Tally Status',
+		text: presetText('Tally', 'Red'),
+		key: 'tally_red_status',
+		down: [],
+		feedbacks: [{ feedbackId: 'rTallyStatus', options: { state: 'on' }, style: { bgcolor: combineRgb(255, 0, 0) } }],
+	})
 
 	// ---- Auto Framing: Multi Tracking -----------------------------------------
 	button({

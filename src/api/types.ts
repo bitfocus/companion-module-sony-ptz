@@ -9,6 +9,7 @@ export type StopTarget = 'pantilt' | 'zoom' | 'focus' | 'motor'
 export type AFMode = 'normal' | 'interval' | 'zoomtrigger'
 export type AFSensitivity = 'normal' | 'low'
 export type FocusMode = 'auto' | 'manual'
+export type WhiteBalanceMode = 'auto' | 'indoor' | 'outdoor' | 'onepushwb' | 'atw' | 'manual'
 export type TrackingKind = 'Speed' | 'Sensitivity'
 
 /** Shot mode is encoded as the zoom field of PtzAutoFramingAdjustSetting ("0,0,<zoom>"). */
@@ -78,6 +79,15 @@ export interface ImagingStatus {
 	exposureGain: number
 	exposureIris: number
 	exposureNDVariable: number
+	whiteBalanceMode: string
+	whiteBalanceCbGain: number
+	whiteBalanceCrGain: number
+	stabilizer: string
+}
+
+export interface TallyStatus {
+	tallyControl: string
+	rTallyStatus: string
 }
 
 export interface PaintStatus {

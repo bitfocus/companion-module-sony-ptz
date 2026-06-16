@@ -95,6 +95,16 @@ Add the connection and enter the camera's details:
   - On/Off
   - Mode (Normal/Interval/Zoom Trigger) \*SRG only
   - Sensitivity (Normal/Low) \*SRG only
+- White Balance Mode
+  - Auto/Indoor/Outdoor/One Push WB/ATW/Manual
+- White Balance Blue (Cb) Gain
+  - Value (0-255)
+- White Balance Red (Cr) Gain
+  - Value (0-255)
+- Image Stabilizer
+  - On/Off
+- Tally Control
+  - On/Off
 - Absolute Focus \*SRG only
 - Absolute Zoom \*SRG only
 - Absolute PTZF
@@ -130,6 +140,13 @@ Add the connection and enter the camera's details:
   - Focus Mode
   - AF Mode \*SRG only
   - Sensitivity \*SRG only
+- Imaging
+  - White Balance Mode
+  - White Balance Gain (Blue/Red current readout + rotary nudge)
+  - Image Stabilizer
+- Tally
+  - Control (On/Off)
+  - Red Tally Status indicator
 - Rotary Button
   - Pan
   - Tilt
@@ -158,6 +175,10 @@ Add the connection and enter the camera's details:
 - Focus Mode (Auto/Manual)
 - Auto Focus Mode (Normal/Interval/Zoom Trigger) \*SRG only
 - Auto Focus Sensitivity (Normal/Low) \*SRG only
+- White Balance Mode (Auto/Indoor/Outdoor/One Push WB/ATW/Manual)
+- Image Stabilizer (On/Off)
+- Tally Control (On/Off)
+- Red Tally Status (On/Off)
 
 ### Variables
 
@@ -201,6 +222,12 @@ Add the connection and enter the camera's details:
 - `$(this:exposureIris)` - Exposure Iris Value
 - `$(this:exposureNDVariable)` - Exposure ND Variable Value \*BRC-AM7 only
 - `$(this:masterBlack)` - Master Black Value \*BRC-AM7 only
+- `$(this:whiteBalanceMode)` - White Balance Mode (Auto/Indoor/Outdoor/One Push WB/ATW/Manual)
+- `$(this:whiteBalanceCbGain)` - White Balance Blue (Cb) Gain Value
+- `$(this:whiteBalanceCrGain)` - White Balance Red (Cr) Gain Value
+- `$(this:stabilizer)` - Image Stabilizer State (On/Off)
+- `$(this:tallyControl)` - Tally Control State (On/Off)
+- `$(this:rTallyStatus)` - Red Tally Status (On/Off)
 - `$(this:currentSceneFile)` - Current Scene File Number \*BRC-AM7 only
 - `$(this:sceneFileName1)` … `$(this:sceneFileName16)` - Scene File Names (Slots 1–16) \*BRC-AM7 only
 - `$(this:foundDevice1)` … `$(this:foundDevice8)` - IP addresses of cameras found by Discover Cameras

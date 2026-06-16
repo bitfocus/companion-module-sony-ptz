@@ -345,5 +345,93 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			],
 			callback: (feedback) => self.state.get('focusSensitivity') === feedback.options.level,
 		},
+		whiteBalanceMode: {
+			type: 'boolean',
+			name: 'Imaging - White Balance Mode',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 102, 204),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'White Balance Mode',
+					id: 'mode',
+					choices: [
+						{ id: 'auto', label: 'Auto' },
+						{ id: 'indoor', label: 'Indoor' },
+						{ id: 'outdoor', label: 'Outdoor' },
+						{ id: 'onepushwb', label: 'One Push WB' },
+						{ id: 'atw', label: 'ATW' },
+						{ id: 'manual', label: 'Manual' },
+					],
+					default: 'auto',
+				},
+			],
+			callback: (feedback) => self.state.get('whiteBalanceMode') === feedback.options.mode,
+		},
+		stabilizer: {
+			type: 'boolean',
+			name: 'Imaging - Image Stabilizer',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'State',
+					id: 'state',
+					choices: [
+						{ id: 'on', label: 'On' },
+						{ id: 'off', label: 'Off' },
+					],
+					default: 'on',
+				},
+			],
+			callback: (feedback) => self.state.get('stabilizer') === feedback.options.state,
+		},
+		tallyControl: {
+			type: 'boolean',
+			name: 'Tally - Control',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 153, 51),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'State',
+					id: 'state',
+					choices: [
+						{ id: 'on', label: 'On' },
+						{ id: 'off', label: 'Off' },
+					],
+					default: 'on',
+				},
+			],
+			callback: (feedback) => self.state.get('tallyControl') === feedback.options.state,
+		},
+		rTallyStatus: {
+			type: 'boolean',
+			name: 'Tally - Red Tally Status',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 0, 0),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Red Tally',
+					id: 'state',
+					choices: [
+						{ id: 'on', label: 'On (Program)' },
+						{ id: 'off', label: 'Off' },
+					],
+					default: 'on',
+				},
+			],
+			callback: (feedback) => self.state.get('rTallyStatus') === feedback.options.state,
+		},
 	})
 }
