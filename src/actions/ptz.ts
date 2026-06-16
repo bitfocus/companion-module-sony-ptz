@@ -1,6 +1,6 @@
 import type { CompanionActionDefinitions } from '@companion-module/base'
 import type { ModuleInstance } from '../main.js'
-import { resolveSpeed } from './helpers.js'
+import { resolveNumber } from './helpers.js'
 import { DEFAULT_PTZ_MOVE_SPEED, DEFAULT_PTZ_STEP, DEFAULT_PTZ_ZOOM_SPEED } from './constants.js'
 
 // Absolute positions are 16-bit signed (see to16); fall back to that full range when the
@@ -65,7 +65,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			],
 			callback: async ({ options }) => {
 				if (!self.api) return
-				const speed = resolveSpeed(options.speed, DEFAULT_PTZ_MOVE_SPEED)
+				const speed = resolveNumber(options.speed, DEFAULT_PTZ_MOVE_SPEED)
 				switch (options.val) {
 					case 'move_up':
 						return self.api.ptz.move('up', 0, speed)
@@ -110,7 +110,7 @@ export function ptzActions(self: ModuleInstance): CompanionActionDefinitions {
 			],
 			callback: async ({ options }) => {
 				if (!self.api) return
-				const speed = resolveSpeed(options.speed, DEFAULT_PTZ_ZOOM_SPEED)
+				const speed = resolveNumber(options.speed, DEFAULT_PTZ_ZOOM_SPEED)
 				switch (options.val) {
 					case 'zoom_tele':
 						return self.api.ptz.zoom('tele', speed)

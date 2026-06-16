@@ -1,10 +1,12 @@
 import type {
 	AutoFramingStatus,
+	ImagingStatus,
 	PtzfStatus,
 	SceneFileStatus,
 	StreamStatus,
 	SysInfoStatus,
 	SystemStatus,
+	TallyStatus,
 } from '../api/types.js'
 
 export type StateKey =
@@ -29,6 +31,12 @@ export type StateKey =
 	| 'focusMode'
 	| 'focusSensitivity'
 	| 'afMode'
+	| 'whiteBalanceMode'
+	| 'whiteBalanceCbGain'
+	| 'whiteBalanceCrGain'
+	| 'stabilizer'
+	| 'tallyControl'
+	| 'rTallyStatus'
 	// Display-only variable keys
 	| 'modelName'
 	| 'name'
@@ -128,6 +136,24 @@ export function stateFromPtzf(s: PtzfStatus): StateFragment {
 
 export function stateFromStream(s: StreamStatus): StateFragment {
 	return { streamMode: s.streamMode }
+}
+
+// Exposure fields are intentionally omitted: they flow straight to variables in main (position-like,
+// gated after a PTZ step) rather than through state. Only the feedback-backed WB/stabilizer keys live here.
+export function stateFromImaging(s: ImagingStatus): StateFragment {
+	return {
+		whiteBalanceMode: s.whiteBalanceMode,
+		whiteBalanceCbGain: s.whiteBalanceCbGain,
+		whiteBalanceCrGain: s.whiteBalanceCrGain,
+		stabilizer: s.stabilizer,
+	}
+}
+
+export function stateFromTally(s: TallyStatus): StateFragment {
+	return {
+		tallyControl: s.tallyControl,
+		rTallyStatus: s.rTallyStatus,
+	}
 }
 
 export function stateFromSceneFile(s: SceneFileStatus): StateFragment {

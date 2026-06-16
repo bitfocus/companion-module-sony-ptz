@@ -226,6 +226,8 @@ export function autoFramingActions(self: ModuleInstance): CompanionActionDefinit
 		},
 		fixed_angle_position_action: {
 			name: 'Auto Framing - Fixed Angle Position',
+			description:
+				'Note: The Fixed Angle Position Settings must be set to enabled in the PTZ Auto Framing Settings menu.',
 			options: [
 				{
 					id: 'val',

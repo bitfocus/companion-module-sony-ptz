@@ -16,10 +16,12 @@ import { CameraApi } from './api/camera-api.js'
 import {
 	CameraState,
 	stateFromAutoFraming,
+	stateFromImaging,
 	stateFromPtzf,
 	stateFromSceneFile,
 	stateFromStream,
 	stateFromSystemInfo,
+	stateFromTally,
 } from './state/camera-state.js'
 
 export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
@@ -56,6 +58,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 			else if (key === 'FocusMode' || key === 'AFMode' || key === 'AFSensitivity') inqs.add('ptzf')
 			else if (key.startsWith('SceneFile')) inqs.add('sceneFile')
 			else if (key === 'System') inqs.add('power')
+			else if (key.startsWith('WhiteBalance') || key === 'Stabilizer') inqs.add('imaging')
+			else if (key === 'TallyControl') inqs.add('tally')
 		}
 		let changed = false
 		for (const inq of inqs) {
@@ -68,6 +72,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 					changed = this.state.update(stateFromSceneFile(await this.api.query.sceneFile())) || changed
 				} else if (inq === 'power') {
 					changed = this.state.set('power', (await this.api.query.sysInfo()).power) || changed
+				} else if (inq === 'imaging') {
+					changed = this.state.update(stateFromImaging(await this.api.query.imaging())) || changed
+				} else if (inq === 'tally') {
+					changed = this.state.update(stateFromTally(await this.api.query.tally())) || changed
 				}
 			} catch {
 				// Best-effort: the next regular poll will reconcile if this targeted refresh fails.
@@ -160,6 +168,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 
 			this.status = InstanceStatus.Ok
 
+			// Imaging (white balance / stabilizer) and tally are optional categories: not every model
+			// supports the inquiry, and a failure here must not abort the core poll above.
+			const imaging = await this.api.query.imaging().catch(() => undefined)
+			const tally = await this.api.query.tally().catch(() => undefined)
+
 			const prevModel = this.state.get('modelName')
 
 			const changed = this.state.update({
@@ -168,6 +181,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 				...stateFromPtzf(ptzf),
 				...stateFromStream(stream),
 				...stateFromSceneFile(sceneFile),
+				...(imaging ? stateFromImaging(imaging) : {}),
+				...(tally ? stateFromTally(tally) : {}),
 			})
 			// Re-export presets when the model is first learned or changes, so the preset list
 			// reflects only the connected camera's features.
@@ -182,15 +197,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig, ModuleSecrets> {
 			// Position/exposure values are skipped briefly after a PTZ step so the optimistic
 			// local update isn't clobbered by a stale poll reading.
 			if (Date.now() - this.lastStepTime >= 3000) {
-				const imaging = await this.api.query.imaging()
 				const paint = await this.api.query.paint()
 				variables.panPos = ptzf.pan
 				variables.tiltPos = ptzf.tilt
 				variables.zoomPos = ptzf.zoom
 				variables.focusPos = ptzf.focus
-				variables.exposureGain = imaging.exposureGain
-				variables.exposureIris = imaging.exposureIris
-				variables.exposureNDVariable = imaging.exposureNDVariable
+				if (imaging) {
+					variables.exposureGain = imaging.exposureGain
+					variables.exposureIris = imaging.exposureIris
+					variables.exposureNDVariable = imaging.exposureNDVariable
+				}
 				variables.masterBlack = paint.masterBlack
 			}
 			this.setVariableValues(variables)

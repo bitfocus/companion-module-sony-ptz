@@ -5,7 +5,7 @@ All notable changes to this module will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] - 2026-06-16
 
 ### Added
 
@@ -21,12 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auto Framing Tracking Status** feedback and `trackingStatus` variable
 - **Multi-Person Tracking** feedback and `multiTracking` / `multiTrackingNum` variables
 - **Focus Mode**, **Auto Focus Mode**, and **Auto Focus Sensitivity** feedbacks for the existing focus actions
+- **White Balance Mode** action (Auto / Indoor / Outdoor / One Push WB / ATW / Manual), feedback and `whiteBalanceMode` variable
+- **White Balance Blue (Cb) Gain** and **White Balance Red (Cr) Gain** actions with `whiteBalanceCbGain` / `whiteBalanceCrGain` variables
+- **Image Stabilizer** action (On / Off), feedback and `stabilizer` variable
+- **Tally Control** action (On / Off), feedback and `tallyControl` variable, plus a **Red Tally Status** feedback and `rTallyStatus` variable
 - Matching **presets** for the new actions, organized into categories, with feedback highlighting on the relevant buttons.
 - Presets are now **filtered to the connected camera model** once it is known; model-specific presets are hidden for other models. When the camera is offline or its model is unrecognized, all presets are shown.
 - Support for attaching feedbacks to presets via an optional trailing element on the preset specs.
 
 ### Changed
 
+- **PTZ Presets — Recall** and **Store** gain a "Custom Number / Variable" option in the preset dropdown, allowing the preset number to be driven by a value or variable — including presets beyond the listed range
 - **PTZ Move** and **PTZ Zoom** speed fields now accept variables, so pan/tilt and zoom speeds can be driven dynamically
 - Configuration password is now stored as a secret
 
@@ -61,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release: PTZ control, presets, and status variables for Sony BRC and SRG series cameras over HTTP with digest authentication.
 
-[Unreleased]: https://github.com/bitfocus/companion-module-sony-ptz/compare/v1.2.0...HEAD
+[1.3.0]: https://github.com/bitfocus/companion-module-sony-ptz/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/bitfocus/companion-module-sony-ptz/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/bitfocus/companion-module-sony-ptz/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/bitfocus/companion-module-sony-ptz/compare/v1.0.0...v1.0.1
